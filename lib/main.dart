@@ -1,7 +1,6 @@
 import 'package:clinic/pages/start_page.dart';
 import 'package:flutter/material.dart';
 
-import 'core/global/theme/colors/light_theme_colors.dart';
 import 'core/global/theme/theme_data/theme_data_light.dart';
 
 main() => runApp(const MainWidget());
