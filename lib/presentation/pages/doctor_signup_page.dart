@@ -1,14 +1,15 @@
+import 'package:clinic/presentation/Providers/inherited_widgets/parent_user_provider.dart';
+import 'package:flutter/material.dart';
+
 import 'package:clinic/global/theme/colors/light_theme_colors.dart';
 import 'package:clinic/global/theme/fonts/app_fonst.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
-import 'package:flutter/material.dart';
-import '../widgets/stepper_widgets/step1_content.dart';
-import '../widgets/stepper_widgets/step2_content.dart';
+import 'package:clinic/presentation/widgets/stepper_widgets/common_stepper_widgets/main_info_widget.dart';
+import 'package:clinic/presentation/widgets/stepper_widgets/doctor_stepper_widget/acadimic_info_widget.dart';
 
 class DoctorSignupPage extends StatefulWidget {
   static const route = '/doctorSignupPage';
   const DoctorSignupPage({super.key});
-
   @override
   State<DoctorSignupPage> createState() => _DoctorSignupPageState();
 }
@@ -22,10 +23,16 @@ class _DoctorSignupPageState extends State<DoctorSignupPage> {
   int currentStep = 0;
   bool valid = false;
   static const numberOfSteps = 2;
-  Step1Content step1content = Step1Content();
-  Step2Content step2content = Step2Content();
+  MainInfoWidget mainInfoWidget = MainInfoWidget();
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var doctorProvider = ParentUserProvider.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -63,7 +70,7 @@ class _DoctorSignupPageState extends State<DoctorSignupPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: onStepContinue,
+                  onPressed: () => onStepContinue(doctorProvider),
                   child: const Text(
                     'التالي',
                     style: TextStyle(
@@ -89,7 +96,7 @@ class _DoctorSignupPageState extends State<DoctorSignupPage> {
                         ? Colors.red
                         : LightThemeColors.primaryColorDark),
               ),
-              content: step1content,
+              content: mainInfoWidget,
               state: states[0],
             ),
             Step(
@@ -105,7 +112,7 @@ class _DoctorSignupPageState extends State<DoctorSignupPage> {
                             ? Colors.grey
                             : LightThemeColors.primaryColorDark),
               ),
-              content: step2content,
+              content: const AcadimicInfoWidget(),
               state: states[1],
             ),
           ],
@@ -114,36 +121,33 @@ class _DoctorSignupPageState extends State<DoctorSignupPage> {
     );
   }
 
-  void onStepContinue() {
+  void onStepContinue(ParentUserProvider? doctorProvider) {
     switch (currentStep) {
       case 0:
-        if (step1content.formKey.currentState!.validate() &&
-            step1content.imageIsSet) {
+        if (mainInfoWidget.formKey.currentState!.validate() &&
+            doctorProvider!.doctorModel!.personalImage != null) {
           valid = true;
-        } else if (!step1content.imageIsSet) {
-          step1content.validateImage!();
+        } else if (doctorProvider!.doctorModel!.personalImage == null) {
+          mainInfoWidget.validateImage!();
         }
 
         break;
       case 1:
         bool clinicLocationIsSet = true;
         bool clinicFormValidation = true;
-        for (var clinic in step2content.clinics) {
+        for (var clinic in doctorProvider!.doctorModel!.clinics) {
           if (!clinic.formKey.currentState!.validate()) {
             clinicFormValidation = false;
           }
-          if (!clinic.locationIsSet) {
+          if (clinic.location == null) {
             clinicLocationIsSet = false;
           }
         }
         if (clinicFormValidation &&
-            step2content.idImageIsSet &&
+            (doctorProvider.doctorModel!.medicalIdImage != null) &&
             clinicLocationIsSet) {
           valid = true;
         }
-        break;
-
-      case 2:
         break;
 
       default:

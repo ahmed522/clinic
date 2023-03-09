@@ -1,9 +1,9 @@
-import 'package:clinic/UI/widgets/signup_page.dart';
-import 'package:clinic/UI/widgets/singin_page.dart';
 import 'package:flutter/material.dart';
 
-import '../../global/theme/colors/light_theme_colors.dart';
-import '../../global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/presentation/widgets/signup_page.dart';
+import 'package:clinic/presentation/widgets/singin_page.dart';
 
 class StartPage extends StatelessWidget {
   static const route = '/';

@@ -1,1 +1,4 @@
-enum UserType { doctor, user }
+enum UserType {
+  doctor,
+  user,
+}

@@ -1,57 +1,33 @@
-import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/presentation/Providers/inherited_widgets/parent_user_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../../global/constants/am_or_pm.dart';
-import '../../global/theme/colors/light_theme_colors.dart';
-import '../../global/theme/fonts/app_fonst.dart';
-import '../../global/widgets/day.dart';
+import 'package:clinic/global/constants/am_or_pm.dart';
+import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/constants/regions.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
+import 'package:clinic/global/widgets/day.dart';
 
-// ignore: must_be_immutable
-class Clinic extends StatefulWidget {
-  final formKey = GlobalKey<FormState>();
-
-  int index;
-  bool locationIsSet;
-  bool examineVezeetaValid = true;
-  bool reexamineVezeetaValid = true;
-  Map<String, bool> workDays = {};
-  TimeOfDay openTime;
-  TimeOfDay closeTime;
-  String openTimeFinalMin;
-  String openTimeFinalHour;
-  String closeTimeFinalMin;
-  String closeTimeFinalHour;
-  AMOrPM openTimeAMOrPM;
-  AMOrPM closeTimeAMOrPM;
-
-  Clinic({
+class ClinicPage extends StatefulWidget {
+  final int index;
+  const ClinicPage({
     super.key,
     required this.index,
-    this.locationIsSet = false,
-    this.openTime = AppConstants.initialOpenTime,
-    this.closeTime = AppConstants.initialCloseTime,
-    this.openTimeFinalMin = AppConstants.initialOpenTimeFinalMin,
-    this.openTimeFinalHour = AppConstants.initialOpenTimeFinalHour,
-    this.closeTimeFinalMin = AppConstants.initialCloseTimeFinalMin,
-    this.closeTimeFinalHour = AppConstants.initialCloseTimeFinalHour,
-    this.openTimeAMOrPM = AppConstants.initialAmOrPm,
-    this.closeTimeAMOrPM = AppConstants.initialAmOrPm,
   });
 
   @override
-  State<Clinic> createState() => _ClinicState();
+  State<ClinicPage> createState() => _ClinicPageState();
 }
 
-class _ClinicState extends State<Clinic> {
-  @override
-  void initState() {
-    super.initState();
-    widget.workDays = Map<String, bool>.fromIterables(
-        AppConstants.weekDays, AppConstants.initialCheckedDays);
-  }
+class _ClinicPageState extends State<ClinicPage> {
+  bool _examineVezeetaValid = true;
+  bool _reexamineVezeetaValid = true;
 
   @override
   Widget build(BuildContext context) {
+    var doctorProvider = ParentUserProvider.of(context);
+    var clinicModel = doctorProvider!.doctorModel!.clinics[widget.index];
     return Column(
       children: [
         Center(
@@ -61,7 +37,7 @@ class _ClinicState extends State<Clinic> {
                 color: LightThemeColors.primaryColor,
                 borderRadius: BorderRadius.circular(8)),
             child: Text(
-              ' عيادة رقم ${widget.index}',
+              ' عيادة رقم ${widget.index + 1}',
               style: const TextStyle(
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w700,
@@ -72,6 +48,128 @@ class _ClinicState extends State<Clinic> {
           ),
         ),
         const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MyAlertDialog.getInfoAlertDialog(
+              context,
+              'أين باقي المحافظات؟',
+              AppConstants.whereIsRestGovernorates,
+              {
+                'أعي ذلك': () => Navigator.of(context).pop(),
+              },
+            ),
+            const Text(
+              'المحافظة',
+              style: TextStyle(
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: LightThemeColors.primaryColor,
+              ),
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.only(
+              left: 15,
+              right: 5,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: LightThemeColors.primaryColor,
+                width: 1,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                items: Regions.governorates
+                    .map(
+                      (governorate) => DropdownMenuItem(
+                        value: governorate,
+                        child: Text(
+                          governorate,
+                          style: const TextStyle(
+                              fontFamily: AppFonts.mainArabicFontFamily),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (item) {
+                  setState(() {
+                    clinicModel.governorate = item!;
+                  });
+                },
+                value: clinicModel.governorate,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MyAlertDialog.getInfoAlertDialog(
+              context,
+              'المنطقة الجغرافية',
+              AppConstants.regionInfo,
+              {
+                'أعي ذلك': () => Navigator.of(context).pop(),
+              },
+            ),
+            const Text(
+              'المنطقة',
+              style: TextStyle(
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: LightThemeColors.primaryColor,
+              ),
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.only(
+              left: 15,
+              right: 5,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: LightThemeColors.primaryColor,
+                width: 1,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                items: Regions.regions.keys
+                    .map(
+                      (region) => DropdownMenuItem(
+                        value: region,
+                        child: Text(
+                          region,
+                          style: const TextStyle(
+                              fontFamily: AppFonts.mainArabicFontFamily),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (item) {
+                  setState(() {
+                    clinicModel.region = item!;
+                  });
+                },
+                value: clinicModel.region,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
         const Align(
           alignment: Alignment.centerRight,
           child: Text(
@@ -98,7 +196,7 @@ class _ClinicState extends State<Clinic> {
                 foregroundColor: LightThemeColors.primaryColor,
               ),
               onPressed: () => setState(() {
-                widget.locationIsSet = true;
+                clinicModel.location = 'location is set !!';
               }),
               child: Row(
                 children: [
@@ -121,7 +219,7 @@ class _ClinicState extends State<Clinic> {
               ),
             ),
             const SizedBox(width: 10),
-            widget.locationIsSet
+            (clinicModel.location != null)
                 ? const Icon(
                     Icons.done_rounded,
                     color: Colors.green,
@@ -148,13 +246,11 @@ class _ClinicState extends State<Clinic> {
         const SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: Day.getClickableWeekDays(widget.workDays, (day) {
+          children: Day.getClickableWeekDays(clinicModel.workDays, (day) {
             setState(() {
-              if (widget.workDays[day] != null) {
-                widget.workDays[day] = !widget.workDays[day]!;
-              }
+              clinicModel.workDays[day] = !clinicModel.workDays[day]!;
             });
-          }),
+          }, context),
         ),
         const SizedBox(height: 30),
         const Align(
@@ -185,29 +281,34 @@ class _ClinicState extends State<Clinic> {
               onPressed: () async {
                 TimeOfDay? picked;
                 picked = await showTimePicker(
-                    context: context, initialTime: widget.closeTime);
+                    context: context, initialTime: clinicModel.closeTime);
 
                 setState(() {
-                  widget.closeTime =
-                      (picked == null) ? widget.closeTime : picked;
-                  widget.closeTimeFinalMin = (widget.closeTime.minute < 10)
-                      ? (AppConstants.zero + widget.closeTime.minute.toString())
-                      : (widget.closeTime.minute.toString());
-                  if (widget.closeTime.hour > 12) {
-                    widget.closeTimeFinalHour =
-                        (widget.closeTime.hour - 12).toString();
-                    widget.closeTimeAMOrPM = AMOrPM.pm;
+                  clinicModel.closeTime =
+                      (picked == null) ? clinicModel.closeTime : picked;
+                  clinicModel.closeTimeFinalMin =
+                      (clinicModel.closeTime.minute < 10)
+                          ? (AppConstants.zero +
+                              clinicModel.closeTime.minute.toString())
+                          : (clinicModel.closeTime.minute.toString());
+                  if (clinicModel.closeTime.hour > 12) {
+                    clinicModel.closeTimeFinalHour =
+                        (clinicModel.closeTime.hour - 12).toString();
+                    clinicModel.closeTimeAMOrPM = AMOrPM.pm;
                   } else {
-                    widget.closeTimeFinalHour = (widget.closeTime.hour == 0)
-                        ? '12'
-                        : (widget.closeTime.hour).toString();
-                    widget.closeTimeAMOrPM =
-                        (widget.closeTime.hour == 12) ? AMOrPM.pm : AMOrPM.am;
+                    clinicModel.closeTimeFinalHour =
+                        (clinicModel.closeTime.hour == 0)
+                            ? '12'
+                            : (clinicModel.closeTime.hour).toString();
+                    clinicModel.closeTimeAMOrPM =
+                        (clinicModel.closeTime.hour == 12)
+                            ? AMOrPM.pm
+                            : AMOrPM.am;
                   }
                 });
               },
               child: Text(
-                '${widget.closeTimeFinalHour} : ${widget.closeTimeFinalMin} ${widget.closeTimeAMOrPM.name.toUpperCase()}',
+                '${clinicModel.closeTimeFinalHour} : ${clinicModel.closeTimeFinalMin} ${clinicModel.closeTimeAMOrPM.name.toUpperCase()}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
@@ -237,28 +338,34 @@ class _ClinicState extends State<Clinic> {
                 TimeOfDay? picked;
 
                 picked = await showTimePicker(
-                    context: context, initialTime: widget.openTime);
+                    context: context, initialTime: clinicModel.openTime);
 
                 setState(() {
-                  widget.openTime = (picked == null) ? widget.openTime : picked;
-                  widget.openTimeFinalMin = (widget.openTime.minute < 10)
-                      ? (AppConstants.zero + widget.openTime.minute.toString())
-                      : (widget.openTime.minute.toString());
-                  if (widget.openTime.hour > 12) {
-                    widget.openTimeFinalHour =
-                        (widget.openTime.hour - 12).toString();
-                    widget.openTimeAMOrPM = AMOrPM.pm;
+                  clinicModel.openTime =
+                      (picked == null) ? clinicModel.openTime : picked;
+                  clinicModel.openTimeFinalMin =
+                      (clinicModel.openTime.minute < 10)
+                          ? (AppConstants.zero +
+                              clinicModel.openTime.minute.toString())
+                          : (clinicModel.openTime.minute.toString());
+                  if (clinicModel.openTime.hour > 12) {
+                    clinicModel.openTimeFinalHour =
+                        (clinicModel.openTime.hour - 12).toString();
+                    clinicModel.openTimeAMOrPM = AMOrPM.pm;
                   } else {
-                    widget.openTimeFinalHour = (widget.openTime.hour == 0)
-                        ? '12'
-                        : (widget.openTime.hour).toString();
-                    widget.openTimeAMOrPM =
-                        (widget.openTime.hour == 12) ? AMOrPM.pm : AMOrPM.am;
+                    clinicModel.openTimeFinalHour =
+                        (clinicModel.openTime.hour == 0)
+                            ? '12'
+                            : (clinicModel.openTime.hour).toString();
+                    clinicModel.openTimeAMOrPM =
+                        (clinicModel.openTime.hour == 12)
+                            ? AMOrPM.pm
+                            : AMOrPM.am;
                   }
                 });
               },
               child: Text(
-                '${widget.openTimeFinalHour} : ${widget.openTimeFinalMin} ${widget.openTimeAMOrPM.name.toUpperCase()}',
+                '${clinicModel.openTimeFinalHour} : ${clinicModel.openTimeFinalMin} ${clinicModel.openTimeAMOrPM.name.toUpperCase()}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
@@ -278,7 +385,7 @@ class _ClinicState extends State<Clinic> {
           height: 30,
         ),
         Form(
-          key: widget.formKey,
+          key: clinicModel.formKey,
           child: Column(
             children: [
               const Align(
@@ -302,19 +409,20 @@ class _ClinicState extends State<Clinic> {
                       validator: ((value) {
                         if (value == null || value.trim().isEmpty) {
                           setState(() {
-                            widget.examineVezeetaValid = false;
+                            _examineVezeetaValid = false;
                           });
                           return 'من فضلك ادخل السعر  ';
                         } else {
                           setState(() {
-                            widget.examineVezeetaValid =
+                            _examineVezeetaValid =
                                 RegExp(AppConstants.vezeetaValidationRegExp)
                                     .hasMatch(value);
                           });
-                          if (!widget.examineVezeetaValid) {
+                          if (!_examineVezeetaValid) {
                             return 'من فضلك ادخل قيمة صحيحة ';
                           }
                         }
+                        clinicModel.examineVezeeta = int.parse(value);
                         return null;
                       }),
                       keyboardType: TextInputType.number,
@@ -327,7 +435,7 @@ class _ClinicState extends State<Clinic> {
                       width: 20,
                       height: 5,
                       decoration: BoxDecoration(
-                          color: widget.examineVezeetaValid
+                          color: _examineVezeetaValid
                               ? LightThemeColors.primaryColor
                               : Colors.red,
                           borderRadius: BorderRadius.circular(10)),
@@ -339,7 +447,7 @@ class _ClinicState extends State<Clinic> {
               const Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'سعر إعادة الكشف',
+                  'سعر الإستشارة',
                   style: TextStyle(
                     fontFamily: AppFonts.mainArabicFontFamily,
                     fontWeight: FontWeight.w700,
@@ -357,19 +465,21 @@ class _ClinicState extends State<Clinic> {
                       validator: ((value) {
                         if (value == null || value.trim().isEmpty) {
                           setState(() {
-                            widget.reexamineVezeetaValid = false;
+                            _reexamineVezeetaValid = false;
                           });
                           return 'من فضلك ادخل السعر  ';
                         } else {
                           setState(() {
-                            widget.reexamineVezeetaValid =
+                            _reexamineVezeetaValid =
                                 RegExp(AppConstants.vezeetaValidationRegExp)
                                     .hasMatch(value);
                           });
-                          if (!widget.reexamineVezeetaValid) {
+                          if (!_reexamineVezeetaValid) {
                             return 'من فضلك ادخل قيمة صحيحة ';
                           }
                         }
+                        clinicModel.reexamineVezeeta = int.parse(value);
+
                         return null;
                       }),
                       keyboardType: TextInputType.number,
@@ -382,7 +492,7 @@ class _ClinicState extends State<Clinic> {
                       width: 20,
                       height: 5,
                       decoration: BoxDecoration(
-                          color: widget.reexamineVezeetaValid
+                          color: _reexamineVezeetaValid
                               ? LightThemeColors.primaryColor
                               : Colors.red,
                           borderRadius: BorderRadius.circular(10)),

@@ -1,6 +1,5 @@
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
 import 'package:flutter/material.dart';
-
-import '../colors/light_theme_colors.dart';
 
 ThemeData getThemeDataLight() {
   return ThemeData(

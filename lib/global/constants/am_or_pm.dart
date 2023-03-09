@@ -1,1 +1,4 @@
-enum AMOrPM { am, pm }
+enum AMOrPM {
+  am,
+  pm,
+}

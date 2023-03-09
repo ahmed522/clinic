@@ -1,32 +1,33 @@
-import 'package:clinic/UI/widgets/clinic.dart';
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'dart:io';
+
+import 'package:clinic/data/models/clinic_model.dart';
+import 'package:clinic/presentation/Providers/inherited_widgets/parent_user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../global/constants/app_constants.dart';
-import '../../../global/theme/fonts/app_fonst.dart';
-import '../../../global/widgets/alert_dialog.dart';
 
-// ignore: must_be_immutable
-class Step2Content extends StatefulWidget {
-  bool idImageIsSet = false;
-  List<Clinic> clinics = [];
-  Step2Content({super.key});
+import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
+import 'package:clinic/presentation/widgets/clinic_page.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+
+class AcadimicInfoWidget extends StatefulWidget {
+  const AcadimicInfoWidget({
+    super.key,
+  });
 
   @override
-  State<Step2Content> createState() => _Step2ContentState();
+  State<AcadimicInfoWidget> createState() => _AcadimicInfoWidgetState();
 }
 
-class _Step2ContentState extends State<Step2Content> {
+class _AcadimicInfoWidgetState extends State<AcadimicInfoWidget> {
   late GlobalKey<FormState> formKey;
-  String? _selectedDegree = 'طبيب امتياز';
-  String? _selectedSpecialization = 'طبيب عام ';
-  String? _selectedRegion = 'حلوان';
-
   ImagePicker imagePicker = ImagePicker();
   XFile? _idImage;
-
+  final List<ClinicPage> _clinics = [];
   @override
   Widget build(BuildContext context) {
+    var doctorProvider = ParentUserProvider.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,10 +79,10 @@ class _Step2ContentState extends State<Step2Content> {
                     .toList(),
                 onChanged: (item) {
                   setState(() {
-                    _selectedDegree = item;
+                    doctorProvider.doctorModel!.degree = item!;
                   });
                 },
-                value: _selectedDegree,
+                value: doctorProvider!.doctorModel!.degree,
               ),
             ),
           ),
@@ -126,10 +127,10 @@ class _Step2ContentState extends State<Step2Content> {
                     .toList(),
                 onChanged: (item) {
                   setState(() {
-                    _selectedSpecialization = item;
+                    doctorProvider.doctorModel!.specialization = item!;
                   });
                 },
-                value: _selectedSpecialization,
+                value: doctorProvider.doctorModel!.specialization,
               ),
             ),
           ),
@@ -172,11 +173,11 @@ class _Step2ContentState extends State<Step2Content> {
                 onPressed: () async {
                   _idImage = await imagePicker.pickImage(
                       source: ImageSource.gallery, imageQuality: 50);
-                  if (_idImage != null) {
-                    setState(() {
-                      widget.idImageIsSet = true;
-                    });
-                  }
+
+                  setState(() {
+                    doctorProvider.doctorModel!.medicalIdImage =
+                        File(_idImage!.path);
+                  });
                 },
                 child: Icon(
                   Icons.photo,
@@ -200,11 +201,11 @@ class _Step2ContentState extends State<Step2Content> {
                       source: ImageSource.camera,
                       imageQuality: 50,
                       preferredCameraDevice: CameraDevice.rear);
-                  if (_idImage != null) {
-                    setState(() {
-                      widget.idImageIsSet = true;
-                    });
-                  }
+
+                  setState(() {
+                    doctorProvider.doctorModel!.medicalIdImage =
+                        File(_idImage!.path);
+                  });
                 },
                 child: Icon(
                   Icons.camera_alt_rounded,
@@ -212,7 +213,7 @@ class _Step2ContentState extends State<Step2Content> {
                 ),
               ),
               const SizedBox(width: 10),
-              widget.idImageIsSet
+              (doctorProvider.doctorModel!.medicalIdImage != null)
                   ? const Icon(
                       Icons.done_rounded,
                       color: Colors.green,
@@ -222,64 +223,6 @@ class _Step2ContentState extends State<Step2Content> {
                       color: Colors.red,
                     )
             ],
-          ),
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              MyAlertDialog.getInfoAlertDialog(
-                context,
-                'أين باقي المناطق؟',
-                AppConstants.whereIsRestRegions,
-                {
-                  'أعي ذلك': () => Navigator.of(context).pop(),
-                },
-              ),
-              const Text(
-                'المنطقة',
-                style: TextStyle(
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                  color: LightThemeColors.primaryColor,
-                ),
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: LightThemeColors.primaryColor,
-                width: 1,
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                items: AppConstants.regions
-                    .map(
-                      (region) => DropdownMenuItem(
-                        value: region,
-                        child: Text(
-                          region,
-                          style: const TextStyle(
-                              fontFamily: AppFonts.mainArabicFontFamily),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (item) {
-                  setState(() {
-                    _selectedRegion = item;
-                  });
-                },
-                value: _selectedRegion,
-              ),
-            ),
           ),
           const SizedBox(height: 30),
           const Align(
@@ -296,7 +239,7 @@ class _Step2ContentState extends State<Step2Content> {
           ),
           const SizedBox(height: 20),
           Column(
-            children: widget.clinics,
+            children: _clinics,
           ),
           const SizedBox(height: 10),
           Row(
@@ -311,11 +254,12 @@ class _Step2ContentState extends State<Step2Content> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {
-                  Clinic clinic = Clinic(
-                    index: widget.clinics.length + 1,
-                  );
+                  doctorProvider.doctorModel!.clinics.add(ClinicModel());
+                  int index = _clinics.length;
                   setState(() {
-                    widget.clinics.add(clinic);
+                    _clinics.add(ClinicPage(
+                      index: index,
+                    ));
                   });
                 },
                 child: Row(
@@ -338,7 +282,7 @@ class _Step2ContentState extends State<Step2Content> {
                   ],
                 ),
               ),
-              (widget.clinics.isNotEmpty)
+              (_clinics.isNotEmpty)
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -356,7 +300,9 @@ class _Step2ContentState extends State<Step2Content> {
                             MyAlertDialog.getAlertDialogActions({
                               'متأكد': () {
                                 setState(() {
-                                  widget.clinics.removeLast();
+                                  doctorProvider.doctorModel!.clinics
+                                      .removeLast();
+                                  _clinics.removeLast();
                                 });
                                 Navigator.of(context).pop();
                               },

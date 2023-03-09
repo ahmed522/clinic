@@ -1,9 +1,9 @@
-import 'package:clinic/UI/pages/user_signup_page.dart';
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
-import 'package:clinic/UI/pages/doctor_signup_page.dart';
+import 'package:clinic/presentation/Providers/injection_widgets/doctor_provider_injection_widget.dart';
+import 'package:clinic/presentation/Providers/injection_widgets/user_provider_injection_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -29,8 +29,8 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, DoctorSignupPage.route),
+                onPressed: () => Navigator.pushNamed(
+                    context, DoctorProviderInjectionWidget.route),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: LightThemeColors.primaryColor,
@@ -64,8 +64,8 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, UserSignupPage.route),
+                onPressed: () => Navigator.pushNamed(
+                    context, UserProviderInjectionWidget.route),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: LightThemeColors.primaryColor,

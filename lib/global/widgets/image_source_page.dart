@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../theme/colors/light_theme_colors.dart';
-import '../theme/fonts/app_fonst.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
 
 // ignore: must_be_immutable
 class ImageSourcePage extends StatelessWidget {

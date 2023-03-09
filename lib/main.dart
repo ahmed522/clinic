@@ -1,9 +1,6 @@
 import 'package:clinic/global/routes/routes.dart';
-import 'package:clinic/UI/pages/start_page.dart';
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/presentation/pages/start_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'global/theme/theme_data/theme_data_light.dart';
 
 main() => runApp(const MainWidget());

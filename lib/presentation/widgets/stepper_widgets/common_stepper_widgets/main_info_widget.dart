@@ -1,29 +1,28 @@
 import 'dart:io';
+import 'package:clinic/global/widgets/gender_selector.dart';
+import 'package:clinic/presentation/Providers/inherited_widgets/parent_user_provider.dart';
 
-import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../global/constants/app_constants.dart';
-import '../../../global/theme/colors/light_theme_colors.dart';
-import '../../../global/theme/fonts/app_fonst.dart';
-import '../../../global/widgets/alert_dialog.dart';
-import '../../../global/widgets/image_source_page.dart';
+import 'package:clinic/global/widgets/image_source_page.dart';
+import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/constants/user_type.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/widgets/snackbar.dart';
 
-// ignore: must_be_immutable
-class Step1Content extends StatefulWidget {
-  UserType userType;
-  bool imageIsSet = false;
-  void Function()? validateImage;
-
+class MainInfoWidget extends StatefulWidget {
+  final UserType userType;
+  late final void Function()? validateImage;
   final formKey = GlobalKey<FormState>();
-  Step1Content({super.key, this.userType = UserType.doctor});
+  MainInfoWidget({super.key, this.userType = UserType.doctor});
   @override
-  State<Step1Content> createState() => _Step1ContentState();
+  State<MainInfoWidget> createState() => _MainInfoWidgetState();
 }
 
-class _Step1ContentState extends State<Step1Content> {
+class _MainInfoWidgetState extends State<MainInfoWidget> {
   bool _showPassword = false;
   String pleaseEnterPicture = '';
   late GlobalKey<FormState> formKey;
@@ -35,15 +34,6 @@ class _Step1ContentState extends State<Step1Content> {
     super.initState();
     formKey = widget.formKey;
 
-    _imageSourcePage.onPressed = (image) => setState(() {
-          personalImage = image;
-          if (personalImage != null) {
-            widget.imageIsSet = true;
-          }
-          setState(() {
-            pleaseEnterPicture = '';
-          });
-        });
     widget.validateImage = () {
       setState(() {
         pleaseEnterPicture = 'من فضلك أدخل الصورة الشخصية';
@@ -53,13 +43,24 @@ class _Step1ContentState extends State<Step1Content> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = ParentUserProvider.of(context);
+    _imageSourcePage.onPressed = (image) => setState(() {
+          personalImage = image;
+          if (widget.userType == UserType.doctor) {
+            provider!.doctorModel!.personalImage = File(personalImage!.path);
+          } else {
+            provider!.userModel!.personalImage = File(personalImage!.path);
+          }
+
+          pleaseEnterPicture = '';
+        });
     return SingleChildScrollView(
       child: Form(
         key: formKey,
         child: Padding(
           padding: (widget.userType == UserType.doctor)
-              ? const EdgeInsets.only(top: 20, right: 25, left: 25)
-              : const EdgeInsets.only(top: 70, right: 40, left: 40),
+              ? const EdgeInsets.only(top: 5, right: 5, left: 5)
+              : const EdgeInsets.only(top: 50, right: 20, left: 20),
           child: Column(
             children: [
               Row(
@@ -151,6 +152,112 @@ class _Step1ContentState extends State<Step1Content> {
               const Align(
                 alignment: Alignment.centerRight,
                 child: Text(
+                  'العمر',
+                  style: TextStyle(
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: LightThemeColors.primaryColor,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 90, left: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      validator: ((value) {
+                        if (value == null || value.trim().isEmpty) {
+                          setState(() {
+                            if (widget.userType == UserType.doctor) {
+                              provider!.doctorModel!.age =
+                                  AppConstants.wrongAgeErrorCode;
+                            } else {
+                              provider!.userModel!.age =
+                                  AppConstants.wrongAgeErrorCode;
+                            }
+                          });
+                          return 'من فضلك ادخل العمر  ';
+                        } else if (!RegExp(AppConstants.vezeetaValidationRegExp)
+                            .hasMatch(value)) {
+                          setState(() {
+                            if (widget.userType == UserType.doctor) {
+                              provider!.doctorModel!.age =
+                                  AppConstants.wrongAgeErrorCode;
+                            } else {
+                              provider!.userModel!.age =
+                                  AppConstants.wrongAgeErrorCode;
+                            }
+                          });
+
+                          return 'من فضلك ادخل قيمة صحيحة ';
+                        } else {
+                          int enteredAge = int.parse(value);
+                          int age = (widget.userType == UserType.doctor)
+                              ? AppConstants.doctorMinimumAge
+                              : AppConstants.userMinimumAge;
+                          if (enteredAge < age) {
+                            setState(() {
+                              if (widget.userType == UserType.doctor) {
+                                provider!.doctorModel!.age =
+                                    AppConstants.wrongAgeErrorCode;
+                              } else {
+                                provider!.userModel!.age =
+                                    AppConstants.wrongAgeErrorCode;
+                              }
+                            });
+                            if (age == AppConstants.doctorMinimumAge) {
+                              return 'الحد الأدنى لعمر الطبيب هو ${AppConstants.doctorMinimumAge} عام';
+                            }
+                            return 'الحد الأدنى لعمر المستخدم هو ${AppConstants.userMinimumAge} عام';
+                          }
+                          setState(() {
+                            if (widget.userType == UserType.doctor) {
+                              provider!.doctorModel!.age = enteredAge;
+                            } else {
+                              provider!.userModel!.age = enteredAge;
+                            }
+                          });
+                          return null;
+                        }
+                      }),
+                      keyboardType: TextInputType.number,
+                      maxLength: 2,
+                      decoration: const InputDecoration(
+                        counter: Offstage(),
+                      ),
+                    ),
+                    Container(
+                      width: 20,
+                      height: 5,
+                      decoration: BoxDecoration(
+                          color: (widget.userType == UserType.doctor)
+                              ? (provider!.doctorModel!.age ==
+                                      AppConstants.wrongAgeErrorCode)
+                                  ? Colors.red
+                                  : LightThemeColors.primaryColor
+                              : (provider!.userModel!.age ==
+                                      AppConstants.wrongAgeErrorCode)
+                                  ? Colors.red
+                                  : LightThemeColors.primaryColor,
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              const GenderSelectorWidget(),
+              const SizedBox(height: 40),
+              const Divider(
+                thickness: 2,
+                indent: 80,
+                endIndent: 80,
+              ),
+              const SizedBox(height: 40),
+              const Align(
+                alignment: Alignment.centerRight,
+                child: Text(
                   'البريد الإلكتروني',
                   style: TextStyle(
                     fontFamily: AppFonts.mainArabicFontFamily,
@@ -171,6 +278,11 @@ class _Step1ContentState extends State<Step1Content> {
                     if (!emailValid) {
                       return 'من فضلك ادخل بريدإلكتروني صحيح';
                     }
+                  }
+                  if (widget.userType == UserType.doctor) {
+                    provider.doctorModel!.email = value;
+                  } else {
+                    provider.userModel!.email = value;
                   }
                   return null;
                 },
@@ -216,6 +328,12 @@ class _Step1ContentState extends State<Step1Content> {
                   } else if (!value.contains(RegExp(r'[0-9]'))) {
                     return 'كلمة المرور يجب أن تحتوي على أرقام';
                   }
+                  if (widget.userType == UserType.doctor) {
+                    provider.doctorModel!.setPassword = value;
+                  } else {
+                    provider.userModel!.setPassword = value;
+                  }
+
                   return null;
                 },
                 obscureText: !_showPassword,
@@ -265,6 +383,11 @@ class _Step1ContentState extends State<Step1Content> {
                   } else if (value.contains(RegExp(r'[0-9]'))) {
                     return 'الاسم لا يجب ان يحتوي على أرقام';
                   }
+                  if (widget.userType == UserType.doctor) {
+                    provider.doctorModel!.firstName = value;
+                  } else {
+                    provider.userModel!.firstName = value;
+                  }
 
                   return null;
                 },
@@ -304,6 +427,12 @@ class _Step1ContentState extends State<Step1Content> {
                   } else if (value.contains(RegExp(r'[0-9]'))) {
                     return 'الاسم لا يجب ان يحتوي على أرقام';
                   }
+                  if (widget.userType == UserType.doctor) {
+                    provider.doctorModel!.lastName = value;
+                  } else {
+                    provider.userModel!.lastName = value;
+                  }
+
                   return null;
                 },
                 decoration: const InputDecoration(
@@ -312,15 +441,16 @@ class _Step1ContentState extends State<Step1Content> {
                   hintText: 'Enter your last name',
                 ),
               ),
-              const SizedBox(height: 50),
               (widget.userType == UserType.user)
                   ? Column(
                       children: [
+                        const SizedBox(height: 50),
                         ElevatedButton(
                           onPressed: () {
                             if (widget.formKey.currentState!.validate()) {
+                              print(provider.userModel!.lastName);
                               MySnackBar.showSnackBar(
-                                  context, 'تم التسجيل بنجاح');
+                                  context, 'تم التسجيل بنجاح­');
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -342,6 +472,7 @@ class _Step1ContentState extends State<Step1Content> {
                       ],
                     )
                   : const SizedBox(),
+              const SizedBox(height: 50),
               const Text(
                 'أو قم بالتسجيل من خلال',
                 style: TextStyle(

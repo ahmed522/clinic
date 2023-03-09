@@ -1,8 +1,8 @@
-import 'package:clinic/global/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 
-import '../../global/theme/colors/light_theme_colors.dart';
-import '../../global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/theme/colors/light_theme_colors.dart';
+import 'package:clinic/global/theme/fonts/app_fonst.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
