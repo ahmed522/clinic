@@ -33,6 +33,7 @@ class AppConstants {
     'طبيب عام',
     'طبيب طوارىء',
     'طبيب قلب',
+    'طبيب القلب والأوعية الدموية',
     'طبيب مخ وأعصاب',
     'طبيب جلدية',
     'طبيب أنف وأذن وحنجرة',
@@ -44,12 +45,44 @@ class AppConstants {
     'طبيب عيون',
     'طبيب سمعيات',
     'طبيب أطفال',
+    'طبيب حديثي الولادة',
     'طبيب نساء وتوليد',
     'طبيب نفسي',
     'طبيب باطنة وجهاز هضمي',
     'طبيب جرًّاح',
     'طبيب تخدير',
   ];
+  static const List<String> doctorSpecializationsIcons = [
+    'assets/img/specializations/general_practitioner.png',
+    'assets/img/specializations/emergency_doctor.png',
+    'assets/img/specializations/cardiologist.png',
+    'assets/img/specializations/cardiovascular.png',
+    'assets/img/specializations/neurologist.png',
+    'assets/img/specializations/dermatology.png',
+    'assets/img/specializations/ent.png',
+    'assets/img/specializations/hematology.png',
+    'assets/img/specializations/oncology.png',
+    'assets/img/specializations/radiography.png',
+    'assets/img/specializations/bone.png',
+    'assets/img/specializations/tooth.png',
+    'assets/img/specializations/oculist.png',
+    'assets/img/specializations/audiologist.png',
+    'assets/img/specializations/pediatrics.png',
+    'assets/img/specializations/pacifier.png',
+    'assets/img/specializations/fallopian.png',
+    'assets/img/specializations/psychology.png',
+    'assets/img/specializations/stomach.png',
+    'assets/img/specializations/surgery.png',
+    'assets/img/specializations/anesthesia.png',
+  ];
+  static Map<String, String> specializationsIcons =
+      Map<String, String>.fromIterables(
+          doctorSpecializations, doctorSpecializationsIcons);
+  static const String signinWithGoogle = 'أو قم بتسجيل الدخول من خلال';
+  static const String verifyEmail =
+      'لقد تم إرسال رسالة التحقق إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد التحقق';
+  static const String passwordReset =
+      'سوف يتم إرسال رسالة إعادة التعيين إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد إعادة تعيين كلمة المرور';
 
   static const String whyMedicalId =
       ' تطبيق طبي هو تطبيق تواصل إجتماعي تفاعلي بين الأطباء والمستخدمين العاديين لكي يمكنهم من الإستفسار عن المعلومات الطبية أو حتى مراسلة طبيب والإستفسار عن الحالة المرضية ولذلك يجب أن نتأكد أن كل الأطباء المتواجدين على التطبيق هم ممن يحق له مزاولة المهنة وتشخيص الحالات المرضية ووصف العلاج حتى نحافظ على صحة المستخدمين وسلامتهم';

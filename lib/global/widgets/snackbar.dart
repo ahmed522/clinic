@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
-import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/fonts/app_fonst.dart';
 
 class MySnackBar {
   static void showSnackBar(BuildContext context, String msg) {
@@ -20,7 +20,7 @@ class MySnackBar {
           ),
           textAlign: TextAlign.end,
         ),
-        backgroundColor: LightThemeColors.primaryColorDark,
+        backgroundColor: AppColors.primaryColorDark,
       ),
     );
   }

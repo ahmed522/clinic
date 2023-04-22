@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
-import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/fonts/app_fonst.dart';
 
 class MyAlertDialog {
   static void showAlertDialog(BuildContext context, String title,
@@ -21,7 +21,9 @@ class MyAlertDialog {
                   fontFamily: AppFonts.mainArabicFontFamily,
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
-                  color: Colors.grey[900],
+                  color: (Theme.of(context).brightness == Brightness.light)
+                      ? Colors.grey[850]
+                      : Colors.white,
                 ),
               ),
               content: (content != null)
@@ -51,7 +53,7 @@ class MyAlertDialog {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            backgroundColor: LightThemeColors.primaryColor,
+            backgroundColor: AppColors.primaryColor,
             foregroundColor: Colors.white,
           ),
           onPressed: onPressed,

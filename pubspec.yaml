@@ -36,9 +36,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  bloc:
-  flutter_bloc:
   image_picker: ^0.8.6+2
+  path_provider: ^2.0.13
+  firebase_core: ^2.8.0
+  get: ^4.6.5
+  firebase_auth: ^4.4.0
+
 
 
 
@@ -74,8 +77,31 @@ flutter:
     - assets/img/doctor.png
     - assets/img/user.png
     - assets/img/academic_data.png
-    - assets/img/user_pic.png
- 
+    - assets/img/emergency.png
+    - assets/img/error.png
+    - assets/img/login.png
+  #============================Specializations
+    - assets/img/specializations/general_practitioner.png
+    - assets/img/specializations/emergency_doctor.png
+    - assets/img/specializations/cardiologist.png
+    - assets/img/specializations/cardiovascular.png
+    - assets/img/specializations/neurologist.png
+    - assets/img/specializations/dermatology.png
+    - assets/img/specializations/ent.png
+    - assets/img/specializations/hematology.png
+    - assets/img/specializations/oncology.png
+    - assets/img/specializations/radiography.png
+    - assets/img/specializations/bone.png
+    - assets/img/specializations/tooth.png
+    - assets/img/specializations/oculist.png
+    - assets/img/specializations/audiologist.png
+    - assets/img/specializations/pediatrics.png
+    - assets/img/specializations/pacifier.png
+    - assets/img/specializations/fallopian.png
+    - assets/img/specializations/psychology.png
+    - assets/img/specializations/stomach.png
+    - assets/img/specializations/surgery.png
+    - assets/img/specializations/anesthesia.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

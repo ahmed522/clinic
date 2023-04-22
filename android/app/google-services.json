@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "772748166970",
+    "project_id": "tabib-56f14",
+    "storage_bucket": "tabib-56f14.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772748166970:android:b730c12acaba931834b203",
+        "android_client_info": {
+          "package_name": "com.clinical.tibei.clinic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772748166970-cv1bhlcvn1131nif4l7eq3lrhi5uvabf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdabasdz5eYK4jfV-H10jsE1QH6b-ceyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772748166970-cv1bhlcvn1131nif4l7eq3lrhi5uvabf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

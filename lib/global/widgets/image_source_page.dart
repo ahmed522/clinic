@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:clinic/global/theme/colors/light_theme_colors.dart';
-import 'package:clinic/global/theme/fonts/app_fonst.dart';
+import 'package:clinic/global/colors/app_colors.dart';
 
 // ignore: must_be_immutable
 class ImageSourcePage extends StatelessWidget {
@@ -12,7 +11,6 @@ class ImageSourcePage extends StatelessWidget {
   void Function(XFile? image)? onPressed;
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.only(
         top: 40,
@@ -23,10 +21,12 @@ class ImageSourcePage extends StatelessWidget {
         children: [
           Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.camera_alt_rounded,
                 size: 50,
-                color: LightThemeColors.primaryColor,
+                color: (Theme.of(context).brightness == Brightness.light)
+                    ? AppColors.primaryColor
+                    : Colors.white,
               ),
               const SizedBox(
                 height: 20,
@@ -39,35 +39,22 @@ class ImageSourcePage extends StatelessWidget {
                       preferredCameraDevice: CameraDevice.rear);
                   onPressed!(userImage);
                 },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: LightThemeColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: const BorderSide(
-                      color: LightThemeColors.primaryColor,
-                    ),
-                  ),
-                  shadowColor: Colors.transparent,
-                ),
+                style: Theme.of(context).elevatedButtonTheme.style,
                 child: Text(
                   'كاميرا',
-                  style: TextStyle(
-                    color: LightThemeColors.primaryColor,
-                    fontFamily: AppFonts.mainArabicFontFamily,
-                    fontWeight: FontWeight.bold,
-                    fontSize: (size.width < 370) ? 15 : 20,
-                  ),
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),
             ],
           ),
           Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.image,
                 size: 50,
-                color: LightThemeColors.primaryColor,
+                color: (Theme.of(context).brightness == Brightness.light)
+                    ? AppColors.primaryColor
+                    : Colors.white,
               ),
               const SizedBox(
                 height: 20,
@@ -80,22 +67,10 @@ class ImageSourcePage extends StatelessWidget {
                       preferredCameraDevice: CameraDevice.rear);
                   onPressed!(userImage);
                 },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: LightThemeColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: const BorderSide(
-                          color: LightThemeColors.primaryColor)),
-                ),
+                style: Theme.of(context).elevatedButtonTheme.style,
                 child: Text(
                   'المعرض',
-                  style: TextStyle(
-                    color: LightThemeColors.primaryColor,
-                    fontFamily: AppFonts.mainArabicFontFamily,
-                    fontWeight: FontWeight.bold,
-                    fontSize: (size.width < 370) ? 15 : 20,
-                  ),
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),
             ],
