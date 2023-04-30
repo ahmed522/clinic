@@ -4,7 +4,7 @@ import 'package:clinic/features/authentication/controller/sign_up/common/signup_
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/model/clinic_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/add_clinic_button.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/remove_clinic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +20,7 @@ class AcadimicInfoWidget extends StatelessWidget {
   AcadimicInfoWidget({
     super.key,
   });
-  final SignupController controller = Get.find(tag: DoctorSignupPage.route);
+  final SignupController controller = Get.find(tag: DoctorSignUpParent.route);
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -57,7 +57,7 @@ class AcadimicInfoWidget extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: GetBuilder<SignupController>(
-                  tag: DoctorSignupPage.route,
+                  tag: DoctorSignUpParent.route,
                   builder: (controller) {
                     return DropdownButton(
                       items: AppConstants.doctorDegrees
@@ -106,7 +106,7 @@ class AcadimicInfoWidget extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: GetBuilder<SignupController>(
-                  tag: DoctorSignupPage.route,
+                  tag: DoctorSignUpParent.route,
                   builder: (controller) {
                     return DropdownButton(
                       items: AppConstants.doctorSpecializations
@@ -186,7 +186,7 @@ class AcadimicInfoWidget extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               GetBuilder<SignupController>(
-                tag: DoctorSignupPage.route,
+                tag: DoctorSignUpParent.route,
                 builder: (controller) {
                   if ((controller as DoctorSignupController)
                           .doctorModel
@@ -216,7 +216,7 @@ class AcadimicInfoWidget extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           GetBuilder<SignupController>(
-              tag: DoctorSignupPage.route,
+              tag: DoctorSignUpParent.route,
               builder: (controller) {
                 return Column(
                   children: (controller as DoctorSignupController).clinics,
@@ -246,7 +246,7 @@ class AcadimicInfoWidget extends StatelessWidget {
                 },
               ),
               GetBuilder<SignupController>(
-                  tag: DoctorSignupPage.route,
+                  tag: DoctorSignUpParent.route,
                   builder: (controller) {
                     if ((controller as DoctorSignupController)
                         .clinics

@@ -1,6 +1,10 @@
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
+import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
+import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -24,8 +28,13 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, DoctorSignupPage.route),
+                onPressed: () {
+                  Get.lazyPut<SignupController>(
+                    () => DoctorSignupController(),
+                    tag: DoctorSignUpParent.route,
+                  );
+                  Get.offNamed(DoctorSignUpParent.route);
+                },
                 style: Theme.of(context).elevatedButtonTheme.style,
                 child: Text(
                   'أنا طبيب',
@@ -44,8 +53,13 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, UserSignupPage.route),
+                onPressed: () {
+                  Get.lazyPut<SignupController>(
+                    () => UserSignupController(),
+                    tag: UserSignupPage.route,
+                  );
+                  Get.offNamed(UserSignupPage.route);
+                },
                 style: Theme.of(context).elevatedButtonTheme.style,
                 child: Text(
                   'أنا مستخدم',

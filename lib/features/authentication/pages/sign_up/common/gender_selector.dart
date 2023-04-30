@@ -1,7 +1,7 @@
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_page.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class GenderSelectorWidget extends StatelessWidget {
             children: [
               GetBuilder<SignupController>(
                   tag: userType == UserType.doctor
-                      ? DoctorSignupPage.route
+                      ? DoctorSignUpParent.route
                       : UserSignupPage.route,
                   builder: (controller) {
                     return CircularIconButton(
@@ -65,7 +65,7 @@ class GenderSelectorWidget extends StatelessWidget {
                   }),
               GetBuilder<SignupController>(
                   tag: userType == UserType.doctor
-                      ? DoctorSignupPage.route
+                      ? DoctorSignUpParent.route
                       : UserSignupPage.route,
                   builder: (controller) {
                     return CircularIconButton(

@@ -1,10 +1,8 @@
-import 'package:clinic/features/authentication/model/user_model.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
-import 'package:flutter/material.dart';
+import 'package:clinic/global/data/models/user_model.dart';
 
 class UserPostModel {
-  Key key = UniqueKey();
   UserModel user = UserModel();
   String searchingSpecialization = AppConstants.initialDoctorSpecialization;
   Map<String, int> patientAge = {

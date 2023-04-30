@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
-import 'package:clinic/features/authentication/model/doctor_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/clinic_page.dart';
 import 'package:clinic/global/constants/gender.dart';
+import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

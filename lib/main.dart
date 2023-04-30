@@ -1,5 +1,4 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
-import 'package:clinic/features/start/pages/start_page.dart';
 import 'package:clinic/firebase_options.dart';
 import 'package:clinic/global/routes/routes.dart';
 import 'package:clinic/global/widgets/loading.dart';

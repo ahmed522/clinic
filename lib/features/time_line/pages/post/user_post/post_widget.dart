@@ -315,13 +315,13 @@ class PostWidget extends StatelessWidget {
                                     Colors.white,
                                     BlendMode.srcATop,
                                   ),
-                                  child: Image.asset(
+                                  child: Image.network(
                                     AppConstants.specializationsIcons[
                                         post.searchingSpecialization]!,
                                     scale: 1.5,
                                   ),
                                 )
-                              : Image.asset(
+                              : Image.network(
                                   AppConstants.specializationsIcons[
                                       post.searchingSpecialization]!,
                                   scale: 1.5,

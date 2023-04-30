@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_page.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
@@ -49,7 +49,7 @@ class PersonalImageSetter extends StatelessWidget {
         Stack(alignment: Alignment.center, children: [
           GetBuilder<SignupController>(
               tag: userType == UserType.doctor
-                  ? DoctorSignupPage.route
+                  ? DoctorSignUpParent.route
                   : UserSignupPage.route,
               builder: (controller) {
                 bool personalImageIsNotNull = false;
@@ -118,7 +118,7 @@ class PersonalImageSetter extends StatelessWidget {
                                 padding: MediaQuery.of(context).viewInsets,
                                 child: GetBuilder<SignupController>(
                                     tag: userType == UserType.doctor
-                                        ? DoctorSignupPage.route
+                                        ? DoctorSignUpParent.route
                                         : UserSignupPage.route,
                                     builder: (controller) {
                                       return Wrap(children: [
@@ -153,7 +153,7 @@ class PersonalImageSetter extends StatelessWidget {
         const SizedBox(height: 20),
         (userType == UserType.doctor)
             ? GetBuilder<SignupController>(
-                tag: DoctorSignupPage.route,
+                tag: DoctorSignUpParent.route,
                 builder: (controller) {
                   return Text(
                     (controller as DoctorSignupController)

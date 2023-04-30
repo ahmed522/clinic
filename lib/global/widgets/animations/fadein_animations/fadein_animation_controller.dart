@@ -6,5 +6,6 @@ class FadeinAnimationController extends GetxController {
   Future startAnimation() async {
     await Future.delayed(const Duration(milliseconds: 1000));
     animate.value = true;
+    Get.delete<FadeinAnimationController>();
   }
 }

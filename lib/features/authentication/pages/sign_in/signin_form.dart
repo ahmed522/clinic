@@ -1,6 +1,4 @@
-import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_in/signin_controller.dart';
-import 'package:clinic/features/authentication/pages/common/sign_with_google.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonst.dart';

@@ -1,4 +1,3 @@
-import 'package:clinic/global/fonts/app_fonst.dart';
 import 'package:flutter/material.dart';
 
 class UserNameAndPicWidget extends StatelessWidget {

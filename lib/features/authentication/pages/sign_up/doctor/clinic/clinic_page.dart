@@ -1,8 +1,7 @@
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
-import 'package:clinic/features/authentication/model/clinic_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/day.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/constants/am_or_pm.dart';
@@ -22,7 +21,7 @@ class ClinicPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SignupController controller = Get.find(tag: DoctorSignupPage.route);
+    final SignupController controller = Get.find(tag: DoctorSignUpParent.route);
 
     return Column(
       children: [
@@ -79,7 +78,7 @@ class ClinicPage extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: GetBuilder<SignupController>(
-                  tag: DoctorSignupPage.route,
+                  tag: DoctorSignUpParent.route,
                   builder: (controller) {
                     return DropdownButton(
                       items: Regions.governorates
@@ -142,7 +141,7 @@ class ClinicPage extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: GetBuilder<SignupController>(
-                  tag: DoctorSignupPage.route,
+                  tag: DoctorSignUpParent.route,
                   builder: (controller) {
                     return DropdownButton(
                       items: Regions.regions.keys
@@ -211,7 +210,7 @@ class ClinicPage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             GetBuilder<SignupController>(
-                tag: DoctorSignupPage.route,
+                tag: DoctorSignUpParent.route,
                 builder: (controller) {
                   if ((controller as DoctorSignupController)
                           .doctorModel
@@ -238,7 +237,7 @@ class ClinicPage extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         GetBuilder<SignupController>(
-            tag: DoctorSignupPage.route,
+            tag: DoctorSignUpParent.route,
             builder: (controller) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -260,7 +259,7 @@ class ClinicPage extends StatelessWidget {
           ),
         ),
         GetBuilder<SignupController>(
-            tag: DoctorSignupPage.route,
+            tag: DoctorSignUpParent.route,
             builder: (controller) {
               return Row(
                 children: [
@@ -451,7 +450,7 @@ class ClinicPage extends StatelessWidget {
                       ),
                     ),
                     GetBuilder<SignupController>(
-                        tag: DoctorSignupPage.route,
+                        tag: DoctorSignUpParent.route,
                         builder: (controller) {
                           return Container(
                             width: 20,
@@ -510,7 +509,7 @@ class ClinicPage extends StatelessWidget {
                       ),
                     ),
                     GetBuilder<SignupController>(
-                        tag: DoctorSignupPage.route,
+                        tag: DoctorSignUpParent.route,
                         builder: (controller) {
                           return Container(
                             width: 20,

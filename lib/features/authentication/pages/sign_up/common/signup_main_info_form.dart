@@ -2,7 +2,7 @@ import 'package:clinic/features/authentication/controller/sign_up/common/signup_
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
 import 'package:clinic/features/authentication/pages/sign_up/common/gender_selector.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_page.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
@@ -24,7 +24,7 @@ class SignupMainInfoForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<SignupController>(
         tag: userType == UserType.doctor
-            ? DoctorSignupPage.route
+            ? DoctorSignUpParent.route
             : UserSignupPage.route,
         builder: (controller) {
           return Form(
@@ -330,9 +330,7 @@ class SignupMainInfoForm extends StatelessWidget {
                                   .formKey
                                   .currentState!
                                   .validate()) {
-                                controller.signupUser(
-                                    controller.userModel.email!.trim(),
-                                    controller.userModel.getPassword!);
+                                controller.signupUser(controller.userModel);
                               }
                             },
                             style: ElevatedButton.styleFrom(

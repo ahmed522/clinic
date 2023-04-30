@@ -34,4 +34,19 @@ class ClinicModel {
     this.openTimeAMOrPM = AppConstants.initialAmOrPm,
     this.closeTimeAMOrPM = AppConstants.initialAmOrPm,
   });
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['work_days'] = workDays;
+    data['open_time_min'] = openTimeFinalMin;
+    data['open_time_hour'] = openTimeFinalHour;
+    data['open_time_am_or_pm'] = openTimeAMOrPM.name;
+    data['close_time_min'] = closeTimeFinalMin;
+    data['close_time_hour'] = closeTimeFinalHour;
+    data['close_time_am_or_pm'] = closeTimeAMOrPM.name;
+    data['examine_vezeeta'] = examineVezeeta;
+    data['reexamine_vezeeta'] = reexamineVezeeta;
+    data['governorate'] = governorate;
+    data['region'] = region;
+    return data;
+  }
 }
