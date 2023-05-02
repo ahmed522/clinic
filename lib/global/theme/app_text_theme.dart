@@ -1,5 +1,5 @@
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 
 class AppTextTheme {

@@ -1,7 +1,7 @@
 import 'package:clinic/features/authentication/controller/sign_in/signin_controller.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +17,6 @@ class SigninForm extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return GetBuilder<SigninController>(
-        init: SigninController(),
         builder: (controller) => Form(
               key: controller.formKey,
               child: Column(
@@ -88,13 +87,9 @@ class SigninForm extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: size.height / 15),
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (controller.formKey.currentState!.validate()) {
-                          controller.signinUser(
-                              controller.email!, controller.password!);
-                        }
-                      },
+                      onPressed: controller.loading ? null : () => signin(),
                       style: ElevatedButton.styleFrom(
+                          disabledBackgroundColor: Colors.grey,
                           backgroundColor: AppColors.primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
@@ -121,5 +116,13 @@ class SigninForm extends StatelessWidget {
                 ],
               ),
             ));
+  }
+
+  signin() {
+    final controller = SigninController.find;
+    if (controller.formKey.currentState!.validate()) {
+      controller.updateLoading(true);
+      controller.signinUser(controller.email!, controller.password!);
+    }
   }
 }

@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 class SignupController extends GetxController {
   bool showPassword = false;
   static SignupController get find => Get.find();
-
+  bool loading = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   setPersonalImage(File image) {
@@ -30,11 +30,18 @@ class SignupController extends GetxController {
     update();
   }
 
+  updateLoading(bool value) {
+    loading = value;
+    update();
+  }
+
   signupDoctor(DoctorModel doctorModel) {
     AuthenticationController.find.createDoctorWithEmailAndPassword(doctorModel);
   }
 
-  signupUser(UserModel userModel) {
-    AuthenticationController.find.createUserWithEmailAndPassword(userModel);
+  signupUser(UserModel userModel) async {
+    await AuthenticationController.find
+        .createUserWithEmailAndPassword(userModel);
+    updateLoading(false);
   }
 }

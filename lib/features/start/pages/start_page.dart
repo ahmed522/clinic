@@ -6,7 +6,7 @@ import 'package:clinic/global/widgets/animations/fadein_animations/fadein_animat
 import 'package:clinic/global/widgets/animations/fadein_animations/fadein_animation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:get/get.dart';
 
 class StartPage extends StatelessWidget {
@@ -24,25 +24,33 @@ class StartPage extends StatelessWidget {
           FadeinAnimationWidget(
             duration: const Duration(milliseconds: 800),
             position: PositionAnimationModel(
-              topBefore: size.height / 8,
-              topAfter: size.height / 6,
+              topBefore: (size.width > AppConstants.phoneWidth)
+                  ? size.height / 16
+                  : size.height / 8,
+              topAfter: (size.width > AppConstants.phoneWidth)
+                  ? size.height / 12
+                  : size.height / 6,
             ),
             child: Image.asset(
               'assets/img/startpage.png',
               width: (size.width > AppConstants.phoneWidth)
-                  ? size.width / 2
+                  ? size.width / 1.5
                   : size.width,
             ),
           ),
           FadeinAnimationWidget(
             duration: const Duration(milliseconds: 1200),
             position: PositionAnimationModel(
-              topAfter: size.height / 6 + size.width / 1.5,
+              topAfter: (size.width > AppConstants.phoneWidth)
+                  ? size.height / 12 + size.width / 3
+                  : size.height / 6 + size.width / 1.5,
             ),
             child: Text(
               "طبيب",
               style: TextStyle(
-                fontSize: size.width / 4,
+                fontSize: (size.width > AppConstants.phoneWidth)
+                    ? size.width / 8
+                    : size.width / 4,
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w500,
                 color: Theme.of(context).brightness == Brightness.light
@@ -54,8 +62,9 @@ class StartPage extends StatelessWidget {
           FadeinAnimationWidget(
             duration: const Duration(milliseconds: 1500),
             position: PositionAnimationModel(
-              topAfter:
-                  size.height / 6 + size.width / 1.5 + size.width / 4 + 15,
+              topAfter: (size.width > AppConstants.phoneWidth)
+                  ? size.height / 12 + size.width / 3 + size.width / 8 + 30
+                  : size.height / 6 + size.width / 1.5 + size.width / 4 + 15,
             ),
             child: Text(
               "عيادة على الهاتف",

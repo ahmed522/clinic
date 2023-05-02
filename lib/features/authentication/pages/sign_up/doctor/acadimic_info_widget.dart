@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:clinic/global/constants/app_constants.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/clinic_page.dart';
 import 'package:clinic/global/colors/app_colors.dart';
@@ -153,13 +153,15 @@ class AcadimicInfoWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 style: Theme.of(context).elevatedButtonTheme.style,
-                onPressed: () async {
-                  XFile? idImage;
-                  idImage = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery, imageQuality: 50);
-                  (controller as DoctorSignupController)
-                      .setDoctorMedicalIdImage(File(idImage!.path));
-                },
+                onPressed: controller.loading
+                    ? null
+                    : () async {
+                        XFile? idImage;
+                        idImage = await ImagePicker().pickImage(
+                            source: ImageSource.gallery, imageQuality: 50);
+                        (controller as DoctorSignupController)
+                            .setDoctorMedicalIdImage(File(idImage!.path));
+                      },
                 child: Icon(
                   Icons.photo,
                   color: (Theme.of(context).brightness == Brightness.light)
@@ -170,13 +172,15 @@ class AcadimicInfoWidget extends StatelessWidget {
               const SizedBox(width: 10),
               ElevatedButton(
                 style: Theme.of(context).elevatedButtonTheme.style,
-                onPressed: () async {
-                  XFile? idImage;
-                  idImage = await ImagePicker()
-                      .pickImage(source: ImageSource.camera, imageQuality: 50);
-                  (controller as DoctorSignupController)
-                      .setDoctorMedicalIdImage(File(idImage!.path));
-                },
+                onPressed: controller.loading
+                    ? null
+                    : () async {
+                        XFile? idImage;
+                        idImage = await ImagePicker().pickImage(
+                            source: ImageSource.camera, imageQuality: 50);
+                        (controller as DoctorSignupController)
+                            .setDoctorMedicalIdImage(File(idImage!.path));
+                      },
                 child: Icon(
                   Icons.camera_alt_rounded,
                   color: (Theme.of(context).brightness == Brightness.light)
@@ -231,7 +235,11 @@ class AcadimicInfoWidget extends StatelessWidget {
                   (controller as DoctorSignupController)
                       .doctorModel
                       .clinics
-                      .add(ClinicModel());
+                      .add(ClinicModel(
+                          index: (controller as DoctorSignupController)
+                              .doctorModel
+                              .clinics
+                              .length));
                   int index =
                       (controller as DoctorSignupController).clinics.length;
                   (controller as DoctorSignupController)
@@ -254,6 +262,7 @@ class AcadimicInfoWidget extends StatelessWidget {
                       return RemoveClinicButton(onRemoveClinic: () {
                         controller.doctorModel.clinics.removeLast();
                         controller.removeClinic();
+                        controller.updateClinicLocationLoading(false);
                       });
                     } else {
                       return const SizedBox();

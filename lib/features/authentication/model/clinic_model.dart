@@ -18,9 +18,13 @@ class ClinicModel {
   String governorate;
   String region;
   String? location;
+  double? locationLatitude;
+  double? locationLongitude;
+  int index;
   final formKey = GlobalKey<FormState>();
 
   ClinicModel({
+    required this.index,
     this.governorate = AppConstants.initialClinicGovernorate,
     this.region = AppConstants.initialClinicRegion,
     this.examineVezeeta = AppConstants.initialExamineVezeeta,
@@ -36,6 +40,7 @@ class ClinicModel {
   });
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['index'] = index;
     data['work_days'] = workDays;
     data['open_time_min'] = openTimeFinalMin;
     data['open_time_hour'] = openTimeFinalHour;
@@ -47,6 +52,9 @@ class ClinicModel {
     data['reexamine_vezeeta'] = reexamineVezeeta;
     data['governorate'] = governorate;
     data['region'] = region;
+    data['location'] = location;
+    data['location_latitude'] = locationLatitude;
+    data['location_longitude'] = locationLongitude;
     return data;
   }
 }

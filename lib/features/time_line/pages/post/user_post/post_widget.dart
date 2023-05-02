@@ -5,7 +5,7 @@ import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/post_page.dart';
 import 'package:clinic/global/widgets/containered_text.dart';
 import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';

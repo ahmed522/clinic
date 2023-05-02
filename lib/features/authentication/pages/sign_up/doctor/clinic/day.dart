@@ -1,8 +1,11 @@
+import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:get/get.dart';
 
 class Day extends StatelessWidget {
   final String day;
@@ -57,11 +60,13 @@ class Day extends StatelessWidget {
 
   static List<Widget> getClickableWeekDays(Map<String, bool> workDays,
       void Function(String day) onTap, BuildContext context) {
+    final SignupController controller =
+        Get.find<SignupController>(tag: DoctorSignUpParent.route);
     List<Widget> weekDays = [];
     workDays.forEach((day, isChecked) {
       weekDays.add(
         GestureDetector(
-          onTap: () => onTap(day),
+          onTap: controller.loading ? null : () => onTap(day),
           child: Day(
             day: day,
             checked: isChecked,

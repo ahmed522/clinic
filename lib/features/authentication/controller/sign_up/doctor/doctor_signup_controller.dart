@@ -11,9 +11,11 @@ class DoctorSignupController extends SignupController {
   static DoctorSignupController get find => Get.find();
   String personalImageValidation = '';
   DoctorModel doctorModel = DoctorModel();
-
   int currentStep = 0;
   bool doctorValidation = false;
+  RxBool locationValidation = false.obs;
+  double? latitude, longitude;
+  bool clinicLocationLoading = false;
   List<StepState> states = [
     StepState.editing,
     StepState.indexed,
@@ -110,8 +112,32 @@ class DoctorSignupController extends SignupController {
     update();
   }
 
-  updateClinicLocation(String location, int index) {
-    doctorModel.clinics[index].location = location;
+  updateClinicLocationFromTextField(String? text, int index) {
+    if (text != null && text.trim() != '') {
+      doctorModel.clinics[index].location = text.trim();
+      locationValidation.value = true;
+    } else {
+      doctorModel.clinics[index].location = null;
+      locationValidation.value = false;
+    }
+  }
+
+  updateClinicLocationFromCurrentLocation(int index) {
+    if (latitude == null || longitude == null) {
+      doctorModel.clinics[index].locationLatitude = null;
+      doctorModel.clinics[index].locationLongitude = null;
+      locationValidation.value = false;
+    } else {
+      doctorModel.clinics[index].locationLatitude = latitude;
+      doctorModel.clinics[index].locationLongitude = longitude;
+      locationValidation.value = true;
+    }
+    clinicLocationLoading = false;
+    update();
+  }
+
+  updateClinicLocationLoading(bool value) {
+    clinicLocationLoading = value;
     update();
   }
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:get/get.dart';
 
 class MySnackBar {
   static void showSnackBar(BuildContext context, String msg) {
@@ -24,4 +25,24 @@ class MySnackBar {
       ),
     );
   }
+
+  static void showGetSnackbar(String message, Color color) => Get.showSnackbar(
+        GetSnackBar(
+          messageText: Center(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.white,
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          backgroundColor: color,
+          snackPosition: SnackPosition.TOP,
+          snackStyle: SnackStyle.GROUNDED,
+          duration: const Duration(milliseconds: 2000),
+          animationDuration: const Duration(milliseconds: 500),
+        ),
+      );
 }

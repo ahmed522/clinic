@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class SigninController extends GetxController {
   static SigninController get find => Get.find();
-
+  bool loading = false;
   String? email;
   String? password;
   bool showPassword = false;
@@ -12,6 +12,11 @@ class SigninController extends GetxController {
 
   updateShowPassword() {
     showPassword = !showPassword;
+    update();
+  }
+
+  updateLoading(bool value) {
+    loading = value;
     update();
   }
 

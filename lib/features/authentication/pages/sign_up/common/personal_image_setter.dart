@@ -8,7 +8,7 @@ import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_pa
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/image_source_page.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +140,7 @@ class PersonalImageSetter extends StatelessWidget {
                                                         File(image.path));
                                               }
                                             }
+                                            Get.back();
                                           }
                                       ]);
                                     }),

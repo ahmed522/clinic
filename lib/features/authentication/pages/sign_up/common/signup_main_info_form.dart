@@ -1,3 +1,4 @@
+import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
@@ -7,7 +8,7 @@ import 'package:clinic/features/authentication/pages/sign_up/user/user_signup_pa
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -325,15 +326,10 @@ class SignupMainInfoForm extends StatelessWidget {
                         children: [
                           const SizedBox(height: 50),
                           ElevatedButton(
-                            onPressed: () {
-                              if ((controller as UserSignupController)
-                                  .formKey
-                                  .currentState!
-                                  .validate()) {
-                                controller.signupUser(controller.userModel);
-                              }
-                            },
+                            onPressed:
+                                controller.loading ? null : () => signupUser(),
                             style: ElevatedButton.styleFrom(
+                                disabledBackgroundColor: Colors.grey,
                                 backgroundColor: AppColors.primaryColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -360,5 +356,13 @@ class SignupMainInfoForm extends StatelessWidget {
             ),
           );
         });
+  }
+
+  signupUser() {
+    final SignupController controller = Get.find(tag: UserSignupPage.route);
+    if (controller.formKey.currentState!.validate()) {
+      controller.updateLoading(true);
+      controller.signupUser((controller as UserSignupController).userModel);
+    }
   }
 }

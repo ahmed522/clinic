@@ -8,9 +8,10 @@ import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/regions.dart';
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 class ClinicPage extends StatelessWidget {
   final int index;
@@ -168,55 +169,15 @@ class ClinicPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            'موقع العيادة',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ElevatedButton(
-              style: Theme.of(context).elevatedButtonTheme.style,
-              onPressed: () {
-                (controller as DoctorSignupController)
-                    .updateClinicLocation('location is set !!', index);
-              },
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: (Theme.of(context).brightness == Brightness.light)
-                        ? AppColors.darkThemeBackgroundColor
-                        : Colors.white,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'تحديد الموقع',
-                    style: TextStyle(
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.darkThemeBackgroundColor
-                                : Colors.white,
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            GetBuilder<SignupController>(
+            GetX<SignupController>(
                 tag: DoctorSignUpParent.route,
                 builder: (controller) {
                   if ((controller as DoctorSignupController)
-                          .doctorModel
-                          .clinics[index]
-                          .location !=
-                      null) {
+                      .locationValidation
+                      .isTrue) {
                     return const Icon(Icons.done_rounded, color: Colors.green);
                   } else {
                     return const Icon(
@@ -225,6 +186,109 @@ class ClinicPage extends StatelessWidget {
                     );
                   }
                 }),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              'موقع العيادة',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 80.0),
+          child: TextField(
+            decoration: InputDecoration(
+              icon: const Icon(
+                Icons.location_on_outlined,
+              ),
+              helperText: 'ادخل عنوان العيادة بالتفصيل',
+              helperStyle: TextStyle(
+                  color: (Theme.of(context).brightness == Brightness.light)
+                      ? AppColors.darkThemeBackgroundColor
+                      : Colors.white,
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            onChanged: (value) => (controller as DoctorSignupController)
+                .updateClinicLocationFromTextField(value, index),
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: [
+            ElevatedButton(
+              style: Theme.of(context).elevatedButtonTheme.style,
+              onPressed: ((controller as DoctorSignupController)
+                          .clinicLocationLoading ||
+                      controller.loading)
+                  ? null
+                  : () => getCurrentLocation(),
+              child: GetBuilder<SignupController>(
+                  tag: DoctorSignUpParent.route,
+                  builder: (controller) {
+                    return Row(
+                      children: [
+                        (controller as DoctorSignupController)
+                                .clinicLocationLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: (Theme.of(context).brightness ==
+                                          Brightness.light)
+                                      ? AppColors.primaryColor
+                                      : Colors.white,
+                                ),
+                              )
+                            : Icon(
+                                Icons.location_on_outlined,
+                                color: (Theme.of(context).brightness ==
+                                        Brightness.light)
+                                    ? AppColors.darkThemeBackgroundColor
+                                    : Colors.white,
+                                size: 20,
+                              ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'إستخدم الموقع الحالي',
+                          style: TextStyle(
+                              color: (Theme.of(context).brightness ==
+                                      Brightness.light)
+                                  ? AppColors.darkThemeBackgroundColor
+                                  : Colors.white,
+                              fontFamily: AppFonts.mainArabicFontFamily,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15),
+                        )
+                      ],
+                    );
+                  }),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              'أو',
+              style: TextStyle(
+                  color: (Theme.of(context).brightness == Brightness.light)
+                      ? AppColors.darkThemeBackgroundColor
+                      : Colors.white,
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14),
+            ),
           ],
         ),
         const SizedBox(height: 30),
@@ -265,55 +329,62 @@ class ClinicPage extends StatelessWidget {
                 children: [
                   TextButton(
                     style: Theme.of(context).elevatedButtonTheme.style,
-                    onPressed: () async {
-                      TimeOfDay? picked;
-                      picked = await showTimePicker(
-                          context: context,
-                          initialTime:
-                              controller.doctorModel.clinics[index].closeTime);
+                    onPressed: controller.loading
+                        ? null
+                        : () async {
+                            TimeOfDay? picked;
+                            picked = await showTimePicker(
+                                context: context,
+                                initialTime:
+                                    (controller as DoctorSignupController)
+                                        .doctorModel
+                                        .clinics[index]
+                                        .closeTime);
 
-                      controller.doctorModel.clinics[index].closeTime =
-                          (picked == null)
-                              ? controller.doctorModel.clinics[index].closeTime
-                              : picked;
-                      controller.doctorModel.clinics[index].closeTimeFinalMin =
-                          (controller.doctorModel.clinics[index].closeTime
-                                      .minute <
-                                  10)
-                              ? (AppConstants.zero +
-                                  controller.doctorModel.clinics[index]
-                                      .closeTime.minute
-                                      .toString())
-                              : (controller
-                                  .doctorModel.clinics[index].closeTime.minute
-                                  .toString());
-                      if (controller.doctorModel.clinics[index].closeTime.hour >
-                          12) {
-                        controller.doctorModel.clinics[index]
-                            .closeTimeFinalHour = (controller
-                                    .doctorModel.clinics[index].closeTime.hour -
-                                12)
-                            .toString();
-                        controller.doctorModel.clinics[index].closeTimeAMOrPM =
-                            AMOrPM.pm;
-                      } else {
-                        controller.doctorModel.clinics[index]
-                            .closeTimeFinalHour = (controller.doctorModel
-                                    .clinics[index].closeTime.hour ==
-                                0)
-                            ? '12'
-                            : (controller
-                                    .doctorModel.clinics[index].closeTime.hour)
-                                .toString();
-                        controller.doctorModel.clinics[index].closeTimeAMOrPM =
-                            (controller.doctorModel.clinics[index].closeTime
-                                        .hour ==
-                                    12)
-                                ? AMOrPM.pm
-                                : AMOrPM.am;
-                      }
-                      controller.update();
-                    },
+                            controller.doctorModel.clinics[index].closeTime =
+                                (picked == null)
+                                    ? controller
+                                        .doctorModel.clinics[index].closeTime
+                                    : picked;
+                            controller.doctorModel.clinics[index]
+                                .closeTimeFinalMin = (controller.doctorModel
+                                        .clinics[index].closeTime.minute <
+                                    10)
+                                ? (AppConstants.zero +
+                                    controller.doctorModel.clinics[index]
+                                        .closeTime.minute
+                                        .toString())
+                                : (controller
+                                    .doctorModel.clinics[index].closeTime.minute
+                                    .toString());
+                            if (controller
+                                    .doctorModel.clinics[index].closeTime.hour >
+                                12) {
+                              controller.doctorModel.clinics[index]
+                                  .closeTimeFinalHour = (controller.doctorModel
+                                          .clinics[index].closeTime.hour -
+                                      12)
+                                  .toString();
+                              controller.doctorModel.clinics[index]
+                                  .closeTimeAMOrPM = AMOrPM.pm;
+                            } else {
+                              controller.doctorModel.clinics[index]
+                                  .closeTimeFinalHour = (controller.doctorModel
+                                          .clinics[index].closeTime.hour ==
+                                      0)
+                                  ? '12'
+                                  : (controller.doctorModel.clinics[index]
+                                          .closeTime.hour)
+                                      .toString();
+                              controller.doctorModel.clinics[index]
+                                  .closeTimeAMOrPM = (controller.doctorModel
+                                          .clinics[index].closeTime.hour ==
+                                      12)
+                                  ? AMOrPM.pm
+                                  : AMOrPM.am;
+                            }
+                            controller.update();
+                          },
                     child: Text(
                       '${(controller as DoctorSignupController).doctorModel.clinics[index].closeTimeFinalHour} : ${controller.doctorModel.clinics[index].closeTimeFinalMin} ${controller.doctorModel.clinics[index].closeTimeAMOrPM.name.toUpperCase()}',
                       style: Theme.of(context).textTheme.bodyText1,
@@ -333,56 +404,60 @@ class ClinicPage extends StatelessWidget {
                   const SizedBox(width: 10),
                   TextButton(
                     style: Theme.of(context).elevatedButtonTheme.style,
-                    onPressed: () async {
-                      TimeOfDay? picked;
+                    onPressed: controller.loading
+                        ? null
+                        : () async {
+                            TimeOfDay? picked;
 
-                      picked = await showTimePicker(
-                          context: context,
-                          initialTime:
-                              controller.doctorModel.clinics[index].openTime);
+                            picked = await showTimePicker(
+                                context: context,
+                                initialTime: controller
+                                    .doctorModel.clinics[index].openTime);
 
-                      controller.doctorModel.clinics[index].openTime =
-                          (picked == null)
-                              ? controller.doctorModel.clinics[index].openTime
-                              : picked;
-                      controller.doctorModel.clinics[index].openTimeFinalMin =
-                          (controller.doctorModel.clinics[index].openTime
-                                      .minute <
-                                  10)
-                              ? (AppConstants.zero +
-                                  controller.doctorModel.clinics[index].openTime
-                                      .minute
-                                      .toString())
-                              : (controller
-                                  .doctorModel.clinics[index].openTime.minute
-                                  .toString());
-                      if (controller.doctorModel.clinics[index].openTime.hour >
-                          12) {
-                        controller.doctorModel.clinics[index]
-                            .openTimeFinalHour = (controller
-                                    .doctorModel.clinics[index].openTime.hour -
-                                12)
-                            .toString();
-                        controller.doctorModel.clinics[index].openTimeAMOrPM =
-                            AMOrPM.pm;
-                      } else {
-                        controller.doctorModel.clinics[index]
-                            .openTimeFinalHour = (controller
-                                    .doctorModel.clinics[index].openTime.hour ==
-                                0)
-                            ? '12'
-                            : (controller
-                                    .doctorModel.clinics[index].openTime.hour)
-                                .toString();
-                        controller.doctorModel.clinics[index].openTimeAMOrPM =
-                            (controller.doctorModel.clinics[index].openTime
-                                        .hour ==
-                                    12)
-                                ? AMOrPM.pm
-                                : AMOrPM.am;
-                      }
-                      controller.update();
-                    },
+                            controller.doctorModel.clinics[index].openTime =
+                                (picked == null)
+                                    ? controller
+                                        .doctorModel.clinics[index].openTime
+                                    : picked;
+                            controller.doctorModel.clinics[index]
+                                .openTimeFinalMin = (controller.doctorModel
+                                        .clinics[index].openTime.minute <
+                                    10)
+                                ? (AppConstants.zero +
+                                    controller.doctorModel.clinics[index]
+                                        .openTime.minute
+                                        .toString())
+                                : (controller
+                                    .doctorModel.clinics[index].openTime.minute
+                                    .toString());
+                            if (controller
+                                    .doctorModel.clinics[index].openTime.hour >
+                                12) {
+                              controller.doctorModel.clinics[index]
+                                  .openTimeFinalHour = (controller.doctorModel
+                                          .clinics[index].openTime.hour -
+                                      12)
+                                  .toString();
+                              controller.doctorModel.clinics[index]
+                                  .openTimeAMOrPM = AMOrPM.pm;
+                            } else {
+                              controller.doctorModel.clinics[index]
+                                  .openTimeFinalHour = (controller.doctorModel
+                                          .clinics[index].openTime.hour ==
+                                      0)
+                                  ? '12'
+                                  : (controller.doctorModel.clinics[index]
+                                          .openTime.hour)
+                                      .toString();
+                              controller.doctorModel.clinics[index]
+                                  .openTimeAMOrPM = (controller.doctorModel
+                                          .clinics[index].openTime.hour ==
+                                      12)
+                                  ? AMOrPM.pm
+                                  : AMOrPM.am;
+                            }
+                            controller.update();
+                          },
                     child: Text(
                       '${controller.doctorModel.clinics[index].openTimeFinalHour} : ${controller.doctorModel.clinics[index].openTimeFinalMin} ${controller.doctorModel.clinics[index].openTimeAMOrPM.name.toUpperCase()}',
                       style: Theme.of(context).textTheme.bodyText1,
@@ -406,10 +481,7 @@ class ClinicPage extends StatelessWidget {
           height: 30,
         ),
         Form(
-          key: (controller as DoctorSignupController)
-              .doctorModel
-              .clinics[index]
-              .formKey,
+          key: controller.doctorModel.clinics[index].formKey,
           child: Column(
             children: [
               Align(
@@ -536,5 +608,36 @@ class ClinicPage extends StatelessWidget {
         )
       ],
     );
+  }
+
+  getCurrentLocation() async {
+    final SignupController controller =
+        Get.find<SignupController>(tag: DoctorSignUpParent.route);
+    (controller as DoctorSignupController).updateClinicLocationLoading(true);
+    Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionIsGiven;
+    LocationData locationData;
+    permissionIsGiven = await location.hasPermission();
+    if (permissionIsGiven == PermissionStatus.denied) {
+      permissionIsGiven = await location.requestPermission();
+      if (permissionIsGiven == PermissionStatus.denied) {
+        controller.updateClinicLocationLoading(false);
+
+        return;
+      }
+    }
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        controller.updateClinicLocationLoading(false);
+        return;
+      }
+    }
+    locationData = await location.getLocation();
+    controller.latitude = locationData.latitude;
+    controller.longitude = locationData.longitude;
+    controller.updateClinicLocationFromCurrentLocation(index);
   }
 }

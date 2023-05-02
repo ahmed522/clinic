@@ -1,6 +1,9 @@
+import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class RemoveClinicButton extends StatelessWidget {
   const RemoveClinicButton({
@@ -10,21 +13,25 @@ class RemoveClinicButton extends StatelessWidget {
   final void Function() onRemoveClinic;
   @override
   Widget build(BuildContext context) {
+    final SignupController controller =
+        Get.find<SignupController>(tag: DoctorSignUpParent.route);
     return ElevatedButton(
       style: Theme.of(context).elevatedButtonTheme.style,
-      onPressed: () {
-        MyAlertDialog.showAlertDialog(
-            context,
-            'هل أنت متأكد من إزالة العيادة ؟',
-            null,
-            MyAlertDialog.getAlertDialogActions({
-              'متأكد': () {
-                onRemoveClinic();
-                Navigator.of(context).pop();
-              },
-              'إلغاء': () => Navigator.of(context).pop(),
-            }));
-      },
+      onPressed: controller.loading
+          ? null
+          : () {
+              MyAlertDialog.showAlertDialog(
+                  context,
+                  'هل أنت متأكد من إزالة العيادة ؟',
+                  null,
+                  MyAlertDialog.getAlertDialogActions({
+                    'متأكد': () {
+                      onRemoveClinic();
+                      Get.back();
+                    },
+                    'إلغاء': () => Get.back(),
+                  }));
+            },
       child: Row(
         children: [
           Icon(

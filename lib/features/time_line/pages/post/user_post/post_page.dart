@@ -1,6 +1,6 @@
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/global/functions/common_functions.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/post_widget.dart';
 import 'package:flutter/material.dart';
 

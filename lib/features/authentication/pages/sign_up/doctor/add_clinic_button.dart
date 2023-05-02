@@ -1,6 +1,9 @@
+import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
+import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AddClinicButton extends StatelessWidget {
   const AddClinicButton({
@@ -11,6 +14,8 @@ class AddClinicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final SignupController controller =
+        Get.find<SignupController>(tag: DoctorSignUpParent.route);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -19,7 +24,7 @@ class AddClinicButton extends StatelessWidget {
         backgroundColor: AppColors.primaryColor,
         foregroundColor: Colors.white,
       ),
-      onPressed: () => onAddClinic(),
+      onPressed: controller.loading ? null : () => onAddClinic(),
       child: Row(
         children: const [
           Icon(

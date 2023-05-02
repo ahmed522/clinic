@@ -1,7 +1,7 @@
 import 'package:clinic/features/time_line/controller/create_user_post_controller.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/fonts/app_fonst.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/circular_icon_button.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
