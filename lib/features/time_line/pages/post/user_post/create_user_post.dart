@@ -1,12 +1,18 @@
+import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/time_line/controller/create_user_post_controller.dart';
+import 'package:clinic/features/time_line/controller/post_controller.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/data/models/user_model.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/circular_icon_button.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/disease_widget.dart';
 import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +23,9 @@ class CreateUserPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(CreateUserPostController());
+
+    controller.postModel.user =
+        AuthenticationController.find.currentUser as UserModel;
     final List<int> numberOfdays = List.generate(30, (index) => index);
     final List<int> numberOfmonthes = List.generate(12, (index) => index);
     final List<int> numberOfyears = List.generate(100, (index) => index);
@@ -38,9 +47,10 @@ class CreateUserPost extends StatelessWidget {
             if (controller.tempContent != null &&
                 controller.tempContent!.trim() != '') {
               controller.postModel.content = controller.tempContent;
+              controller.postModel.timeStamp = Timestamp.now();
+              PostController.find.uploadUserPost(controller.postModel);
               Get.back();
               controller.onDelete();
-              MySnackBar.showSnackBar(context, 'تم نشر سؤالك بنجاح :)');
             } else {
               MySnackBar.showSnackBar(context, 'من فضلك أدخل سؤالك');
             }
@@ -83,9 +93,11 @@ class CreateUserPost extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10),
-                const UserNameAndPicWidget(
-                  userName: 'user name',
-                  userPic: 'assets/img/user.png',
+                UserNameAndPicWidget(
+                  userName: CommonFunctions.getFullName(
+                      controller.postModel.user.firstName!,
+                      controller.postModel.user.lastName!),
+                  userPic: controller.postModel.user.personalImageURL!,
                 ),
                 const SizedBox(height: 30),
                 Align(

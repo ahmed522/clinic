@@ -8,7 +8,7 @@ class AuthenticationExceptionHandler {
     switch (errorCode) {
       case 'network-request-failed':
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   'حدثت مشكلة، حاول التأكد من الإتصال بالإنترنت وإعادة المحاولة ',
             ));
@@ -23,7 +23,7 @@ class AuthenticationExceptionHandler {
         break;
       default:
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   'حدثت مشكلة، حاول التأكد من البريد الإلكتروني وإعادة المحاولة ',
             ));
@@ -34,7 +34,7 @@ class AuthenticationExceptionHandler {
     switch (errorCode) {
       case 'network-request-failed':
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   ' حدثت مشكلة، حاول التأكد من الإتصال بالإنترنت وإعادة المحاولة ',
             ));
@@ -83,7 +83,7 @@ class AuthenticationExceptionHandler {
         break;
       default:
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
             ));
     }

@@ -1,3 +1,4 @@
+import 'package:clinic/features/time_line/controller/post_controller.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/disease_widget.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -6,7 +7,7 @@ import 'package:get/get.dart';
 
 class CreateUserPostController extends GetxController {
   static CreateUserPostController get find => Get.find();
-
+  final postController = Get.lazyPut(() => PostController());
   final UserPostModel postModel = UserPostModel();
   List<DiseaseWidget> diseases = [];
 
@@ -75,7 +76,7 @@ class CreateUserPostController extends GetxController {
   onFemalePressed() {
     femaleSelected = true;
     maleSelected = false;
-    postModel.patientGender = Gender.male;
+    postModel.patientGender = Gender.female;
     update();
   }
 

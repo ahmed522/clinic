@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage({super.key, required this.imageAsset, required this.message});
@@ -10,7 +11,11 @@ class ErrorPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imageAsset),
+          SvgPicture.asset(
+            imageAsset,
+            height: 200,
+            width: 200,
+          ),
           const SizedBox(
             height: 30,
           ),

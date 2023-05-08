@@ -1,22 +1,15 @@
 import 'package:clinic/features/time_line/model/user_post_model.dart';
+import 'package:clinic/features/time_line/pages/post/user_post/user_post_page_child.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
-import 'package:clinic/features/time_line/pages/post/user_post/post_widget.dart';
 import 'package:flutter/material.dart';
 
-class PostPage extends StatefulWidget {
-  const PostPage({super.key});
+class PostPage extends StatelessWidget {
+  const PostPage({super.key, required this.post});
+  final UserPostModel post;
   static const route = '/postPage';
-
-  @override
-  State<PostPage> createState() => _PostPageState();
-}
-
-class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
-    final UserPostModel post =
-        ModalRoute.of(context)?.settings.arguments as UserPostModel;
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -42,15 +35,9 @@ class _PostPageState extends State<PostPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          PostWidget(
-            post: post,
-            isPostPage: true,
-          )
-        ],
-      )),
+      body: UserPostPageChild(
+        post: post,
+      ),
     );
   }
 }

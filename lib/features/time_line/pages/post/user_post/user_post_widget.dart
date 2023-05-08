@@ -1,32 +1,35 @@
-// ignore_for_file: must_be_immutable
-
+import 'package:clinic/features/time_line/controller/post_controller.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
-import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/features/time_line/pages/post/common/post_content_widget.dart';
+import 'package:clinic/features/time_line/pages/post/common/post_top_widget.dart';
+import 'package:clinic/features/time_line/pages/post/user_post/user_post_bottom_widget.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
-import 'package:clinic/features/time_line/pages/post/user_post/post_page.dart';
 import 'package:clinic/global/widgets/containered_text.dart';
-import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class PostWidget extends StatelessWidget {
+class UserPostWidget extends StatelessWidget {
   final UserPostModel post;
   final bool isPostPage;
 
-  PostWidget({
+  const UserPostWidget({
     super.key,
     required this.post,
     this.isPostPage = false,
   });
-  bool reacted = false;
 
   @override
   Widget build(BuildContext context) {
+    Get.put<PostController>(PostController());
+
     Size size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: isPostPage
+          ? const EdgeInsets.only(right: 5.0, left: 5.0, top: 5.0, bottom: 10.0)
+          : const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
           color: (Theme.of(context).brightness == Brightness.light)
@@ -47,53 +50,20 @@ class PostWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                post.isErgent
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Image.asset('assets/img/emergency.png', width: 30),
-                          const Text(
-                            'حالة طارئة',
-                            style: TextStyle(
-                              fontFamily: AppFonts.mainArabicFontFamily,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      )
-                    : const SizedBox(),
-                UserNameAndPicWidget(
-                  userName: CommonFunctions.getFullName(
-                      post.user.firstName!, post.user.lastName!),
-                  userPic: 'assets/img/user.png',
-                ),
-              ],
+            PostTopWidget(
+              setSideInfo: post.isErgent,
+              userName: CommonFunctions.getFullName(
+                  post.user.firstName!, post.user.lastName!),
+              personalImageURL: post.user.personalImageURL!,
+              postSideInfoText: 'حالة طارئة',
+              postSideInfoTextColor: Colors.red,
+              postSideInfoImageAsset: 'assets/img/emergency.png',
+              timestamp: post.timeStamp!,
             ),
             const SizedBox(
               height: 10,
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
-                (post.content != null)
-                    ? post.content!
-                    : AppConstants.whyMedicalId,
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 15,
-                  color: (Theme.of(context).brightness == Brightness.light)
-                      ? Colors.black87
-                      : Colors.white,
-                ),
-              ),
-            ),
+            PostContentWidget(postContent: post.content!),
             const SizedBox(
               height: 10,
             ),
@@ -127,7 +97,7 @@ class PostWidget extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: (post.patientGender == Gender.male)
                         ? AppColors.primaryColor
-                        : Colors.pinkAccent,
+                        : Colors.pink,
                   ),
                   child: Icon(
                     (post.patientGender == Gender.male)
@@ -291,119 +261,7 @@ class PostWidget extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(5.0),
-                      decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(
-                            color: (Theme.of(context).brightness ==
-                                    Brightness.light)
-                                ? AppColors.primaryColor
-                                : Colors.white,
-                          ),
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Row(
-                        children: [
-                          (Theme.of(context).brightness == Brightness.dark)
-                              ? ColorFiltered(
-                                  colorFilter: const ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.srcATop,
-                                  ),
-                                  child: Image.network(
-                                    AppConstants.specializationsIcons[
-                                        post.searchingSpecialization]!,
-                                    scale: 1.5,
-                                  ),
-                                )
-                              : Image.network(
-                                  AppConstants.specializationsIcons[
-                                      post.searchingSpecialization]!,
-                                  scale: 1.5,
-                                ),
-                          const SizedBox(width: 3),
-                          Text(
-                            post.searchingSpecialization,
-                            style: TextStyle(
-                              fontFamily: AppFonts.mainArabicFontFamily,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
-                                  ? AppColors.primaryColor
-                                  : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 4.0),
-                    Text(
-                      (post.user.gender == Gender.male) ? 'يبحث عن' : 'تبحث عن',
-                      style: TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black87
-                                : Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    isPostPage
-                        ? const SizedBox()
-                        : IconButton(
-                            iconSize: 20,
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(PostPage.route, arguments: post);
-                            },
-                            icon: Icon(
-                              Icons.comment,
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
-                                  ? Colors.black87
-                                  : Colors.white70,
-                            ),
-                          ),
-                    const SizedBox(width: 2),
-                    StatefulBuilder(builder: (context, setState) {
-                      return IconButton(
-                        iconSize: 20,
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          if (reacted) {
-                            post.reacts--;
-                          } else {
-                            post.reacts++;
-                          }
-                          setState(() => reacted = !reacted);
-                        },
-                        icon: Icon(
-                          Icons.favorite_rounded,
-                          color: reacted
-                              ? Colors.red
-                              : (Theme.of(context).brightness ==
-                                      Brightness.light)
-                                  ? Colors.black87
-                                  : Colors.white70,
-                        ),
-                      );
-                    }),
-                  ],
-                )
-              ],
-            ),
+            UserPostBottomWidget(post: post, isPostPage: isPostPage),
           ],
         ),
       ),

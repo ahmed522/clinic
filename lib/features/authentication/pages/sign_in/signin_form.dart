@@ -120,6 +120,7 @@ class SigninForm extends StatelessWidget {
 
   signin() {
     final controller = SigninController.find;
+
     if (controller.formKey.currentState!.validate()) {
       controller.updateLoading(true);
       controller.signinUser(controller.email!, controller.password!);

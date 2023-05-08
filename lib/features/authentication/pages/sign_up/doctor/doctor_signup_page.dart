@@ -140,7 +140,6 @@ class DoctorSignupPage extends StatelessWidget {
             clinicLocationIsSet = false;
           }
         }
-        print(clinicLocationIsSet);
         if (clinicFormValidation &&
             (controller.doctorModel.medicalIdImage != null) &&
             clinicLocationIsSet) {

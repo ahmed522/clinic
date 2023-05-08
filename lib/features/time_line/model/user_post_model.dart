@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserPostModel {
   UserModel user = UserModel();
+  String? postId;
+  Timestamp? timeStamp;
   String searchingSpecialization = AppConstants.initialDoctorSpecialization;
   Map<String, int> patientAge = {
     'days': 0,
@@ -15,30 +17,55 @@ class UserPostModel {
   List<String> patientDiseases = [];
   bool isErgent = false;
   String? content;
-  int reacts = 0;
-  Map<String, List<String>> comments = {};
+  bool reacted = false;
   UserPostModel();
-  UserPostModel.fromSnapShot(
-      {required DocumentSnapshot<Map<String, dynamic>> userSnapShot,
-      required DocumentSnapshot<Map<String, dynamic>> postSnapShot,
-      CollectionReference? commentsCollection}) {
-    user = UserModel.fromSnapShot(userSnapShot);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['post_id'] = postId;
+    data['uid'] = user.userId;
+    data['time_stamp'] = timeStamp;
+    data['searching_specialization'] = searchingSpecialization;
+    data['patient_age'] = patientAge;
+    data['patient_diseases'] = patientDiseases;
+    data['patient_gender'] = patientGender.name;
+    data['reacts'] = 0;
+    data['content'] = content;
+    data['is_ergent'] = isErgent;
+    return data;
+  }
+
+  UserPostModel.fromSnapShot({
+    required DocumentSnapshot<Map<String, dynamic>> postSnapShot,
+    required UserModel writer,
+  }) {
     final postData = postSnapShot.data();
-    searchingSpecialization = postData!['searching_specialization'];
-    patientAge = postData['patient_age'];
+    user = writer;
+    postId = postData!['post_id'];
+    searchingSpecialization = postData['searching_specialization'];
+    patientAge.addAll(_getPatientAge(postData['patient_age']));
     patientGender =
         postData['patient_gender'] == 'male' ? Gender.male : Gender.female;
-    patientDiseases = postData['patient_diseases'];
-    isErgent = postData['isErgent'];
-    reacts = postData['reacts'];
+    patientDiseases = _getPatientDiseases(postData['patient_diseases']);
+    isErgent = postData['is_ergent'];
     content = postData['content'];
-    if (commentsCollection != null) {
-      commentsCollection.get().then((QuerySnapshot snapshot) {
-        snapshot.docs.map((document) {
-          comments
-              .addEntries([MapEntry(document['comment'], document['replies'])]);
-        });
-      });
+    timeStamp = postData['time_stamp'];
+  }
+
+  Map<String, int> _getPatientAge(Map<String, dynamic> patientAge) {
+    Map<String, int> map = {};
+    map.addEntries([
+      MapEntry('days', patientAge['days']),
+      MapEntry('months', patientAge['months']),
+      MapEntry('years', patientAge['years']),
+    ]);
+    return map;
+  }
+
+  List<String> _getPatientDiseases(List<dynamic> patientDiseases) {
+    List<String> diseases = [];
+    for (var disease in patientDiseases) {
+      diseases.add(disease.toString());
     }
+    return diseases;
   }
 }

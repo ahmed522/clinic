@@ -7,6 +7,7 @@ import 'package:clinic/global/widgets/animations/fadein_animations/fadein_animat
 import 'package:flutter/material.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class StartPage extends StatelessWidget {
@@ -31,11 +32,10 @@ class StartPage extends StatelessWidget {
                   ? size.height / 12
                   : size.height / 6,
             ),
-            child: Image.asset(
-              'assets/img/startpage.png',
-              width: (size.width > AppConstants.phoneWidth)
-                  ? size.width / 1.5
-                  : size.width,
+            child: SvgPicture.asset(
+              'assets/img/welcome.svg',
+              width: (size.width > AppConstants.phoneWidth) ? 500 : 200,
+              height: (size.width > AppConstants.phoneWidth) ? 500 : 200,
             ),
           ),
           FadeinAnimationWidget(

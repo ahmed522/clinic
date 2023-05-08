@@ -1,26 +1,28 @@
 import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/functions/common_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ClinicModel {
   Map<String, bool> workDays = Map<String, bool>.fromIterables(
       AppConstants.weekDays, AppConstants.initialCheckedDays);
-  TimeOfDay openTime;
-  TimeOfDay closeTime;
-  String openTimeFinalMin;
-  String openTimeFinalHour;
-  String closeTimeFinalMin;
-  String closeTimeFinalHour;
-  AMOrPM openTimeAMOrPM;
-  AMOrPM closeTimeAMOrPM;
-  int examineVezeeta;
-  int reexamineVezeeta;
-  String governorate;
-  String region;
+  late TimeOfDay openTime;
+  late TimeOfDay closeTime;
+  late String openTimeFinalMin;
+  late String openTimeFinalHour;
+  late String closeTimeFinalMin;
+  late String closeTimeFinalHour;
+  late AMOrPM openTimeAMOrPM;
+  late AMOrPM closeTimeAMOrPM;
+  late int examineVezeeta;
+  late int reexamineVezeeta;
+  late String governorate;
+  late String region;
   String? location;
   double? locationLatitude;
   double? locationLongitude;
-  int index;
+  late int index;
   final formKey = GlobalKey<FormState>();
 
   ClinicModel({
@@ -56,5 +58,34 @@ class ClinicModel {
     data['location_latitude'] = locationLatitude;
     data['location_longitude'] = locationLongitude;
     return data;
+  }
+
+  factory ClinicModel.fromSnapShot(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data();
+    return ClinicModel.fromJson(data!);
+  }
+  ClinicModel.fromJson(Map<String, dynamic> data) {
+    index = data['index'];
+    workDays = data['work_days'];
+    openTimeFinalMin = data['open_time_min'];
+    openTimeFinalHour = data['open_time_hour'];
+    openTimeAMOrPM =
+        (data['open_time_am_or_pm'] == 'am') ? AMOrPM.am : AMOrPM.pm;
+    closeTimeFinalMin = data['close_time_min'];
+    closeTimeFinalHour = data['close_time_hour'];
+    closeTimeAMOrPM =
+        (data['close_time_am_or_pm'] == 'am') ? AMOrPM.am : AMOrPM.pm;
+    examineVezeeta = data['examine_vezeeta'];
+    reexamineVezeeta = data['reexamine_vezeeta'];
+    governorate = data['governorate'];
+    region = data['region'];
+    location = data['location'];
+    locationLatitude = data['location_latitude'];
+    locationLongitude = data['location_longitude'];
+    openTime =
+        setClinicOpenTime(openTimeFinalHour, openTimeFinalMin, openTimeAMOrPM);
+    closeTime = setClinicCloseTime(
+        closeTimeFinalHour, closeTimeFinalMin, closeTimeAMOrPM);
   }
 }

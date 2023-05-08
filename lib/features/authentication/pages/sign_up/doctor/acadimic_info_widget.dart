@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
-import 'package:clinic/features/authentication/model/clinic_model.dart';
+import 'package:clinic/global/data/models/clinic_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/add_clinic_button.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/remove_clinic_button.dart';

@@ -20,7 +20,7 @@ class _MainPageState extends State<MainPage> {
   bool _searchSelected = false;
   bool _personalPageSelected = false;
   bool _timelineSelected = true;
-  Widget page = TimeLine();
+  Widget page = const TimeLine();
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -39,11 +39,19 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   CustomPaint(
                     size: Size(size.width, 110),
-                    painter: BottomNavBarCustomPainter(),
+                    painter: BottomNavBarCustomPainter(
+                      color: (Theme.of(context).brightness == Brightness.light)
+                          ? Colors.white
+                          : AppColors.darkThemeBottomNavBarColor,
+                    ),
                   ),
                   CustomPaint(
                     size: Size(size.width, 110),
-                    painter: BottomNavBarCustomPainterBorder(),
+                    painter: BottomNavBarCustomPainterBorder(
+                      color: (Theme.of(context).brightness == Brightness.light)
+                          ? AppColors.primaryColor
+                          : Colors.white,
+                    ),
                   ),
                   Center(
                     child: FloatingActionButton(
@@ -78,7 +86,10 @@ class _MainPageState extends State<MainPage> {
                               Icons.settings,
                               color: _settingsSelected
                                   ? AppColors.primaryColor
-                                  : Colors.black54,
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.light)
+                                      ? Colors.black54
+                                      : Colors.white54,
                               size: 28,
                             ),
                           ),
@@ -98,7 +109,10 @@ class _MainPageState extends State<MainPage> {
                               Icons.search_rounded,
                               color: _searchSelected
                                   ? AppColors.primaryColor
-                                  : Colors.black54,
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.light)
+                                      ? Colors.black54
+                                      : Colors.white54,
                               size: 28,
                             ),
                           ),
@@ -119,7 +133,10 @@ class _MainPageState extends State<MainPage> {
                               Icons.person_rounded,
                               color: _personalPageSelected
                                   ? AppColors.primaryColor
-                                  : Colors.black54,
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.light)
+                                      ? Colors.black54
+                                      : Colors.white54,
                               size: 28,
                             ),
                           ),
@@ -133,14 +150,17 @@ class _MainPageState extends State<MainPage> {
                                 _searchSelected = false;
                                 _personalPageSelected = false;
                                 _timelineSelected = true;
-                                page = TimeLine();
+                                page = const TimeLine();
                               });
                             },
                             icon: Icon(
                               Icons.question_answer_rounded,
                               color: _timelineSelected
                                   ? AppColors.primaryColor
-                                  : Colors.black54,
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.light)
+                                      ? Colors.black54
+                                      : Colors.white54,
                               size: 28,
                             ),
                           ),

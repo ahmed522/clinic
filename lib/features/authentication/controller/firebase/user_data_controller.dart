@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:clinic/global/constants/gender.dart';
+import 'package:clinic/global/constants/user_type.dart';
+import 'package:clinic/global/data/models/clinic_model.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/data/models/user_model.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +19,6 @@ import 'package:path_provider/path_provider.dart';
 class UserDataController extends GetxController {
   static UserDataController get find => Get.find();
   final _db = FirebaseFirestore.instance;
-
   createUser(UserModel user) async {
     await _db
         .collection('users')
@@ -25,7 +28,7 @@ class UserDataController extends GetxController {
             () => MySnackBar.showGetSnackbar('تم التسجيل بنجاح', Colors.green))
         .catchError((error) {
       Get.to(() => const ErrorPage(
-            imageAsset: 'assets/img/error.png',
+            imageAsset: 'assets/img/error.svg',
             message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
           ));
     });
@@ -38,8 +41,9 @@ class UserDataController extends GetxController {
           .collection('clinics')
           .doc(doctor.userId)
           .collection('doctor_clinics');
+      String clincDocId;
       for (var clinic in doctor.clinics) {
-        final String clincDocId = '${doctor.userId}-${clinic.index.toString()}';
+        clincDocId = '${doctor.userId}-${clinic.index.toString()}';
         await doctorClinicsCollectionReference
             .doc(clincDocId)
             .set(clinic.toJson());
@@ -50,7 +54,7 @@ class UserDataController extends GetxController {
       );
     } catch (e) {
       Get.to(() => const ErrorPage(
-            imageAsset: 'assets/img/error.png',
+            imageAsset: 'assets/img/error.svg',
             message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
           ));
     }
@@ -66,7 +70,7 @@ class UserDataController extends GetxController {
         await imageFileRoot.putFile(await _compressImage(user));
       } catch (e) {
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   'حدثت مشكلة في تحميل الصورة الشخصية، يرجى إعادة المحاولة لاحقاً',
             ));
@@ -86,7 +90,7 @@ class UserDataController extends GetxController {
         await imageFileRoot.putFile(await _compressImage(doctor));
       } catch (e) {
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   'حدثت مشكلة في تحميل الصورة الشخصية، يرجى إعادة المحاولة لاحقاً',
             ));
@@ -107,7 +111,7 @@ class UserDataController extends GetxController {
             .putFile(await _compressImage(doctor, isMedicalIdImage: true));
       } catch (e) {
         Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.png',
+              imageAsset: 'assets/img/error.svg',
               message:
                   'حدثت مشكلة في تحميل الصورة الشخصية، يرجى إعادة المحاولة لاحقاً',
             ));
@@ -146,4 +150,163 @@ class UserDataController extends GetxController {
     }
     return compressedImageFile;
   }
+
+  Future<List<ClinicModel>> getDoctorClinicsById(String doctorId) async {
+    final doctorClincsCollectionRef =
+        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+    List<ClinicModel> clinics = [];
+    await doctorClincsCollectionRef.get().then((collectionSnapShot) {
+      collectionSnapShot.docs.map((singleClinicSnapshot) {
+        clinics.add(ClinicModel.fromSnapShot(singleClinicSnapshot));
+      });
+    });
+    return clinics;
+  }
+
+  Future<DoctorModel> getDoctorById(String doctorId) async {
+    final doctorDocumentSnapshot =
+        await _db.collection('doctors').doc(doctorId).get();
+    return DoctorModel.fromSnapShot(doctorDocumentSnapshot);
+  }
+
+  Future<UserModel> getUserById(String userId) async {
+    final userDocumentSnapshot =
+        await _db.collection('users').doc(userId).get();
+    return UserModel.fromSnapShot(userDocumentSnapshot);
+  }
+
+  Future<UserType?> getUserTypeById(String uid) async {
+    UserType? userType;
+    await _db.collection('doctors').doc(uid).get().then(
+      ((value) {
+        if (value.data() == null) {
+          userType = UserType.user;
+        } else {
+          userType = UserType.doctor;
+        }
+      }),
+    );
+    return userType;
+  }
+
+  Future<String> getUserNameById(String uid, UserType userType) async {
+    String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
+    String? firstName;
+    String? lastName;
+
+    await _db.collection(collectionName).doc(uid).get().then(
+      ((value) {
+        firstName = value.data()!['first_name'];
+        lastName = value.data()!['last_name'];
+      }),
+    );
+    return CommonFunctions.getFullName(firstName!, lastName!);
+  }
+
+  Future<String> getUserPersonalImageURLById(
+      String uid, UserType userType) async {
+    String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
+    String? personalImageURL;
+    await _db.collection(collectionName).doc(uid).get().then(
+      ((value) {
+        personalImageURL = value.data()!['personal_image_URL'];
+      }),
+    );
+    return personalImageURL!;
+  }
+
+  Future<Gender> getUserGenderById(String uid, UserType userType) async {
+    String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
+    Gender? gender;
+    await _db.collection(collectionName).doc(uid).get().then(
+      ((value) {
+        gender =
+            (value.data()!['gender'] == 'male') ? Gender.male : Gender.female;
+      }),
+    );
+    return gender!;
+  }
+
+  Future<bool> isUserReactedPost(String uid, String postDocumentId) async {
+    bool reacted = false;
+    await getPostReactsCollectionById(postDocumentId)
+        .doc(uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        reacted = true;
+      }
+    });
+    return reacted;
+  }
+
+  CollectionReference getUsersPostsCollection() =>
+      _db.collection('users_posts');
+  DocumentReference getUserPostsDocumentById(
+          String uid, String postDocumentId) =>
+      _db
+          .collection('users_posts')
+          .doc(uid)
+          .collection('user_posts')
+          .doc(postDocumentId);
+  CollectionReference getPostReactsCollectionById(String postDocumentId) =>
+      _db.collection('reacts').doc(postDocumentId).collection('post_reacts');
+
+  CollectionReference getAllUsersPostsCollection() =>
+      _db.collection('all_users_posts');
+  //============== comments =================
+
+  DocumentReference _getPostCommentsDocumentById(String postId) =>
+      _db.collection('comments').doc(postId);
+
+  CollectionReference getPostCommentsCollectionById(String postId) =>
+      _getPostCommentsDocumentById(postId).collection('post_comments');
+
+  DocumentReference getCommentDocumentById(
+          String postId, String commentDocumentId) =>
+      getPostCommentsCollectionById(postId).doc(commentDocumentId);
+
+  Future<bool> isUserReactedComment(
+      String uid, String postDocumentId, String commentDocumentId) async {
+    bool reacted = false;
+    await getCommentDocumentById(postDocumentId, commentDocumentId)
+        .collection('comment_reacts')
+        .doc(uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        reacted = true;
+      }
+    });
+    return reacted;
+  }
+
+  //========= Replies ==========
+
+  DocumentReference _getCommentRepliesDocumentById(String commentId) =>
+      _db.collection('replies').doc(commentId);
+
+  CollectionReference getCommentRepliesCollectionById(String commentId) =>
+      _getCommentRepliesDocumentById(commentId).collection('comment_replies');
+
+  DocumentReference getReplyDocumentById(
+          String commentId, String replyDocumentId) =>
+      getCommentRepliesCollectionById(commentId).doc(replyDocumentId);
+
+  Future<bool> isUserReactedReply(
+      String uid, String commentId, String replyDocumentId) async {
+    bool reacted = false;
+    await getReplyDocumentById(commentId, replyDocumentId)
+        .collection('reply_reacts')
+        .doc(uid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.exists) {
+        reacted = true;
+      }
+    });
+    return reacted;
+  }
+
+  //=========================================
 }

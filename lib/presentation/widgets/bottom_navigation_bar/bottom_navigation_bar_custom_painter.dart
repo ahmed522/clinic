@@ -2,10 +2,12 @@ import 'package:clinic/presentation/widgets/bottom_navigation_bar/bottom_navigat
 import 'package:flutter/material.dart';
 
 class BottomNavBarCustomPainter extends CustomPainter {
+  late final Color color;
+  BottomNavBarCustomPainter({required this.color});
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.white
+      ..color = color
       ..style = PaintingStyle.fill;
     Path path = BottomNavBarPath.getBottomNavBarPath(size);
     canvas.drawPath(path, paint);

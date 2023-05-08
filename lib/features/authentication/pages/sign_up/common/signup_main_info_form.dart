@@ -1,4 +1,3 @@
-import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/user/user_signup_controller.dart';
