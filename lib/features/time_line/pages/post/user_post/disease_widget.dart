@@ -1,4 +1,5 @@
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 class DiseaseWidget extends StatelessWidget {
@@ -20,15 +21,15 @@ class DiseaseWidget extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
               side: BorderSide(
-                color: (Theme.of(context).brightness == Brightness.light)
+                color: (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
               ),
             ),
-            backgroundColor: (Theme.of(context).brightness == Brightness.light)
+            backgroundColor: (CommonFunctions.isLightMode(context))
                 ? Colors.white
                 : AppColors.darkThemeBackgroundColor,
-            foregroundColor: (Theme.of(context).brightness == Brightness.light)
+            foregroundColor: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
           ),

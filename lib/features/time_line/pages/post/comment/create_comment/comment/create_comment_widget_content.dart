@@ -1,6 +1,7 @@
 import 'package:clinic/features/time_line/controller/create_comment_controller.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/create_comment_text_field.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/upload_comment_button.dart';
+import 'package:clinic/global/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,6 +36,7 @@ class CreateCommentWidgetContent extends StatelessWidget {
                   : const CircleAvatar(
                       backgroundImage: AssetImage('assets/img/user.png'),
                       radius: 25,
+                      backgroundColor: AppColors.primaryColor,
                     ),
             ],
           ),

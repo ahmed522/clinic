@@ -6,6 +6,7 @@ import 'package:clinic/global/data/models/clinic_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/add_clinic_button.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/remove_clinic_button.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,45 +42,49 @@ class AcadimicInfoWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: (Theme.of(context).brightness == Brightness.light)
-                    ? AppColors.primaryColor
-                    : Colors.white,
-                width: 1,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 5,
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: GetBuilder<SignupController>(
-                  tag: DoctorSignUpParent.route,
-                  builder: (controller) {
-                    return DropdownButton(
-                      items: AppConstants.doctorDegrees
-                          .map(
-                            (degree) => DropdownMenuItem(
-                              value: degree,
-                              child: Text(
-                                degree,
-                                style: const TextStyle(
-                                    fontFamily: AppFonts.mainArabicFontFamily),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: (CommonFunctions.isLightMode(context))
+                      ? AppColors.primaryColor
+                      : Colors.white,
+                  width: 1,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: GetBuilder<SignupController>(
+                    tag: DoctorSignUpParent.route,
+                    builder: (controller) {
+                      return DropdownButton(
+                        items: AppConstants.doctorDegrees
+                            .map(
+                              (degree) => DropdownMenuItem(
+                                value: degree,
+                                child: Text(
+                                  degree,
+                                  style: const TextStyle(
+                                      fontFamily:
+                                          AppFonts.mainArabicFontFamily),
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (item) {
-                        controller.updateDoctorDegree(item!);
-                      },
-                      value: (controller as DoctorSignupController)
-                          .doctorModel
-                          .degree,
-                    );
-                  }),
+                            )
+                            .toList(),
+                        onChanged: (item) {
+                          controller.updateDoctorDegree(item!);
+                        },
+                        value: (controller as DoctorSignupController)
+                            .doctorModel
+                            .degree,
+                      );
+                    }),
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -90,45 +95,49 @@ class AcadimicInfoWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: (Theme.of(context).brightness == Brightness.light)
-                    ? AppColors.primaryColor
-                    : Colors.white,
-                width: 1,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 5,
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: GetBuilder<SignupController>(
-                  tag: DoctorSignUpParent.route,
-                  builder: (controller) {
-                    return DropdownButton(
-                      items: AppConstants.doctorSpecializations
-                          .map(
-                            (specialization) => DropdownMenuItem(
-                              value: specialization,
-                              child: Text(
-                                specialization,
-                                style: const TextStyle(
-                                    fontFamily: AppFonts.mainArabicFontFamily),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: (CommonFunctions.isLightMode(context))
+                      ? AppColors.primaryColor
+                      : Colors.white,
+                  width: 1,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: GetBuilder<SignupController>(
+                    tag: DoctorSignUpParent.route,
+                    builder: (controller) {
+                      return DropdownButton(
+                        items: AppConstants.doctorSpecializations
+                            .map(
+                              (specialization) => DropdownMenuItem(
+                                value: specialization,
+                                child: Text(
+                                  specialization,
+                                  style: const TextStyle(
+                                      fontFamily:
+                                          AppFonts.mainArabicFontFamily),
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (item) {
-                        controller.updateDoctorSpecialization(item!);
-                      },
-                      value: (controller as DoctorSignupController)
-                          .doctorModel
-                          .specialization,
-                    );
-                  }),
+                            )
+                            .toList(),
+                        onChanged: (item) {
+                          controller.updateDoctorSpecialization(item!);
+                        },
+                        value: (controller as DoctorSignupController)
+                            .doctorModel
+                            .specialization,
+                      );
+                    }),
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -164,7 +173,7 @@ class AcadimicInfoWidget extends StatelessWidget {
                       },
                 child: Icon(
                   Icons.photo,
-                  color: (Theme.of(context).brightness == Brightness.light)
+                  color: (CommonFunctions.isLightMode(context))
                       ? AppColors.darkThemeBackgroundColor
                       : Colors.white,
                 ),
@@ -183,7 +192,7 @@ class AcadimicInfoWidget extends StatelessWidget {
                       },
                 child: Icon(
                   Icons.camera_alt_rounded,
-                  color: (Theme.of(context).brightness == Brightness.light)
+                  color: (CommonFunctions.isLightMode(context))
                       ? AppColors.darkThemeBackgroundColor
                       : Colors.white,
                 ),
@@ -252,6 +261,9 @@ class AcadimicInfoWidget extends StatelessWidget {
                     index: index,
                   ));
                 },
+              ),
+              const SizedBox(
+                width: 5,
               ),
               GetBuilder<SignupController>(
                   tag: DoctorSignUpParent.route,

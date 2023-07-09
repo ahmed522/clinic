@@ -12,7 +12,7 @@ class UserModel extends ParentUserModel {
     data['email'] = email;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
-    data['age'] = age;
+    data['birth_date'] = birthDate;
     data['gender'] = gender.name;
     data['personal_image_URL'] = personalImageURL;
 
@@ -24,13 +24,14 @@ class UserModel extends ParentUserModel {
     final data = snapshot.data();
     return UserModel.fromJson(data!);
   }
-  UserModel.fromJson(Map<String, dynamic> data) {
+  UserModel.fromJson(Map<String, dynamic> data, {bool isLocalStorage = false}) {
     userType = UserType.user;
     userId = data['uid'];
     email = data['email'];
     firstName = data['first_name'];
     lastName = data['last_name'];
-    age = data['age'];
+    birthDate =
+        isLocalStorage ? getBirthDate(data['birth_date']) : data['birth_date'];
     gender = (data['gender'] == 'male') ? Gender.male : Gender.female;
     personalImageURL = data['personal_image_URL'];
   }

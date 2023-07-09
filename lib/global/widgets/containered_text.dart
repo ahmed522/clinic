@@ -1,5 +1,6 @@
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 class ContaineredText extends StatelessWidget {
@@ -13,7 +14,7 @@ class ContaineredText extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border.all(
-          color: (Theme.of(context).brightness == Brightness.light)
+          color: (CommonFunctions.isLightMode(context))
               ? AppColors.primaryColor
               : Colors.white,
         ),
@@ -25,7 +26,7 @@ class ContaineredText extends StatelessWidget {
           fontFamily: AppFonts.mainArabicFontFamily,
           fontWeight: FontWeight.w600,
           fontSize: 13,
-          color: (Theme.of(context).brightness == Brightness.light)
+          color: (CommonFunctions.isLightMode(context))
               ? AppColors.primaryColor
               : Colors.white,
         ),

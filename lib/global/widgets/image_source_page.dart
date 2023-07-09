@@ -1,3 +1,4 @@
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -24,7 +25,7 @@ class ImageSourcePage extends StatelessWidget {
               Icon(
                 Icons.camera_alt_rounded,
                 size: 50,
-                color: (Theme.of(context).brightness == Brightness.light)
+                color: (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
               ),
@@ -52,7 +53,7 @@ class ImageSourcePage extends StatelessWidget {
               Icon(
                 Icons.image,
                 size: 50,
-                color: (Theme.of(context).brightness == Brightness.light)
+                color: (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
               ),

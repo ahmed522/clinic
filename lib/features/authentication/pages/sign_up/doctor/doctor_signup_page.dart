@@ -3,6 +3,7 @@ import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_
 import 'package:clinic/features/authentication/pages/sign_up/common/main_info_widget.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/acadimic_info_widget.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -82,7 +83,7 @@ class DoctorSignupPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: (controller.states[0] == StepState.error)
                               ? Colors.red
-                              : Theme.of(context).brightness == Brightness.light
+                              : CommonFunctions.isLightMode(context)
                                   ? AppColors.primaryColorDark
                                   : Colors.white),
                     ),
@@ -100,8 +101,7 @@ class DoctorSignupPage extends StatelessWidget {
                               ? Colors.red
                               : (controller.states[1] == StepState.indexed)
                                   ? Colors.grey
-                                  : Theme.of(context).brightness ==
-                                          Brightness.light
+                                  : CommonFunctions.isLightMode(context)
                                       ? AppColors.primaryColorDark
                                       : Colors.white),
                     ),
@@ -120,7 +120,8 @@ class DoctorSignupPage extends StatelessWidget {
     switch ((controller as DoctorSignupController).currentStep) {
       case 0:
         if ((controller).formKey.currentState!.validate() &&
-            (controller).doctorModel.personalImage != null) {
+            (controller).doctorModel.personalImage != null &&
+            controller.ageIsValid) {
           (controller).setDoctorValidation(true);
         } else if ((controller).doctorModel.personalImage == null) {
           (controller).validatePersonalImage(false);

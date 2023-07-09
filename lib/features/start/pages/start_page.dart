@@ -1,6 +1,7 @@
 import 'package:clinic/features/authentication/pages/sign_in/singin_page.dart';
 import 'package:clinic/features/authentication/pages/sign_up/common/signup_page.dart';
 import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/animations/common/position_animation_model.dart';
 import 'package:clinic/global/widgets/animations/fadein_animations/fadein_animation_controller.dart';
 import 'package:clinic/global/widgets/animations/fadein_animations/fadein_animation_widget.dart';
@@ -34,16 +35,28 @@ class StartPage extends StatelessWidget {
             ),
             child: SvgPicture.asset(
               'assets/img/welcome.svg',
-              width: (size.width > AppConstants.phoneWidth) ? 500 : 200,
-              height: (size.width > AppConstants.phoneWidth) ? 500 : 200,
+              width: (size.width > AppConstants.phoneWidth)
+                  ? 250
+                  : (size.width > 300)
+                      ? 200
+                      : (size.width > 240)
+                          ? 180
+                          : 150,
+              height: (size.width > AppConstants.phoneWidth)
+                  ? 250
+                  : (size.width > 300)
+                      ? 200
+                      : (size.width > 240)
+                          ? 180
+                          : 150,
             ),
           ),
           FadeinAnimationWidget(
             duration: const Duration(milliseconds: 1200),
             position: PositionAnimationModel(
               topAfter: (size.width > AppConstants.phoneWidth)
-                  ? size.height / 12 + size.width / 3
-                  : size.height / 6 + size.width / 1.5,
+                  ? size.height / 12 + 250
+                  : size.height / 6 + 200,
             ),
             child: Text(
               "طبيب",
@@ -53,7 +66,7 @@ class StartPage extends StatelessWidget {
                     : size.width / 4,
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).brightness == Brightness.light
+                color: CommonFunctions.isLightMode(context)
                     ? AppColors.primaryColor
                     : Colors.white,
               ),
@@ -63,8 +76,8 @@ class StartPage extends StatelessWidget {
             duration: const Duration(milliseconds: 1500),
             position: PositionAnimationModel(
               topAfter: (size.width > AppConstants.phoneWidth)
-                  ? size.height / 12 + size.width / 3 + size.width / 8 + 30
-                  : size.height / 6 + size.width / 1.5 + size.width / 4 + 15,
+                  ? size.width / 8 + size.height / 12 + 280
+                  : size.width / 4 + size.height / 6 + 230,
             ),
             child: Text(
               "عيادة على الهاتف",
@@ -72,7 +85,7 @@ class StartPage extends StatelessWidget {
                 fontSize: 18,
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w300,
-                color: Theme.of(context).brightness == Brightness.light
+                color: CommonFunctions.isLightMode(context)
                     ? AppColors.primaryColor
                     : Colors.white,
               ),
@@ -110,7 +123,7 @@ class StartPage extends StatelessWidget {
                     "التسجيل",
                     style: TextStyle(
                         fontSize:
-                            (size.width > AppConstants.phoneWidth) ? 30 : 20,
+                            (size.width > AppConstants.phoneWidth) ? 25 : 20,
                         fontFamily: AppFonts.mainArabicFontFamily,
                         color: Colors.white),
                   ),

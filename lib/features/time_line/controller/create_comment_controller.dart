@@ -19,8 +19,9 @@ class CreateCommentController extends GetxController {
   uploadComment(CommentModel comment) async {
     String commentDocumentId = '${comment.postId}-${const Uuid().v4()}';
     comment.commentId = commentDocumentId;
+
     final DocumentReference postCommentsDocument =
-        _getPostCommentsDocumentById(comment.postId, commentDocumentId);
+        _getCommentDocumentById(comment.postId, commentDocumentId);
     await postCommentsDocument.set(comment.toJson()).whenComplete(() async {
       await _loadComments(comment.postId);
       MySnackBar.showGetSnackbar('تم نشر تعليقك بنجاح', Colors.green);
@@ -42,7 +43,7 @@ class CreateCommentController extends GetxController {
   getCurrentUserId() => _authenticationController.currentUser!.userId;
   getCurrentUser() => _authenticationController.currentUser!;
 
-  _getPostCommentsDocumentById(String postId, String commentDocumentId) =>
+  _getCommentDocumentById(String postId, String commentDocumentId) =>
       _userDataController.getCommentDocumentById(postId, commentDocumentId);
 
   _loadComments(String postId) =>

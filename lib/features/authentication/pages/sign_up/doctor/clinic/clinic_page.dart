@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/sign_up/common/signup_
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/day.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/constants/am_or_pm.dart';
@@ -23,6 +24,7 @@ class ClinicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SignupController controller = Get.find(tag: DoctorSignUpParent.route);
+    final size = MediaQuery.of(context).size;
 
     return Column(
       children: [
@@ -63,46 +65,50 @@ class ClinicPage extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: (Theme.of(context).brightness == Brightness.light)
-                    ? AppColors.primaryColor
-                    : Colors.white,
-                width: 1,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 5,
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: GetBuilder<SignupController>(
-                  tag: DoctorSignUpParent.route,
-                  builder: (controller) {
-                    return DropdownButton(
-                      items: Regions.governorates
-                          .map(
-                            (governorate) => DropdownMenuItem(
-                              value: governorate,
-                              child: Text(
-                                governorate,
-                                style: const TextStyle(
-                                    fontFamily: AppFonts.mainArabicFontFamily),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: (CommonFunctions.isLightMode(context))
+                      ? AppColors.primaryColor
+                      : Colors.white,
+                  width: 1,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: GetBuilder<SignupController>(
+                    tag: DoctorSignUpParent.route,
+                    builder: (controller) {
+                      return DropdownButton(
+                        items: Regions.governorates
+                            .map(
+                              (governorate) => DropdownMenuItem(
+                                value: governorate,
+                                child: Text(
+                                  governorate,
+                                  style: const TextStyle(
+                                      fontFamily:
+                                          AppFonts.mainArabicFontFamily),
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (item) {
-                        controller.updateClinicGovernorate(item!, index);
-                      },
-                      value: (controller as DoctorSignupController)
-                          .doctorModel
-                          .clinics[index]
-                          .governorate,
-                    );
-                  }),
+                            )
+                            .toList(),
+                        onChanged: (item) {
+                          controller.updateClinicGovernorate(item!, index);
+                        },
+                        value: (controller as DoctorSignupController)
+                            .doctorModel
+                            .clinics[index]
+                            .governorate,
+                      );
+                    }),
+              ),
             ),
           ),
         ),
@@ -126,45 +132,48 @@ class ClinicPage extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: (Theme.of(context).brightness == Brightness.light)
-                    ? AppColors.primaryColor
-                    : Colors.white,
-                width: 1,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 5,
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: GetBuilder<SignupController>(
-                  tag: DoctorSignUpParent.route,
-                  builder: (controller) {
-                    return DropdownButton(
-                      items: Regions.regions.keys
-                          .map((region) => DropdownMenuItem(
-                                value: region,
-                                child: Text(
-                                  region,
-                                  style: const TextStyle(
-                                      fontFamily:
-                                          AppFonts.mainArabicFontFamily),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (item) {
-                        controller.updateClinicRegion(item!, index);
-                      },
-                      value: (controller as DoctorSignupController)
-                          .doctorModel
-                          .clinics[index]
-                          .region,
-                    );
-                  }),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: (CommonFunctions.isLightMode(context))
+                      ? AppColors.primaryColor
+                      : Colors.white,
+                  width: 1,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: GetBuilder<SignupController>(
+                    tag: DoctorSignUpParent.route,
+                    builder: (controller) {
+                      return DropdownButton(
+                        items: Regions.regions.keys
+                            .map((region) => DropdownMenuItem(
+                                  value: region,
+                                  child: Text(
+                                    region,
+                                    style: const TextStyle(
+                                        fontFamily:
+                                            AppFonts.mainArabicFontFamily),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (item) {
+                          controller.updateClinicRegion(item!, index);
+                        },
+                        value: (controller as DoctorSignupController)
+                            .doctorModel
+                            .clinics[index]
+                            .region,
+                      );
+                    }),
+              ),
             ),
           ),
         ),
@@ -207,7 +216,7 @@ class ClinicPage extends StatelessWidget {
               ),
               helperText: 'ادخل عنوان العيادة بالتفصيل',
               helperStyle: TextStyle(
-                  color: (Theme.of(context).brightness == Brightness.light)
+                  color: (CommonFunctions.isLightMode(context))
                       ? AppColors.darkThemeBackgroundColor
                       : Colors.white,
                   fontFamily: AppFonts.mainArabicFontFamily,
@@ -224,72 +233,73 @@ class ClinicPage extends StatelessWidget {
         const SizedBox(
           height: 5,
         ),
-        Row(
-          children: [
-            ElevatedButton(
-              style: Theme.of(context).elevatedButtonTheme.style,
-              onPressed: ((controller as DoctorSignupController)
-                          .clinicLocationLoading ||
-                      controller.loading)
-                  ? null
-                  : () => getCurrentLocation(),
-              child: GetBuilder<SignupController>(
-                  tag: DoctorSignUpParent.route,
-                  builder: (controller) {
-                    return Row(
-                      children: [
-                        (controller as DoctorSignupController)
-                                .clinicLocationLoading
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: (Theme.of(context).brightness ==
-                                          Brightness.light)
-                                      ? AppColors.primaryColor
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              ElevatedButton(
+                style: Theme.of(context).elevatedButtonTheme.style,
+                onPressed: ((controller as DoctorSignupController)
+                            .clinicLocationLoading ||
+                        controller.loading)
+                    ? null
+                    : () => getCurrentLocation(),
+                child: GetBuilder<SignupController>(
+                    tag: DoctorSignUpParent.route,
+                    builder: (controller) {
+                      return Row(
+                        children: [
+                          (controller as DoctorSignupController)
+                                  .clinicLocationLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: (Theme.of(context).brightness ==
+                                            Brightness.light)
+                                        ? AppColors.primaryColor
+                                        : Colors.white,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.location_on_outlined,
+                                  color: (CommonFunctions.isLightMode(context))
+                                      ? AppColors.darkThemeBackgroundColor
                                       : Colors.white,
+                                  size: 20,
                                 ),
-                              )
-                            : Icon(
-                                Icons.location_on_outlined,
-                                color: (Theme.of(context).brightness ==
-                                        Brightness.light)
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            'إستخدم الموقع الحالي',
+                            style: TextStyle(
+                                color: (CommonFunctions.isLightMode(context))
                                     ? AppColors.darkThemeBackgroundColor
                                     : Colors.white,
-                                size: 20,
-                              ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'إستخدم الموقع الحالي',
-                          style: TextStyle(
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
-                                  ? AppColors.darkThemeBackgroundColor
-                                  : Colors.white,
-                              fontFamily: AppFonts.mainArabicFontFamily,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15),
-                        )
-                      ],
-                    );
-                  }),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              'أو',
-              style: TextStyle(
-                  color: (Theme.of(context).brightness == Brightness.light)
-                      ? AppColors.darkThemeBackgroundColor
-                      : Colors.white,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14),
-            ),
-          ],
+                                fontFamily: AppFonts.mainArabicFontFamily,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15),
+                          )
+                        ],
+                      );
+                    }),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'أو',
+                style: TextStyle(
+                    color: (CommonFunctions.isLightMode(context))
+                        ? AppColors.darkThemeBackgroundColor
+                        : Colors.white,
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 30),
         Align(
@@ -303,16 +313,40 @@ class ClinicPage extends StatelessWidget {
         GetBuilder<SignupController>(
             tag: DoctorSignUpParent.route,
             builder: (controller) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: Day.getClickableWeekDays(
-                    (controller as DoctorSignupController)
-                        .doctorModel
-                        .clinics[index]
-                        .workDays, (day) {
-                  controller.updateWorkDays(day, index);
-                }, context),
-              );
+              return (size.width > 320)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: Day.getClickableWeekDays(
+                          (controller as DoctorSignupController)
+                              .doctorModel
+                              .clinics[index]
+                              .workDays, (day) {
+                        controller.updateWorkDays(day, index);
+                      }, context),
+                    )
+                  : Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: Day.getClickableWeekDays(
+                              (controller as DoctorSignupController)
+                                  .doctorModel
+                                  .clinics[index]
+                                  .workDays, (day) {
+                            controller.updateWorkDays(day, index);
+                          }, context, daysPerRow: 3, firstIndex: 4),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: Day.getClickableWeekDays(
+                              controller.doctorModel.clinics[index].workDays,
+                              (day) {
+                            controller.updateWorkDays(day, index);
+                          }, context, daysPerRow: 4),
+                        ),
+                      ],
+                    );
             }),
         const SizedBox(height: 30),
         Align(
@@ -325,154 +359,189 @@ class ClinicPage extends StatelessWidget {
         GetBuilder<SignupController>(
             tag: DoctorSignUpParent.route,
             builder: (controller) {
-              return Row(
+              return Column(
                 children: [
-                  TextButton(
-                    style: Theme.of(context).elevatedButtonTheme.style,
-                    onPressed: controller.loading
-                        ? null
-                        : () async {
-                            TimeOfDay? picked;
-                            picked = await showTimePicker(
-                                context: context,
-                                initialTime:
-                                    (controller as DoctorSignupController)
-                                        .doctorModel
-                                        .clinics[index]
-                                        .closeTime);
+                  Row(
+                    children: [
+                      TextButton(
+                        style: Theme.of(context).elevatedButtonTheme.style,
+                        onPressed: controller.loading
+                            ? null
+                            : () async {
+                                TimeOfDay? picked;
 
-                            controller.doctorModel.clinics[index].closeTime =
-                                (picked == null)
-                                    ? controller
-                                        .doctorModel.clinics[index].closeTime
-                                    : picked;
-                            controller.doctorModel.clinics[index]
-                                .closeTimeFinalMin = (controller.doctorModel
-                                        .clinics[index].closeTime.minute <
-                                    10)
-                                ? (AppConstants.zero +
-                                    controller.doctorModel.clinics[index]
-                                        .closeTime.minute
-                                        .toString())
-                                : (controller
-                                    .doctorModel.clinics[index].closeTime.minute
-                                    .toString());
-                            if (controller
-                                    .doctorModel.clinics[index].closeTime.hour >
-                                12) {
-                              controller.doctorModel.clinics[index]
-                                  .closeTimeFinalHour = (controller.doctorModel
-                                          .clinics[index].closeTime.hour -
-                                      12)
-                                  .toString();
-                              controller.doctorModel.clinics[index]
-                                  .closeTimeAMOrPM = AMOrPM.pm;
-                            } else {
-                              controller.doctorModel.clinics[index]
-                                  .closeTimeFinalHour = (controller.doctorModel
-                                          .clinics[index].closeTime.hour ==
-                                      0)
-                                  ? '12'
-                                  : (controller.doctorModel.clinics[index]
-                                          .closeTime.hour)
-                                      .toString();
-                              controller.doctorModel.clinics[index]
-                                  .closeTimeAMOrPM = (controller.doctorModel
-                                          .clinics[index].closeTime.hour ==
-                                      12)
-                                  ? AMOrPM.pm
-                                  : AMOrPM.am;
-                            }
-                            controller.update();
-                          },
-                    child: Text(
-                      '${(controller as DoctorSignupController).doctorModel.clinics[index].closeTimeFinalHour} : ${controller.doctorModel.clinics[index].closeTimeFinalMin} ${controller.doctorModel.clinics[index].closeTimeAMOrPM.name.toUpperCase()}',
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'إلى',
-                    style: TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.darkThemeBackgroundColor
-                                : Colors.white,
-                        fontSize: 15),
-                  ),
-                  const SizedBox(width: 10),
-                  TextButton(
-                    style: Theme.of(context).elevatedButtonTheme.style,
-                    onPressed: controller.loading
-                        ? null
-                        : () async {
-                            TimeOfDay? picked;
+                                picked = await showTimePicker(
+                                    context: context,
+                                    initialTime:
+                                        (controller as DoctorSignupController)
+                                            .doctorModel
+                                            .clinics[index]
+                                            .openTime);
 
-                            picked = await showTimePicker(
-                                context: context,
-                                initialTime: controller
-                                    .doctorModel.clinics[index].openTime);
-
-                            controller.doctorModel.clinics[index].openTime =
-                                (picked == null)
-                                    ? controller
-                                        .doctorModel.clinics[index].openTime
-                                    : picked;
-                            controller.doctorModel.clinics[index]
-                                .openTimeFinalMin = (controller.doctorModel
-                                        .clinics[index].openTime.minute <
-                                    10)
-                                ? (AppConstants.zero +
-                                    controller.doctorModel.clinics[index]
+                                controller.doctorModel.clinics[index].openTime =
+                                    (picked == null)
+                                        ? controller
+                                            .doctorModel.clinics[index].openTime
+                                        : picked;
+                                controller.doctorModel.clinics[index]
+                                    .openTimeFinalMin = (controller.doctorModel
+                                            .clinics[index].openTime.minute <
+                                        10)
+                                    ? (AppConstants.zero +
+                                        controller.doctorModel.clinics[index]
+                                            .openTime.minute
+                                            .toString())
+                                    : (controller.doctorModel.clinics[index]
                                         .openTime.minute
-                                        .toString())
-                                : (controller
-                                    .doctorModel.clinics[index].openTime.minute
-                                    .toString());
-                            if (controller
-                                    .doctorModel.clinics[index].openTime.hour >
-                                12) {
-                              controller.doctorModel.clinics[index]
-                                  .openTimeFinalHour = (controller.doctorModel
-                                          .clinics[index].openTime.hour -
-                                      12)
-                                  .toString();
-                              controller.doctorModel.clinics[index]
-                                  .openTimeAMOrPM = AMOrPM.pm;
-                            } else {
-                              controller.doctorModel.clinics[index]
-                                  .openTimeFinalHour = (controller.doctorModel
-                                          .clinics[index].openTime.hour ==
-                                      0)
-                                  ? '12'
-                                  : (controller.doctorModel.clinics[index]
-                                          .openTime.hour)
+                                        .toString());
+                                if (controller.doctorModel.clinics[index]
+                                        .openTime.hour >
+                                    12) {
+                                  controller.doctorModel.clinics[index]
+                                      .openTimeFinalHour = (controller
+                                              .doctorModel
+                                              .clinics[index]
+                                              .openTime
+                                              .hour -
+                                          12)
                                       .toString();
-                              controller.doctorModel.clinics[index]
-                                  .openTimeAMOrPM = (controller.doctorModel
-                                          .clinics[index].openTime.hour ==
-                                      12)
-                                  ? AMOrPM.pm
-                                  : AMOrPM.am;
-                            }
-                            controller.update();
-                          },
-                    child: Text(
-                      '${controller.doctorModel.clinics[index].openTimeFinalHour} : ${controller.doctorModel.clinics[index].openTimeFinalMin} ${controller.doctorModel.clinics[index].openTimeAMOrPM.name.toUpperCase()}',
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'من',
-                    style: TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
+                                  controller.doctorModel.clinics[index]
+                                      .openTimeAMOrPM = AMOrPM.pm;
+                                } else {
+                                  controller.doctorModel.clinics[index]
+                                      .openTimeFinalHour = (controller
+                                              .doctorModel
+                                              .clinics[index]
+                                              .openTime
+                                              .hour ==
+                                          0)
+                                      ? '12'
+                                      : (controller.doctorModel.clinics[index]
+                                              .openTime.hour)
+                                          .toString();
+                                  controller.doctorModel.clinics[index]
+                                      .openTimeAMOrPM = (controller.doctorModel
+                                              .clinics[index].openTime.hour ==
+                                          12)
+                                      ? AMOrPM.pm
+                                      : AMOrPM.am;
+                                }
+                                controller.update();
+                              },
+                        child: Text(
+                          '${(controller as DoctorSignupController).doctorModel.clinics[index].openTimeFinalHour} : ${controller.doctorModel.clinics[index].openTimeFinalMin} ${controller.doctorModel.clinics[index].openTimeAMOrPM.name.toUpperCase()}',
+                          style: TextStyle(
+                            color: (Theme.of(context).brightness ==
+                                    Brightness.light)
+                                ? AppColors.primaryColor
+                                : Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'من',
+                        style: TextStyle(
+                            fontFamily: AppFonts.mainArabicFontFamily,
+                            color: (Theme.of(context).brightness ==
+                                    Brightness.light)
                                 ? Colors.grey[850]
                                 : Colors.white,
-                        fontSize: 15),
+                            fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      TextButton(
+                        style: Theme.of(context).elevatedButtonTheme.style,
+                        onPressed: controller.loading
+                            ? null
+                            : () async {
+                                TimeOfDay? picked;
+                                picked = await showTimePicker(
+                                    context: context,
+                                    initialTime: controller
+                                        .doctorModel.clinics[index].closeTime);
+
+                                controller
+                                        .doctorModel.clinics[index].closeTime =
+                                    (picked == null)
+                                        ? controller.doctorModel.clinics[index]
+                                            .closeTime
+                                        : picked;
+                                controller.doctorModel.clinics[index]
+                                    .closeTimeFinalMin = (controller.doctorModel
+                                            .clinics[index].closeTime.minute <
+                                        10)
+                                    ? (AppConstants.zero +
+                                        controller.doctorModel.clinics[index]
+                                            .closeTime.minute
+                                            .toString())
+                                    : (controller.doctorModel.clinics[index]
+                                        .closeTime.minute
+                                        .toString());
+                                if (controller.doctorModel.clinics[index]
+                                        .closeTime.hour >
+                                    12) {
+                                  controller.doctorModel.clinics[index]
+                                      .closeTimeFinalHour = (controller
+                                              .doctorModel
+                                              .clinics[index]
+                                              .closeTime
+                                              .hour -
+                                          12)
+                                      .toString();
+                                  controller.doctorModel.clinics[index]
+                                      .closeTimeAMOrPM = AMOrPM.pm;
+                                } else {
+                                  controller.doctorModel.clinics[index]
+                                      .closeTimeFinalHour = (controller
+                                              .doctorModel
+                                              .clinics[index]
+                                              .closeTime
+                                              .hour ==
+                                          0)
+                                      ? '12'
+                                      : (controller.doctorModel.clinics[index]
+                                              .closeTime.hour)
+                                          .toString();
+                                  controller.doctorModel.clinics[index]
+                                      .closeTimeAMOrPM = (controller.doctorModel
+                                              .clinics[index].closeTime.hour ==
+                                          12)
+                                      ? AMOrPM.pm
+                                      : AMOrPM.am;
+                                }
+                                controller.update();
+                              },
+                        child: Text(
+                          '${controller.doctorModel.clinics[index].closeTimeFinalHour} : ${controller.doctorModel.clinics[index].closeTimeFinalMin} ${controller.doctorModel.clinics[index].closeTimeAMOrPM.name.toUpperCase()}',
+                          style: TextStyle(
+                            color: (Theme.of(context).brightness ==
+                                    Brightness.light)
+                                ? AppColors.primaryColor
+                                : Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'إلى',
+                        style: TextStyle(
+                            fontFamily: AppFonts.mainArabicFontFamily,
+                            color: (Theme.of(context).brightness ==
+                                    Brightness.light)
+                                ? AppColors.darkThemeBackgroundColor
+                                : Colors.white,
+                            fontSize: 15),
+                      ),
+                    ],
                   ),
                 ],
               );

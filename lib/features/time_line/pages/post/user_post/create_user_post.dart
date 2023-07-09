@@ -84,7 +84,7 @@ class CreateUserPost extends StatelessWidget {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(
-              top: 10.0,
+              top: 20.0,
               right: 10.0,
               left: 10.0,
               bottom: 20.0,
@@ -92,12 +92,11 @@ class CreateUserPost extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
                 UserNameAndPicWidget(
                   userName: CommonFunctions.getFullName(
                       controller.postModel.user.firstName!,
                       controller.postModel.user.lastName!),
-                  userPic: controller.postModel.user.personalImageURL!,
+                  userPic: controller.postModel.user.personalImageURL,
                 ),
                 const SizedBox(height: 30),
                 Align(
@@ -115,7 +114,7 @@ class CreateUserPost extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(
-                      color: (Theme.of(context).brightness == Brightness.light)
+                      color: (CommonFunctions.isLightMode(context))
                           ? AppColors.primaryColor
                           : Colors.white,
                       width: 1,
@@ -188,8 +187,7 @@ class CreateUserPost extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
+                              color: (CommonFunctions.isLightMode(context))
                                   ? AppColors.primaryColor
                                   : Colors.white,
                               width: 1,
@@ -239,8 +237,7 @@ class CreateUserPost extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
+                              color: (CommonFunctions.isLightMode(context))
                                   ? AppColors.primaryColor
                                   : Colors.white,
                               width: 1,
@@ -291,8 +288,7 @@ class CreateUserPost extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: (Theme.of(context).brightness ==
-                                      Brightness.light)
+                              color: (CommonFunctions.isLightMode(context))
                                   ? AppColors.primaryColor
                                   : Colors.white,
                               width: 1,
@@ -409,8 +405,7 @@ class CreateUserPost extends StatelessWidget {
                                 fontFamily: AppFonts.mainArabicFontFamily,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 20,
-                                color: (Theme.of(context).brightness ==
-                                        Brightness.light)
+                                color: (CommonFunctions.isLightMode(context))
                                     ? AppColors.darkThemeBackgroundColor
                                     : Colors.white,
                               ),
@@ -493,10 +488,9 @@ class CreateUserPost extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                       borderSide: BorderSide(
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.primaryColor
-                                : Colors.white,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? AppColors.primaryColor
+                            : Colors.white,
                       ),
                     ),
                   ),

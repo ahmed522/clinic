@@ -1,5 +1,6 @@
 import 'package:clinic/features/authentication/controller/sign_in/signin_controller.dart';
 import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,10 +20,9 @@ class SigninImageWidget extends StatelessWidget {
           init: SigninController(),
           builder: (controller) {
             return controller.loading
-                ? SizedBox(
-                    height: loadingIndicatorSize,
+                ? AppCircularProgressIndicator(
                     width: loadingIndicatorSize,
-                    child: const CircularProgressIndicator(),
+                    height: loadingIndicatorSize,
                   )
                 : const SizedBox();
           },

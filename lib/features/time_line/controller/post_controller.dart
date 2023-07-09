@@ -2,6 +2,10 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
+import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,18 +21,17 @@ class PostController extends GetxController {
   uploadUserPost(UserPostModel post) async {
     String postDocumentId = '${post.user.userId}-${const Uuid().v4()}';
     post.postId = postDocumentId;
-    final userPostsDocument =
-        _getUserPostsDocumentById(post.user.userId!, postDocumentId);
-    await userPostsDocument.set(post.toJson()).catchError(
+
+    await _getPostDocumentRefById(postDocumentId)
+        .set(post.toJson())
+        .catchError(
           (error) => Get.to(
             () => const ErrorPage(
               imageAsset: 'assets/img/error.svg',
               message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
             ),
           ),
-        );
-    await _getPostDocumentRefById(postDocumentId)
-        .set(post.toJson())
+        )
         .whenComplete(() async {
       await _loadPosts();
       MySnackBar.showGetSnackbar('تم نشر سؤالك بنجاح', Colors.green);
@@ -44,7 +47,7 @@ class PostController extends GetxController {
 
   reactPost(String uid, String postDocumentId) async {
     _getPostReactsCollectionById(postDocumentId)
-        .doc(_authController.currentUser!.userId!)
+        .doc(_currentUserId)
         .set({'reacted': true});
     await _updatePostReacts(uid, postDocumentId, true);
   }
@@ -64,8 +67,6 @@ class PostController extends GetxController {
     int oldReacts = await _getPostReactsById(postDocumentId);
     await _getPostDocumentRefById(postDocumentId)
         .update({'reacts': oldReacts + factor});
-    await _getUserPostsDocumentById(uid, postDocumentId)
-        .update({'reacts': oldReacts + factor});
   }
 
   Future<int> _getPostReactsById(String postDocumentId) async {
@@ -77,15 +78,68 @@ class PostController extends GetxController {
     return reacts!;
   }
 
+  onPostSettingsButtonPressed(BuildContext context, String postId) {
+    Get.bottomSheet(
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            onTap: () => MyAlertDialog.showAlertDialog(
+              context,
+              'حذف السؤال',
+              'هل انت متأكد من حذف هذا السؤال؟',
+              MyAlertDialog.getAlertDialogActions(
+                {
+                  'نعم': () async {
+                    try {
+                      _timeLineController.loadingPosts.value = true;
+                      Get.back(closeOverlays: true);
+                      await _deletePostById(postId).whenComplete(() async {
+                        await _loadPosts();
+                        MySnackBar.showGetSnackbar(
+                            'تم حذف السؤال بنجاح', Colors.green);
+                      });
+                    } catch (e) {
+                      CommonFunctions.errorHappened();
+                    }
+                  },
+                  'إلغاء': () => Get.back(closeOverlays: true),
+                },
+              ),
+            ),
+            title: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'حذف السؤال',
+                style: TextStyle(
+                  color: (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.white
+                      : AppColors.darkThemeBackgroundColor,
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            trailing: const Icon(Icons.delete_rounded),
+          ),
+        ],
+      ),
+      backgroundColor: CommonFunctions.isLightMode(context)
+          ? Colors.white
+          : AppColors.darkThemeBottomNavBarColor,
+    );
+  }
+
+  Future _deletePostById(String postDocumentId) =>
+      _userDataController.deletePostById(postDocumentId);
   DocumentReference _getPostDocumentRefById(String postDocumentId) =>
       _userDataController.getAllUsersPostsCollection().doc(postDocumentId);
-
-  DocumentReference _getUserPostsDocumentById(
-          String uid, String postDocumentId) =>
-      _userDataController.getUserPostsDocumentById(uid, postDocumentId);
-
   CollectionReference _getPostReactsCollectionById(String postDocumentId) =>
       _userDataController.getPostReactsCollectionById(postDocumentId);
 
   _loadPosts() => _timeLineController.loadPosts();
+  bool isCurrentUserPost(String uid) => (uid == _currentUserId);
+
+  get _currentUserId => _authController.currentUserId;
 }

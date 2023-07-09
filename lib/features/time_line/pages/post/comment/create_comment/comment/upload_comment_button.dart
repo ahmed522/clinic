@@ -19,6 +19,7 @@ class UploadCommentButton extends StatelessWidget {
         if (controller.textController.text.trim() == '') {
           MySnackBar.showSnackBar(context, 'من فضلك أدخل تعليقك');
         } else {
+          FocusScope.of(context).unfocus();
           CommentModel comment = CommentModel(
             postId: postId,
             writer: controller.getCurrentUser(),

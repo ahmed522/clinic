@@ -1,5 +1,4 @@
 import 'package:clinic/features/time_line/controller/create_reply_controller.dart';
-import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +21,7 @@ class UploadReplyButton extends StatelessWidget {
         if (controller.textController.text.trim() == '') {
           MySnackBar.showSnackBar(context, 'من فضلك أدخل ردك');
         } else {
+          FocusScope.of(context).unfocus();
           ReplyModel reply = ReplyModel(
             postId: postId,
             writer: controller.getCurrentUser(),

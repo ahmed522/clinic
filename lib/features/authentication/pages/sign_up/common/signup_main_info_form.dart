@@ -22,6 +22,8 @@ class SignupMainInfoForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return GetBuilder<SignupController>(
         tag: userType == UserType.doctor
             ? DoctorSignUpParent.route
@@ -33,102 +35,65 @@ class SignupMainInfoForm extends StatelessWidget {
               children: [
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Text(
-                    'العمر',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 90, left: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextFormField(
-                        validator: ((value) {
-                          if (value == null || value.trim().isEmpty) {
-                            if (userType == UserType.doctor) {
-                              (controller as DoctorSignupController)
-                                  .updateAge(AppConstants.wrongAgeErrorCode);
-                            } else {
-                              (controller as UserSignupController)
-                                  .updateAge(AppConstants.wrongAgeErrorCode);
-                            }
-                            return 'من فضلك ادخل العمر  ';
-                          } else if (!RegExp(
-                                  AppConstants.vezeetaValidationRegExp)
-                              .hasMatch(value)) {
-                            if (userType == UserType.doctor) {
-                              (controller as DoctorSignupController)
-                                  .updateAge(AppConstants.wrongAgeErrorCode);
-                            } else {
-                              (controller as UserSignupController)
-                                  .updateAge(AppConstants.wrongAgeErrorCode);
-                            }
-                            return 'من فضلك ادخل قيمة صحيحة ';
-                          } else {
-                            int enteredAge = int.parse(value);
-                            int age = (userType == UserType.doctor)
-                                ? AppConstants.doctorMinimumAge
-                                : AppConstants.userMinimumAge;
-                            if (enteredAge < age) {
-                              if (userType == UserType.doctor) {
-                                (controller as DoctorSignupController)
-                                    .updateAge(AppConstants.wrongAgeErrorCode);
-                              } else {
-                                (controller as UserSignupController)
-                                    .updateAge(AppConstants.wrongAgeErrorCode);
-                              }
-
-                              if (age == AppConstants.doctorMinimumAge) {
-                                return 'الحد الأدنى لعمر الطبيب هو ${AppConstants.doctorMinimumAge} عام';
-                              }
-                              return 'الحد الأدنى لعمر المستخدم هو ${AppConstants.userMinimumAge} عام';
-                            }
-
-                            if (userType == UserType.doctor) {
-                              (controller as DoctorSignupController)
-                                  .updateAge(enteredAge);
-                            } else {
-                              (controller as UserSignupController)
-                                  .updateAge(enteredAge);
-                            }
-                            return null;
-                          }
-                        }),
-                        keyboardType: TextInputType.number,
-                        maxLength: 2,
-                        decoration: const InputDecoration(
-                          counter: Offstage(),
-                        ),
+                      MyAlertDialog.getInfoAlertDialog(
+                        context,
+                        'تاريخ الميلاد',
+                        (userType == UserType.user)
+                            ? AppConstants.userBirthDateRequirements
+                            : AppConstants.doctorBirthDateRequirements,
+                        {
+                          'أعي ذلك': () => Get.back(),
+                        },
                       ),
-                      Container(
-                        width: 20,
-                        height: 5,
-                        decoration: BoxDecoration(
-                            color: (userType == UserType.doctor)
-                                ? ((controller as DoctorSignupController)
-                                            .doctorModel
-                                            .age ==
-                                        AppConstants.wrongAgeErrorCode)
-                                    ? Colors.red
-                                    : (Theme.of(context).brightness ==
-                                            Brightness.light)
-                                        ? AppColors.primaryColor
-                                        : Colors.white
-                                : ((controller as UserSignupController)
-                                            .userModel
-                                            .age ==
-                                        AppConstants.wrongAgeErrorCode)
-                                    ? Colors.red
-                                    : (Theme.of(context).brightness ==
-                                            Brightness.light)
-                                        ? AppColors.primaryColor
-                                        : Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
+                      Text(
+                        'تاريخ الميلاد',
+                        style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ],
                   ),
                 ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: controller.loading
+                            ? null
+                            : () => (userType == UserType.user)
+                                ? (controller as UserSignupController)
+                                    .pickBirthDate(context)
+                                : (controller as DoctorSignupController)
+                                    .pickBirthDate(context),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.date_range_rounded),
+                            SizedBox(width: size.width > 320 ? 5.0 : 0.0),
+                            size.width > 320
+                                ? Text(
+                                    'أدخل تاريخ الميلاد',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  )
+                                : const SizedBox(),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      controller.ageIsValid
+                          ? const Icon(Icons.done_rounded, color: Colors.green)
+                          : const Icon(
+                              Icons.close_rounded,
+                              color: Colors.red,
+                            )
+                    ],
+                  ),
+                ),
+
                 const SizedBox(height: 30),
                 GenderSelectorWidget(
                   userType: userType,
@@ -325,8 +290,10 @@ class SignupMainInfoForm extends StatelessWidget {
                         children: [
                           const SizedBox(height: 50),
                           ElevatedButton(
-                            onPressed:
-                                controller.loading ? null : () => signupUser(),
+                            onPressed: controller.loading
+                                ? null
+                                : () => (controller as UserSignupController)
+                                    .onSignupUserButtonPressed(),
                             style: ElevatedButton.styleFrom(
                                 disabledBackgroundColor: Colors.grey,
                                 backgroundColor: AppColors.primaryColor,
@@ -355,13 +322,5 @@ class SignupMainInfoForm extends StatelessWidget {
             ),
           );
         });
-  }
-
-  signupUser() {
-    final SignupController controller = Get.find(tag: UserSignupPage.route);
-    if (controller.formKey.currentState!.validate()) {
-      controller.updateLoading(true);
-      controller.signupUser((controller as UserSignupController).userModel);
-    }
   }
 }

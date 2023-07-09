@@ -1,3 +1,5 @@
+import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -26,21 +28,21 @@ class UserNameAndPicWidget extends StatelessWidget {
             Text(
               userName,
               style: TextStyle(
-                  color: (Theme.of(context).brightness == Brightness.light)
+                  color: (CommonFunctions.isLightMode(context))
                       ? Colors.black87
                       : Colors.white,
-                  fontSize: 15),
+                  fontSize: 14),
             ),
             const SizedBox(height: 5),
             (timestamp != null)
                 ? Text(
                     postDataAndTime,
                     style: TextStyle(
-                      color: (Theme.of(context).brightness == Brightness.light)
+                      color: (CommonFunctions.isLightMode(context))
                           ? Colors.black87
                           : Colors.white,
                       fontWeight: FontWeight.w300,
-                      fontSize: 12,
+                      fontSize: 11,
                     ),
                   )
                 : const SizedBox()
@@ -55,6 +57,7 @@ class UserNameAndPicWidget extends StatelessWidget {
             : const CircleAvatar(
                 backgroundImage: AssetImage('assets/img/user.png'),
                 radius: 25,
+                backgroundColor: AppColors.primaryColor,
               ),
       ],
     );

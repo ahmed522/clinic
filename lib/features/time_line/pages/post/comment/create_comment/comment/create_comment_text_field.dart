@@ -1,6 +1,7 @@
 import 'package:clinic/features/time_line/controller/create_comment_controller.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 class CreateCommentTextField extends StatelessWidget {
@@ -13,21 +14,21 @@ class CreateCommentTextField extends StatelessWidget {
     final controller = CreateCommentController.find;
     final size = MediaQuery.of(context).size;
     return SizedBox(
-      width: size.width / 2,
+      width: (size.width > 320) ? size.width / 2 : size.width / 3,
       child: TextField(
         controller: controller.textController,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide(
-              color: (Theme.of(context).brightness == Brightness.light)
+              color: (CommonFunctions.isLightMode(context))
                   ? AppColors.primaryColor
                   : Colors.white,
             ),
           ),
           helperText: 'أضف تعليقك',
           helperStyle: TextStyle(
-              color: (Theme.of(context).brightness == Brightness.light)
+              color: (CommonFunctions.isLightMode(context))
                   ? AppColors.darkThemeBackgroundColor
                   : Colors.white,
               fontFamily: AppFonts.mainArabicFontFamily,

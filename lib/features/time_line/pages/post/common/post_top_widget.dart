@@ -13,33 +13,64 @@ class PostTopWidget extends StatelessWidget {
     this.postSideInfoTextColor,
     this.postSideInfoImageAsset,
     required this.timestamp,
+    required this.paddingValue,
+    required this.onSettingsButtonPressed,
+    required this.isCurrentUserPost,
   }) : super(key: key);
   final bool setSideInfo;
   final String userName;
-  final String personalImageURL;
+  final String? personalImageURL;
   final String? postSideInfoText;
   final Color? postSideInfoTextColor;
   final String? postSideInfoImageAsset;
   final Timestamp timestamp;
-
+  final double paddingValue;
+  final bool isCurrentUserPost;
+  final void Function() onSettingsButtonPressed;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        setSideInfo
-            ? PostSideInfo(
-                text: postSideInfoText!,
-                textColor: postSideInfoTextColor!,
-                imageAsset: postSideInfoImageAsset!,
-              )
-            : const SizedBox(),
-        UserNameAndPicWidget(
-          userName: userName,
-          userPic: personalImageURL,
-          timestamp: timestamp,
-        ),
-      ],
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      width: size.width - paddingValue,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              isCurrentUserPost
+                  ? SizedBox(
+                      height: 25,
+                      width: 25,
+                      child: IconButton(
+                        onPressed: () => onSettingsButtonPressed(),
+                        iconSize: 20,
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(
+                          Icons.more_vert_rounded,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+              SizedBox(
+                width: isCurrentUserPost ? 3 : 0,
+              ),
+              setSideInfo
+                  ? PostSideInfo(
+                      text: postSideInfoText!,
+                      textColor: postSideInfoTextColor!,
+                      imageAsset: postSideInfoImageAsset!,
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+          UserNameAndPicWidget(
+            userName: userName,
+            userPic: personalImageURL,
+            timestamp: timestamp,
+          ),
+        ],
+      ),
     );
   }
 }

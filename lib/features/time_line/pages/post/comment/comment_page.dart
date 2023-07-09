@@ -1,8 +1,8 @@
 import 'package:clinic/features/time_line/controller/comment_replies_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
+import 'package:clinic/features/time_line/pages/post/comment/comment_replies_widget.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/common/create_comment.dart';
-import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
@@ -42,45 +42,28 @@ class CommentPage extends StatelessWidget {
         ),
       ),
       body: RefreshIndicator(
-        child: getCommentPage(context, comment),
+        child: getCommentPage(context),
         onRefresh: () =>
             repliesController.loadCommentReplies(comment.commentId),
       ),
     );
   }
-}
 
-Widget getCommentPage(BuildContext context, CommentModel comment) =>
-    SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: [
-          CommentWidget(
-            comment: comment,
-            isCommentPage: true,
-          ),
-          CreateCommentWidget(
-            postId: comment.postId,
-            isReply: true,
-            commentId: comment.commentId,
-          ),
-          GetX<CommentRepliesController>(
-            builder: (controller) {
-              if (controller.loading.isTrue) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
-                  child: CircularProgressIndicator(
-                    color: (Theme.of(context).brightness == Brightness.light)
-                        ? AppColors.primaryColor
-                        : Colors.white,
-                  ),
-                );
-              }
-              return Column(
-                children: controller.replies.toList(),
-              );
-            },
-          ),
-        ],
-      ),
-    );
+  Widget getCommentPage(BuildContext context) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            CommentWidget(
+              comment: comment,
+              isCommentPage: true,
+            ),
+            CreateCommentWidget(
+              postId: comment.postId,
+              isReply: true,
+              commentId: comment.commentId,
+            ),
+            const CommentRepliesWidget(),
+          ],
+        ),
+      );
+}

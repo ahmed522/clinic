@@ -14,6 +14,7 @@ class AddClinicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final SignupController controller =
         Get.find<SignupController>(tag: DoctorSignUpParent.route);
     return ElevatedButton(
@@ -26,22 +27,24 @@ class AddClinicButton extends StatelessWidget {
       ),
       onPressed: controller.loading ? null : () => onAddClinic(),
       child: Row(
-        children: const [
-          Icon(
+        children: [
+          const Icon(
             Icons.add,
             color: Colors.white,
           ),
           SizedBox(
-            width: 5,
+            width: (size.width > 320) ? 5 : 0,
           ),
-          Text(
-            'إضافة عيادة',
-            style: TextStyle(
-                color: Colors.white,
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w600,
-                fontSize: 15),
-          )
+          (size.width > 320)
+              ? const Text(
+                  'إضافة عيادة',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: AppFonts.mainArabicFontFamily,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12),
+                )
+              : const SizedBox(),
         ],
       ),
     );

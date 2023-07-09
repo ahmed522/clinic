@@ -1,6 +1,8 @@
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,8 @@ class RemoveClinicButton extends StatelessWidget {
   final void Function() onRemoveClinic;
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     final SignupController controller =
         Get.find<SignupController>(tag: DoctorSignUpParent.route);
     return ElevatedButton(
@@ -36,17 +40,26 @@ class RemoveClinicButton extends StatelessWidget {
         children: [
           Icon(
             Icons.remove,
-            color: (Theme.of(context).brightness == Brightness.light)
+            color: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
           ),
-          const SizedBox(
-            width: 5,
+          SizedBox(
+            width: (size.width > 320) ? 5 : 0,
           ),
-          Text(
-            'إزالة عيادة',
-            style: Theme.of(context).textTheme.bodyText1,
-          )
+          (size.width > 320)
+              ? Text(
+                  'إزالة عيادة',
+                  style: TextStyle(
+                    color: (CommonFunctions.isLightMode(context))
+                        ? AppColors.primaryColor
+                        : Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                  ),
+                )
+              : const SizedBox()
         ],
       ),
     );

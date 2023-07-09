@@ -2,10 +2,16 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
+import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/error_page.dart';
+import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PostCommentsController extends GetxController {
@@ -15,6 +21,7 @@ class PostCommentsController extends GetxController {
   RxList<CommentWidget> comments = <CommentWidget>[].obs;
   late String postId;
   RxBool loading = false.obs;
+
   PostCommentsController(this.postId);
   @override
   void onReady() {
@@ -26,7 +33,7 @@ class PostCommentsController extends GetxController {
     loading.value = true;
     try {
       QuerySnapshot snapshot = await _getPostCommentsCollectionById(postId)
-          .orderBy('comment_time', descending: true)
+          .orderBy('comment_time', descending: false)
           .get();
       if (snapshot.size == 0) {
         loading.value = false;
@@ -88,6 +95,64 @@ class PostCommentsController extends GetxController {
     }
   }
 
+  onCommentSettingsButtonPressed(BuildContext context, String commentId) {
+    Get.bottomSheet(
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            onTap: () => MyAlertDialog.showAlertDialog(
+              context,
+              'حذف التعليق',
+              'هل انت متأكد من حذف هذا التعليق؟',
+              MyAlertDialog.getAlertDialogActions(
+                {
+                  'نعم': () async {
+                    try {
+                      loading.value = true;
+                      Get.back(closeOverlays: true);
+                      await _deleteCommentById(postId, commentId)
+                          .whenComplete(() async {
+                        Get.back();
+                        await loadPostComments(postId).then((value) =>
+                            MySnackBar.showGetSnackbar(
+                                'تم حذف التعليق بنجاح', Colors.green));
+                      });
+                    } catch (e) {
+                      Get.back();
+                      CommonFunctions.errorHappened();
+                    }
+                  },
+                  'إلغاء': () => Get.back(),
+                },
+              ),
+            ),
+            title: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'حذف التعليق',
+                style: TextStyle(
+                  color: (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.white
+                      : AppColors.darkThemeBackgroundColor,
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            trailing: const Icon(Icons.delete_rounded),
+          ),
+        ],
+      ),
+      backgroundColor: CommonFunctions.isLightMode(context)
+          ? Colors.white
+          : AppColors.darkThemeBottomNavBarColor,
+    );
+  }
+
+  _deleteCommentById(String postDocumentId, String commentId) async =>
+      _userDataController.deleteCommentById(postDocumentId, commentId);
   CollectionReference _getCommentReactsCollectionById(
           String postDocumentId, String commentDocumentId) =>
       _getCommentDocumentRefById(postDocumentId, commentDocumentId)
@@ -120,4 +185,8 @@ class PostCommentsController extends GetxController {
   _getCommentDocumentRefById(String postDocumentId, String commentDocumentId) =>
       _userDataController.getCommentDocumentById(
           postDocumentId, commentDocumentId);
+
+  bool isCurrentUserComment(String uid) => (uid == _currentUserId);
+
+  get _currentUserId => _authenticationController.currentUserId;
 }

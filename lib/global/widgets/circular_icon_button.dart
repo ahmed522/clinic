@@ -1,4 +1,5 @@
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 class CircularIconButton extends StatelessWidget {
@@ -18,13 +19,13 @@ class CircularIconButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: selected
             ? AppColors.primaryColor
-            : (Theme.of(context).brightness == Brightness.light)
+            : (CommonFunctions.isLightMode(context))
                 ? Colors.white
                 : AppColors.darkThemeBackgroundColor,
         border: Border.all(
             color: selected
                 ? AppColors.primaryColor
-                : (Theme.of(context).brightness == Brightness.light)
+                : (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
             width: 2),
@@ -41,7 +42,7 @@ class CircularIconButton extends StatelessWidget {
             icon: child,
             color: selected
                 ? Colors.white
-                : (Theme.of(context).brightness == Brightness.light)
+                : (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
           ),

@@ -4,15 +4,13 @@ import 'am_or_pm.dart';
 
 class AppConstants {
   static const int passwordLength = 8;
-  static const int doctorMinimumAge = 23;
-  static const int userMinimumAge = 7;
-  static const int wrongAgeErrorCode = 101;
-
-  static const double dayBulletPhoneSize = 33.0;
+  static int doctorMinimumBirthDateYear = DateTime.now().year - 23;
+  static int userMinimumBirthDateYear = DateTime.now().year - 10;
+  static const double dayBulletPhoneSize = 32.0;
   static const double dayBulletTabletSize = 45.0;
-  static const double dayFontPhoneSize = 12.0;
+  static const double dayFontPhoneSize = 9.0;
   static const double dayFontTabletSize = 14.0;
-  static const double phoneWidth = 370.0;
+  static const double phoneWidth = 420.0;
   static const double phoneheight = 750.0;
   static const Size phoneSize = Size(phoneWidth, phoneheight);
   static const String emailValidationRegExp =
@@ -88,13 +86,18 @@ class AppConstants {
       'سوف يتم إرسال رسالة إعادة التعيين إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد إعادة تعيين كلمة المرور';
 
   static const String whyMedicalId =
-      ' تطبيق طبي هو تطبيق تواصل إجتماعي تفاعلي بين الأطباء والمستخدمين العاديين لكي يمكنهم من الإستفسار عن المعلومات الطبية أو حتى مراسلة طبيب والإستفسار عن الحالة المرضية ولذلك يجب أن نتأكد أن كل الأطباء المتواجدين على التطبيق هم ممن يحق له مزاولة المهنة وتشخيص الحالات المرضية ووصف العلاج حتى نحافظ على صحة المستخدمين وسلامتهم';
+      ' تطبيق طبيب هو تطبيق تواصل إجتماعي تفاعلي بين الأطباء والمستخدمين العاديين لكي يمكنهم من الإستفسار عن المعلومات الطبية أو حتى مراسلة طبيب والإستفسار عن الحالة المرضية ولذلك يجب أن نتأكد أن كل الأطباء المتواجدين على التطبيق هم ممن يحق له مزاولة المهنة وتشخيص الحالات المرضية ووصف العلاج حتى نحافظ على صحة المستخدمين وسلامتهم';
   static const String whereIsRestGovernorates =
-      'نعمل دائما على تطوير تطبيق طبي وتغطية نطاق أعلى من المحافظات، ترقب الإصدارات القادمة من التطبيق ';
+      'نعمل دائما على تطوير تطبيق طبيب وتغطية نطاق أعلى من المحافظات، ترقب الإصدارات القادمة من التطبيق ';
   static const String regionInfo =
       'اختر المنطقة بشكل صحيح ومحدد للحصول على أفضل خدمة، إن لم تكن منطقتك موجودة في القائمة إختر أقرب منطقة لها';
   static const String whyPersonalImage =
       'يجب ان تكون الصورة الشخصية واضحة ورسمية قدر الإمكان';
+  static const String doctorBirthDateRequirements =
+      'يجب ألا يقل عمر الطبيب عن 23 عام';
+  static const String userBirthDateRequirements =
+      'يجب ألا يقل عمر المستخدم عن 10 أعوام';
+
   static const String passwordRequirements =
       'أحرف كبيرة \nأحرف صغيرة\nأرقام\nويجب أن لا تقل عن $passwordLength أحرف';
   static const String userNameRequirements =
@@ -144,7 +147,8 @@ class AppConstants {
 
 }
 /*
-  طبيب عام                                 General practitioner
+ 
+ طبيب عام                                 General practitioner
 طبيب الطوارىء                          Emergency Physician
 طبيب القلب                               Cardiologist
 طبيب القلب والأوعية الدموية        Cardiovascular

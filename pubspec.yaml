@@ -48,6 +48,7 @@ dependencies:
   uuid: ^3.0.7
   get_storage: ^2.1.1
   flutter_svg: ^1.1.6
+  cached_network_image: ^3.2.3
 
 
 
@@ -87,6 +88,20 @@ flutter:
     - assets/img/error.svg
     - assets/img/noposts.svg
     - assets/img/welcome.svg
+    - assets/img/following-doctors.png
+    - assets/img/questions.png
+    - assets/img/chats.png
+    - assets/img/medical-record.png
+    - assets/img/settings.png
+    - assets/img/medical-record-not-set.svg
+    - assets/img/pills.png
+    - assets/img/syrup.png
+    - assets/img/syringe.png
+    - assets/img/cream.png
+    - assets/img/suppository.png
+    - assets/img/nasal-spray.png
+    - assets/img/mouth-rinse.png
+
 
   #   - images/a_dot_ham.jpeg
 

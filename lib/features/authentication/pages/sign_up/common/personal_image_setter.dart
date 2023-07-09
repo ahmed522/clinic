@@ -34,7 +34,7 @@ class PersonalImageSetter extends StatelessWidget {
               'الصورة الشخصية',
               AppConstants.whyPersonalImage,
               {
-                'أعي ذلك': () => Navigator.of(context).pop(),
+                'أعي ذلك': () => Get.back(),
               },
             ),
             Text(

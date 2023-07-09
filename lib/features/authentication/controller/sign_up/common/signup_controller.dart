@@ -12,7 +12,7 @@ class SignupController extends GetxController {
   static SignupController get find => Get.find();
   bool loading = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+  bool ageIsValid = false;
   setPersonalImage(File image) {
     update();
   }
@@ -23,10 +23,6 @@ class SignupController extends GetxController {
   }
 
   updateGender(Gender gender) {
-    update();
-  }
-
-  updateAge(int age) {
     update();
   }
 
@@ -43,5 +39,13 @@ class SignupController extends GetxController {
     await AuthenticationController.find
         .createUserWithEmailAndPassword(userModel);
     updateLoading(false);
+  }
+
+  pickBirthDate(BuildContext context) async {
+    update();
+  }
+
+  bool validateBirthDate() {
+    return false;
   }
 }

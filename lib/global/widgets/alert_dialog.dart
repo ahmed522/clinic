@@ -1,3 +1,4 @@
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/colors/app_colors.dart';
@@ -21,8 +22,8 @@ class MyAlertDialog {
                   fontFamily: AppFonts.mainArabicFontFamily,
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
-                  color: (Theme.of(context).brightness == Brightness.light)
-                      ? Colors.grey[850]
+                  color: (CommonFunctions.isLightMode(context))
+                      ? AppColors.darkThemeBackgroundColor
                       : Colors.white,
                 ),
               ),

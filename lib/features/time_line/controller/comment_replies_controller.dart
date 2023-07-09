@@ -2,10 +2,16 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
+import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/error_page.dart';
+import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CommentRepliesController extends GetxController {
@@ -26,7 +32,7 @@ class CommentRepliesController extends GetxController {
     loading.value = true;
     try {
       QuerySnapshot snapshot = await _getCommentRepliesCollectionById(commentId)
-          .orderBy('comment_time', descending: true)
+          .orderBy('comment_time', descending: false)
           .get();
       if (snapshot.size == 0) {
         loading.value = false;
@@ -124,10 +130,74 @@ class CommentRepliesController extends GetxController {
     return reacts!;
   }
 
+  onReplySettingsButtonPressed(BuildContext context, String replyId) {
+    Get.bottomSheet(
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            onTap: () => MyAlertDialog.showAlertDialog(
+              context,
+              'حذف الرد',
+              'هل انت متأكد من حذف هذا الرد؟',
+              MyAlertDialog.getAlertDialogActions(
+                {
+                  'نعم': () async {
+                    try {
+                      loading.value = true;
+                      Get.back(closeOverlays: true);
+                      await _deleteReplyById(commentId, replyId)
+                          .whenComplete(() async {
+                        Get.back();
+                        await loadCommentReplies(commentId).then((value) =>
+                            MySnackBar.showGetSnackbar(
+                                'تم حذف الرد بنجاح', Colors.green));
+                      });
+                    } catch (e) {
+                      Get.back();
+                      CommonFunctions.errorHappened();
+                    }
+                  },
+                  'إلغاء': () => Get.back(),
+                },
+              ),
+            ),
+            title: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'حذف الرد',
+                style: TextStyle(
+                  color: (Theme.of(context).brightness == Brightness.dark)
+                      ? Colors.white
+                      : AppColors.darkThemeBackgroundColor,
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            trailing: const Icon(Icons.delete_rounded),
+          ),
+        ],
+      ),
+      backgroundColor: CommonFunctions.isLightMode(context)
+          ? Colors.white
+          : AppColors.darkThemeBottomNavBarColor,
+    );
+  }
+
+  Future<void> _deleteReplyById(String commentId, String replyId) async {
+    _userDataController.deleteReplyById(commentId, replyId);
+  }
+
   _getReplyDocumentRefById(
     String commentDocumentId,
     String replyDocumentId,
   ) =>
       _userDataController.getReplyDocumentById(
           commentDocumentId, replyDocumentId);
+
+  bool isCurrentUserReply(String uid) => (uid == _currentUserId);
+
+  get _currentUserId => _authenticationController.currentUserId;
 }

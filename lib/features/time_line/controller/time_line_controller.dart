@@ -17,21 +17,27 @@ class TimeLineController extends GetxController {
     super.onReady();
   }
 
-  final userDataController = UserDataController.find;
+  final _userDataController = UserDataController.find;
   RxList<UserPostWidget> content = <UserPostWidget>[].obs;
   Future<void> loadPosts() async {
     try {
-      QuerySnapshot snapshot = await userDataController
+      loadingPosts.value = true;
+      QuerySnapshot snapshot = await _userDataController
           .getAllUsersPostsCollection()
           .orderBy('time_stamp', descending: true)
           .get();
       if (snapshot.size == 0) {
         noPosts.value = true;
+        loadingPosts.value = false;
         return;
       }
+      noPosts.value = false;
       content.clear();
       _showPostsOnTimeLine(snapshot);
     } catch (e) {
+      loadingPosts.value = false;
+      noPosts.value = false;
+
       Get.off(() => const ErrorPage(
             imageAsset: 'assets/img/error.svg',
             message:
@@ -44,11 +50,11 @@ class TimeLineController extends GetxController {
     for (var postSnapShot in snapshot.docs) {
       final String uid = postSnapShot.get('uid');
       final String postDocumentId = postSnapShot.id;
-      final userModel = await userDataController.getUserById(uid);
+      final userModel = await _userDataController.getUserById(uid);
       UserPostModel post = UserPostModel.fromSnapShot(
           postSnapShot: postSnapShot as DocumentSnapshot<Map<String, dynamic>>,
           writer: userModel);
-      post.reacted = await userDataController.isUserReactedPost(
+      post.reacted = await _userDataController.isUserReactedPost(
           _authController.currentUser!.userId!, postDocumentId);
       loadingPosts.value = false;
       content.add(UserPostWidget(post: post));

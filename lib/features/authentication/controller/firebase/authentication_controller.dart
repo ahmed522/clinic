@@ -7,6 +7,7 @@ import 'package:clinic/features/authentication/controller/firebase/user_data_con
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/data/models/user_model.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:clinic/presentation/pages/main_page.dart';
@@ -21,7 +22,7 @@ class AuthenticationController extends GetxController {
   final userDataController = Get.put(UserDataController());
   final LocalStorageController localStorageController =
       Get.put(LocalStorageController());
-  ParentUserModel? currentUser;
+  ParentUserModel? _currentUser;
   RxBool isSigning = false.obs;
   RxBool loading = true.obs;
   @override
@@ -129,7 +130,7 @@ class AuthenticationController extends GetxController {
   }
 
   Future<void> logout() async {
-    currentUser = null;
+    _currentUser = null;
     await localStorageController.removeCurrentUserData();
     await _firebaseAuth.signOut();
   }
@@ -144,4 +145,14 @@ class AuthenticationController extends GetxController {
           ));
     }
   }
+
+  set setCurrentUser(ParentUserModel user) => _currentUser = user;
+  get currentUser => _currentUser;
+  get currentUserId => _currentUser!.userId;
+  get currentUserType => _currentUser!.userType;
+  get currentUserName => CommonFunctions.getFullName(
+      _currentUser!.firstName!, _currentUser!.lastName!);
+  get currentUserGender => _currentUser!.gender;
+  get currentUserBirthDate => _currentUser!.birthDate;
+  get currentUserPersonalImage => _currentUser!.personalImageURL;
 }

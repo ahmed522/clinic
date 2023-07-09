@@ -23,7 +23,7 @@ class UserPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put<PostController>(PostController());
+    final controller = Get.put<PostController>(PostController());
 
     Size size = MediaQuery.of(context).size;
     return Padding(
@@ -32,13 +32,13 @@ class UserPostWidget extends StatelessWidget {
           : const EdgeInsets.all(5.0),
       child: Container(
         decoration: BoxDecoration(
-          color: (Theme.of(context).brightness == Brightness.light)
+          color: (CommonFunctions.isLightMode(context))
               ? Colors.white
               : AppColors.darkThemeBackgroundColor,
           border: Border.all(
             color: post.isErgent
                 ? Colors.red
-                : (Theme.of(context).brightness == Brightness.light)
+                : (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
             width: post.isErgent ? 1.0 : 0.2,
@@ -52,13 +52,18 @@ class UserPostWidget extends StatelessWidget {
           children: [
             PostTopWidget(
               setSideInfo: post.isErgent,
+              isCurrentUserPost:
+                  controller.isCurrentUserPost(post.user.userId!),
               userName: CommonFunctions.getFullName(
                   post.user.firstName!, post.user.lastName!),
-              personalImageURL: post.user.personalImageURL!,
+              personalImageURL: post.user.personalImageURL,
               postSideInfoText: 'حالة طارئة',
               postSideInfoTextColor: Colors.red,
               postSideInfoImageAsset: 'assets/img/emergency.png',
               timestamp: post.timeStamp!,
+              paddingValue: 26,
+              onSettingsButtonPressed: () =>
+                  controller.onPostSettingsButtonPressed(context, post.postId!),
             ),
             const SizedBox(
               height: 10,
@@ -77,7 +82,7 @@ class UserPostWidget extends StatelessWidget {
                     fontFamily: AppFonts.mainArabicFontFamily,
                     fontWeight: FontWeight.w600,
                     fontSize: 20,
-                    color: (Theme.of(context).brightness == Brightness.light)
+                    color: (CommonFunctions.isLightMode(context))
                         ? AppColors.primaryColor
                         : Colors.white,
                   ),
@@ -117,10 +122,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w500,
                         fontSize: 15,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black87
-                                : Colors.white70,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? Colors.black87
+                            : Colors.white70,
                       ),
                     ),
                     const SizedBox(
@@ -132,10 +136,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.primaryColor
-                                : Colors.white,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? AppColors.primaryColor
+                            : Colors.white,
                       ),
                     ),
                   ],
@@ -148,10 +151,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w500,
                         fontSize: 15,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black87
-                                : Colors.white70,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? Colors.black87
+                            : Colors.white70,
                       ),
                     ),
                     const SizedBox(
@@ -163,10 +165,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.primaryColor
-                                : Colors.white,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? AppColors.primaryColor
+                            : Colors.white,
                       ),
                     ),
                   ],
@@ -179,10 +180,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w500,
                         fontSize: 15,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black87
-                                : Colors.white70,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? Colors.black87
+                            : Colors.white70,
                       ),
                     ),
                     const SizedBox(
@@ -194,10 +194,9 @@ class UserPostWidget extends StatelessWidget {
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? AppColors.primaryColor
-                                : Colors.white,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? AppColors.primaryColor
+                            : Colors.white,
                       ),
                     ),
                   ],

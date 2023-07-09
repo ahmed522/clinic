@@ -2,7 +2,6 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/controller/comment_replies_controller.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
-import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,8 +18,10 @@ class CreateReplyController extends GetxController {
   uploadReply(ReplyModel reply) async {
     String replyDocumentId = '${reply.commentId}-${const Uuid().v4()}';
     reply.replyId = replyDocumentId;
+    await _getCommentRepliesDocumentById(reply.commentId)
+        .set({'post_id': reply.postId});
     final DocumentReference commentrepliesDocument =
-        _getCommentRepliesDocumentById(reply.commentId, replyDocumentId);
+        _getReplyDocumentById(reply.commentId, replyDocumentId);
     await commentrepliesDocument.set(reply.toJson()).whenComplete(() async {
       await _loadReplies(reply.commentId);
       MySnackBar.showGetSnackbar('تم نشر ردك بنجاح', Colors.green);
@@ -34,15 +35,14 @@ class CreateReplyController extends GetxController {
     );
   }
 
-  getCurrentUserName() => CommonFunctions.getFullName(
-      _authenticationController.currentUser!.firstName!,
-      _authenticationController.currentUser!.lastName!);
-  getCurrentUserPic() =>
-      _authenticationController.currentUser!.personalImageURL;
-  getCurrentUserId() => _authenticationController.currentUser!.userId;
-  getCurrentUser() => _authenticationController.currentUser!;
-  _getCommentRepliesDocumentById(String commentId, String replyDocumentId) =>
+  getCurrentUserName() => _authenticationController.currentUserName;
+  getCurrentUserPic() => _authenticationController.currentUserPersonalImage;
+  getCurrentUserId() => _authenticationController.currentUserId;
+  getCurrentUser() => _authenticationController.currentUser;
+  _getReplyDocumentById(String commentId, String replyDocumentId) =>
       _userDataController.getReplyDocumentById(commentId, replyDocumentId);
+  DocumentReference _getCommentRepliesDocumentById(String commentId) =>
+      _userDataController.getCommentRepliesDocumentById(commentId);
   _loadReplies(String commentId) =>
       _commentRepliesController.loadCommentReplies(commentId);
 }

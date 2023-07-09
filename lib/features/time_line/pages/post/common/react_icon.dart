@@ -1,3 +1,4 @@
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 
 class ReactIcon extends StatelessWidget {
@@ -14,7 +15,7 @@ class ReactIcon extends StatelessWidget {
       Icons.favorite_rounded,
       color: reacted
           ? Colors.red
-          : (Theme.of(context).brightness == Brightness.light)
+          : (CommonFunctions.isLightMode(context))
               ? Colors.black87
               : Colors.white70,
     );

@@ -13,22 +13,26 @@ class PostSideInfo extends StatelessWidget {
   final String imageAsset;
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Image.asset(imageAsset, width: 30),
-        const SizedBox(
-          width: 3.0,
+        Image.asset(imageAsset, width: (size.width > 330) ? 30 : 24),
+        SizedBox(
+          width: (size.width > 330) ? 3.0 : 0.0,
         ),
-        Text(
-          text,
-          style: TextStyle(
-            fontFamily: AppFonts.mainArabicFontFamily,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-            color: textColor,
-          ),
-        ),
+        (size.width > 330)
+            ? Text(
+                text,
+                style: TextStyle(
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontWeight: FontWeight.w700,
+                  fontSize: (size.width > 330) ? 15 : 12,
+                  color: textColor,
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }

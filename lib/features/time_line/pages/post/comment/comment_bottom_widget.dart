@@ -3,6 +3,7 @@ import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_page.dart';
 import 'package:clinic/features/time_line/pages/post/comment/react_comment_button.dart';
 import 'package:clinic/features/time_line/pages/post/comment/react_reply_button.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,7 +31,7 @@ class CommentBottomWidget extends StatelessWidget {
                 onPressed: () => Get.to(CommentPage(comment: comment)),
                 icon: Icon(
                   Icons.reply,
-                  color: (Theme.of(context).brightness == Brightness.light)
+                  color: (CommonFunctions.isLightMode(context))
                       ? Colors.black87
                       : Colors.white70,
                 ),

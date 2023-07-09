@@ -1,4 +1,7 @@
+import 'package:clinic/features/time_line/controller/comment_replies_controller.dart';
+import 'package:clinic/features/time_line/controller/post_comments_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
+import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_bottom_widget.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_container.dart';
 import 'package:clinic/features/time_line/pages/post/common/post_content_widget.dart';
@@ -21,6 +24,8 @@ class CommentWidget extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
+    final controller =
+        isReply ? CommentRepliesController.find : PostCommentsController.find;
     return Padding(
       padding: EdgeInsets.only(
         top: isCommentPage ? 10.0 : 0.0,
@@ -36,18 +41,30 @@ class CommentWidget extends StatelessWidget {
             PostTopWidget(
               userName: CommonFunctions.getFullName(
                   comment.writer.firstName!, comment.writer.lastName!),
-              personalImageURL: comment.writer.personalImageURL!,
+              isCurrentUserPost: isReply
+                  ? (controller as CommentRepliesController)
+                      .isCurrentUserReply(comment.writer.userId!)
+                  : (controller as PostCommentsController)
+                      .isCurrentUserComment(comment.writer.userId!),
+              personalImageURL: comment.writer.personalImageURL,
               setSideInfo: (comment.writer.userType == UserType.doctor),
               postSideInfoText:
                   (comment.writer.gender == Gender.male) ? 'طبيب' : 'طبيبة',
-              postSideInfoTextColor:
-                  (Theme.of(context).brightness == Brightness.light)
-                      ? AppColors.primaryColor
-                      : Colors.white,
+              postSideInfoTextColor: (CommonFunctions.isLightMode(context))
+                  ? AppColors.primaryColor
+                  : Colors.white,
               postSideInfoImageAsset: (comment.writer.gender == Gender.male)
                   ? 'assets/img/male-doctor.png'
                   : 'assets/img/female-doctor.png',
               timestamp: comment.commentTime,
+              paddingValue: isCommentPage ? 26 : 60,
+              onSettingsButtonPressed: () => isReply
+                  ? (controller as CommentRepliesController)
+                      .onReplySettingsButtonPressed(
+                          context, (comment as ReplyModel).replyId)
+                  : (controller as PostCommentsController)
+                      .onCommentSettingsButtonPressed(
+                          context, comment.commentId),
             ),
             const SizedBox(
               height: 10,

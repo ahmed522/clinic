@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/clinic_page.dart';
+import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -67,12 +69,6 @@ class DoctorSignupController extends SignupController {
   @override
   updateGender(Gender gender) {
     doctorModel.gender = gender;
-    update();
-  }
-
-  @override
-  updateAge(int age) {
-    doctorModel.age = age;
     update();
   }
 
@@ -149,5 +145,28 @@ class DoctorSignupController extends SignupController {
   updateReexamineVezeetaValidation(bool valid, int index) {
     reexamineVezeetaValid[index] = valid;
     update();
+  }
+
+  @override
+  pickBirthDate(BuildContext context) async {
+    DateTime? birthDate = await showDatePicker(
+        context: context,
+        initialDate: doctorModel.birthDate.toDate(),
+        firstDate: DateTime(1940),
+        lastDate: DateTime.now());
+    if (birthDate != null) {
+      doctorModel.birthDate = Timestamp.fromDate(birthDate);
+    }
+    ageIsValid = validateBirthDate();
+    update();
+  }
+
+  @override
+  bool validateBirthDate() {
+    if (doctorModel.birthDate.toDate().year >
+        AppConstants.doctorMinimumBirthDateYear) {
+      return false;
+    }
+    return true;
   }
 }

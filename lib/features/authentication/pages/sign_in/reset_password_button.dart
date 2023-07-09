@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/sign_in/signin_control
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,14 +57,14 @@ class ResetPasswordButton extends StatelessWidget {
         );
       },
       style: TextButton.styleFrom(
-        foregroundColor: Theme.of(context).brightness == Brightness.light
+        foregroundColor: CommonFunctions.isLightMode(context)
             ? AppColors.primaryColor
             : Colors.white,
       ),
       child: Text(
         'هل نسيت كلمة المرور؟',
         style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.light
+          color: CommonFunctions.isLightMode(context)
               ? AppColors.primaryColor
               : Colors.white,
           fontFamily: AppFonts.mainArabicFontFamily,
