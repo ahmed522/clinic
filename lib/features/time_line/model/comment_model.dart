@@ -6,8 +6,10 @@ class CommentModel {
   late String postId;
   late String comment;
   late Timestamp commentTime;
+  int reacts = 0;
   ParentUserModel writer;
   bool reacted = false;
+  bool loading = false;
   CommentModel({
     required this.postId,
     required this.comment,
@@ -34,5 +36,6 @@ class CommentModel {
     postId = commentData['post_id'];
     comment = commentData['comment'];
     commentTime = commentData['comment_time'];
+    reacts = commentData['reacts'];
   }
 }

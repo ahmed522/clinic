@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MedicalRecordPage extends StatelessWidget {
-  MedicalRecordPage({super.key});
+  const MedicalRecordPage({super.key});
   static const String route = '/medicalRecordPageRoute';
-  final controller = Get.put(MedicalRecordPageController());
 
   @override
   Widget build(BuildContext context) {
+    Get.put(MedicalRecordPageController());
     return Scaffold(
       body: Stack(
         children: [
@@ -31,7 +31,14 @@ class MedicalRecordPage extends StatelessWidget {
                 );
               }
               if (controller.medicalRecordIsSet) {
-                return const UserMedicalRecordPage();
+                try {
+                  return const UserMedicalRecordPage();
+                } catch (e) {
+                  return const ErrorPage(
+                    imageAsset: 'assets/img/error.svg',
+                    message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
+                  );
+                }
               }
               return const MedicalRecordIsNotSet();
             },

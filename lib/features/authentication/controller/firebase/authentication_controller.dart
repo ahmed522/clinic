@@ -4,6 +4,8 @@ import 'package:clinic/features/authentication/controller/sign_in/signin_control
 import 'package:clinic/features/authentication/pages/common/email_verification_alert_dialog.dart';
 import 'package:clinic/features/start/pages/start_page.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/global/constants/gender.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/data/models/user_model.dart';
@@ -11,6 +13,7 @@ import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:clinic/presentation/pages/main_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -147,12 +150,14 @@ class AuthenticationController extends GetxController {
   }
 
   set setCurrentUser(ParentUserModel user) => _currentUser = user;
-  get currentUser => _currentUser;
-  get currentUserId => _currentUser!.userId;
-  get currentUserType => _currentUser!.userType;
-  get currentUserName => CommonFunctions.getFullName(
+  ParentUserModel get currentUser => _currentUser!;
+  String get currentUserId => _currentUser!.userId!;
+  UserType get currentUserType => _currentUser!.userType;
+  String get currentUserName => CommonFunctions.getFullName(
       _currentUser!.firstName!, _currentUser!.lastName!);
-  get currentUserGender => _currentUser!.gender;
-  get currentUserBirthDate => _currentUser!.birthDate;
-  get currentUserPersonalImage => _currentUser!.personalImageURL;
+  Gender get currentUserGender => _currentUser!.gender;
+  Timestamp get currentUserBirthDate => _currentUser!.birthDate;
+  String? get currentUserPersonalImage => _currentUser!.personalImageURL;
+  String get currentDoctorSpecialization =>
+      (_currentUser as DoctorModel).specialization;
 }

@@ -15,7 +15,6 @@ class ParentUserModel {
   String? personalImageURL;
   set setPassword(String password) => _password = password;
   String? get getPassword => _password;
-  List<String> likedPosts = [];
   String? userId;
   UserType userType = UserType.user;
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/local_storage_controller.dart';
+import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/medical_record/controller/medical_record_page_controller.dart';
 import 'package:clinic/features/medical_record/model/disease_model.dart';
 import 'package:clinic/features/medical_record/model/medical_record_model.dart';
@@ -8,7 +9,7 @@ import 'package:clinic/features/medical_record/model/medicine_model.dart';
 import 'package:clinic/features/medical_record/model/surgery_model.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/data/models/clinic_model.dart';
+import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/data/models/user_model.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class UserDataController extends GetxController {
   static UserDataController get find => Get.find();
@@ -45,16 +47,10 @@ class UserDataController extends GetxController {
   createDoctor(DoctorModel doctor) async {
     try {
       await _db.collection('doctors').doc(doctor.userId).set(doctor.toJson());
-      final doctorClinicsCollectionReference = _db
-          .collection('clinics')
-          .doc(doctor.userId)
-          .collection('doctor_clinics');
       String clincDocId;
       for (var clinic in doctor.clinics) {
-        clincDocId = '${doctor.userId}-${clinic.index.toString()}';
-        await doctorClinicsCollectionReference
-            .doc(clincDocId)
-            .set(clinic.toJson());
+        clincDocId = '${doctor.userId}-${const Uuid().v4()}';
+        addClinicById(doctor.userId!, clincDocId, clinic);
       }
       MySnackBar.showGetSnackbar(
         'تم التسجيل بنجاح',
@@ -98,7 +94,7 @@ class UserDataController extends GetxController {
     return CommonFunctions.getFullName(firstName!, lastName!);
   }
 
-  Future<String> getUserPersonalImageURLById(
+  Future<String?> getUserPersonalImageURLById(
       String uid, UserType userType) async {
     String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
     String? personalImageURL;
@@ -107,7 +103,7 @@ class UserDataController extends GetxController {
         personalImageURL = value.data()!['personal_image_URL'];
       }),
     );
-    return personalImageURL!;
+    return personalImageURL;
   }
 
   Future<Gender> getUserGenderById(String uid, UserType userType) async {
@@ -121,25 +117,223 @@ class UserDataController extends GetxController {
     );
     return gender!;
   }
+
+  CollectionReference get allUsersFollowingCollection =>
+      _db.collection('all_users_following');
+  CollectionReference getUserFollowingCollectionById(String userId) => _db
+      .collection('all_users_following')
+      .doc(userId)
+      .collection('user_following');
+
   //===============================================
 
   //================= doctor data =================
-  Future<List<ClinicModel>> getDoctorClinicsById(String doctorId) async {
-    final doctorClincsCollectionRef =
-        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
-    List<ClinicModel> clinics = [];
-    await doctorClincsCollectionRef.get().then((collectionSnapShot) {
-      collectionSnapShot.docs.map((singleClinicSnapshot) {
-        clinics.add(ClinicModel.fromSnapShot(singleClinicSnapshot));
-      });
-    });
-    return clinics;
-  }
 
   Future<DoctorModel> getDoctorById(String doctorId) async {
     final doctorDocumentSnapshot =
         await _db.collection('doctors').doc(doctorId).get();
-    return DoctorModel.fromSnapShot(doctorDocumentSnapshot);
+    return DoctorModel.fromSnapShot(
+      doctorDocumentSnapshot,
+    );
+  }
+
+  Future<String> getDoctorSpecializationById(String doctorId) async {
+    late final String specialization;
+    await _db
+        .collection('doctors')
+        .doc(doctorId)
+        .get()
+        .then((value) => specialization = value['specialization']);
+    return specialization;
+  }
+
+  Future<ClinicModel?> getDoctorSingleClinicById(
+      String doctorId, String clinicId) async {
+    ClinicModel? clinic;
+    final doctorClincsCollectionRef =
+        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+    await doctorClincsCollectionRef
+        .where(FieldPath.documentId, isEqualTo: clinicId)
+        .limit(1)
+        .get()
+        .then((collectionSnapShot) {
+      clinic = ClinicModel.fromSnapShot(collectionSnapShot.docs.first);
+    });
+    return clinic;
+  }
+
+  Future<List<String>> getDoctorClinicsIdsById(String doctorId) async {
+    final doctorClincsCollectionRef =
+        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+    List<String> clinics = [];
+    await doctorClincsCollectionRef
+        .orderBy('created_time')
+        .get()
+        .then((collectionSnapShot) {
+      for (var singleClinicSnapshot in collectionSnapShot.docs) {
+        clinics.add(singleClinicSnapshot.id);
+      }
+    });
+    return clinics;
+  }
+
+  Future<List<ClinicModel>> getDoctorClinicsById(String doctorId) async {
+    final doctorClincsCollectionRef =
+        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+    List<ClinicModel> clinics = [];
+    await doctorClincsCollectionRef
+        .orderBy('created_time')
+        .get()
+        .then((collectionSnapShot) {
+      for (var singleClinicSnapshot in collectionSnapShot.docs) {
+        clinics.add(ClinicModel.fromSnapShot(singleClinicSnapshot));
+      }
+    });
+    return clinics;
+  }
+
+  Future<void> addClinicById(
+      String doctorId, String clinicId, ClinicModel newClinic) async {
+    Map<String, dynamic> newData = {};
+    newClinic.clinicId = clinicId;
+    newData = newClinic.toJson();
+    newData['created_time'] = Timestamp.now();
+    try {
+      final doctorClinicsCollectionReference =
+          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+      await doctorClinicsCollectionReference.doc(clinicId).set(newData);
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future<void> updateClinicById(
+      String doctorId, String clinicId, ClinicModel newClinic) async {
+    Map<String, dynamic> newData = {};
+    newData = newClinic.toJson();
+    try {
+      final doctorClinicsCollectionReference =
+          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+      await doctorClinicsCollectionReference.doc(clinicId).update(newData);
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future<void> deleteClinicById(String doctorId, String clinicId) async {
+    try {
+      final doctorClinicsCollectionReference =
+          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
+      await doctorClinicsCollectionReference.doc(clinicId).delete();
+      await _deleteClinicFromPostsById(doctorId, clinicId);
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future<void> _deleteClinicFromPostsById(
+      String doctorId, String clinicId) async {
+    try {
+      await getAllUsersPostsCollection()
+          .where('uid', isEqualTo: doctorId)
+          .get()
+          .then((snapshot) async {
+        for (var postSnapshot in snapshot.docs) {
+          if (postSnapshot['post_type'] == 'discount' ||
+              postSnapshot['post_type'] == 'newClinic') {
+            if (postSnapshot['selected_clinics'] != null &&
+                postSnapshot['selected_clinics'].contains(clinicId)) {
+              List<String> newSelectedClinics = _getNewSelectedClinics(
+                  postSnapshot['selected_clinics'], clinicId);
+              await getAllUsersPostsCollection()
+                  .doc(postSnapshot.id)
+                  .update({'selected_clinics': newSelectedClinics});
+            }
+          }
+        }
+      });
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  /// ----------------------------------------------------------------------
+  ///                           Doctor Profile                             -
+  /// ----------------------------------------------------------------------
+
+  Future<int> getDoctorNumberOfPosts(String doctorId) async =>
+      await getAllUsersPostsCollection()
+          .where('uid', isEqualTo: doctorId)
+          .get()
+          .then((snapshot) {
+        return snapshot.size;
+      });
+  Future<int> getDoctorNumberOfFollowers(String doctorId) async =>
+      await getDoctorFollowersCollectionById(doctorId).get().then((snapshot) {
+        return snapshot.size;
+      });
+  Future<int> getNumberOfFollowing(String userId) async =>
+      await getUserFollowingCollectionById(userId).get().then((snapshot) {
+        return snapshot.size;
+      });
+
+  Future followDoctor(FollowerModel follower, FollowerModel following) async {
+    try {
+      Map<String, dynamic> followerData = follower.toJson();
+      Map<String, dynamic> followingData = following.toJson();
+      followerData['follow_time'] = Timestamp.now();
+      followingData['follow_time'] = Timestamp.now();
+      await getDoctorFollowersCollectionById(following.userId)
+          .doc(follower.userId)
+          .set(followerData);
+      await getUserFollowingCollectionById(follower.userId)
+          .doc(following.userId)
+          .set(followingData);
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future unFollowDoctor(String doctorId, String userId) async {
+    try {
+      await getDoctorFollowersCollectionById(doctorId).doc(userId).delete();
+      await getUserFollowingCollectionById(userId).doc(doctorId).delete();
+    } on Exception {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future<bool> isUserFollowingDoctor(String doctorId, String userId) async {
+    bool followed = false;
+    await getDoctorFollowersCollectionById(doctorId)
+        .where(FieldPath.documentId, isEqualTo: userId)
+        .limit(1)
+        .get()
+        .then((snapshot) {
+      if (snapshot.size == 0) {
+        followed = false;
+      } else {
+        followed = true;
+      }
+    });
+    return followed;
+  }
+
+  CollectionReference get allDoctorsFollowersCollection =>
+      _db.collection('all_doctors_followers');
+  CollectionReference getDoctorFollowersCollectionById(String userId) => _db
+      .collection('all_doctors_followers')
+      .doc(userId)
+      .collection('doctor_followers');
+
+  List<String> _getNewSelectedClinics(
+      List<dynamic> selectedClinics, String deletedClinicId) {
+    List<String> newSelectedClinics = [];
+    for (var clinicId in selectedClinics) {
+      newSelectedClinics.add(clinicId);
+    }
+    newSelectedClinics.remove(deletedClinicId);
+    return newSelectedClinics;
   }
   //===============================================
 
@@ -280,6 +474,24 @@ class UserDataController extends GetxController {
     }
   }
 
+  Future<bool> updateDoctorPersonalImage(
+      String doctorId, DoctorModel doctor) async {
+    final localStorageController = LocalStorageController.find;
+    try {
+      await _deleteImageFromCloudStorageByURL(doctor.personalImageURL!);
+      String? newImageURL = await uploadDoctorPersonalImage(doctor);
+      await _db
+          .collection('doctors')
+          .doc(doctorId)
+          .update({'personal_image_URL': newImageURL});
+      await localStorageController.updatePersonalImage(newImageURL);
+      await localStorageController.getCurrentUserData();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   //===========================================
 
   /// ----------------------------------------------------------------------
@@ -308,10 +520,12 @@ class UserDataController extends GetxController {
   CollectionReference getAllUsersPostsCollection() =>
       _db.collection('all_users_posts');
   // ===================== post deletion =====================
-  Future deletePostById(String postId) async {
+  Future deletePostById(String postId, bool isDoctorPost) async {
     await _deletePostFromAllUsersPostsCollectionById(postId);
-    await _deletePostCommentsFromCommentsCollectionById(postId);
-    await _deletePostRepliesFromRepliesCollectionById(postId);
+    if (!isDoctorPost) {
+      await _deletePostCommentsFromCommentsCollectionById(postId);
+      await _deletePostRepliesFromRepliesCollectionById(postId);
+    }
     await _deletePostReactsFromReactsCollectionById(postId);
   }
 
@@ -551,4 +765,5 @@ class UserDataController extends GetxController {
       _db.collection('medical_records').doc(userId).collection('surgeries');
 
   //==================================================
+
 }

@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_up/doctor/doctor_signup_controller.dart';
-import 'package:clinic/global/data/models/clinic_model.dart';
+import 'package:clinic/global/constants/clinic_page_mode.dart';
+import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/add_clinic_button.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_parent.dart';
 import 'package:clinic/features/authentication/pages/sign_up/doctor/remove_clinic_button.dart';
@@ -14,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/clinic_page.dart';
+import 'package:clinic/features/clinic/pages/creation/create_clinic_page.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 
 class AcadimicInfoWidget extends StatelessWidget {
@@ -251,15 +252,12 @@ class AcadimicInfoWidget extends StatelessWidget {
                               .length));
                   int index =
                       (controller as DoctorSignupController).clinics.length;
-                  (controller as DoctorSignupController)
-                      .examineVezeetaValid
-                      .add(true);
-                  (controller as DoctorSignupController)
-                      .reexamineVezeetaValid
-                      .add(true);
-                  (controller as DoctorSignupController).addClinic(ClinicPage(
-                    index: index,
-                  ));
+                  (controller as DoctorSignupController).addClinic(
+                    CreateClinicPage(
+                      index: index,
+                      mode: ClinicPageMode.signupMode,
+                    ),
+                  );
                 },
               ),
               const SizedBox(

@@ -1,5 +1,4 @@
 import 'package:clinic/features/medical_record/controller/add_medical_record_controller.dart';
-import 'package:clinic/features/medical_record/pages/medical_record_page.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
@@ -19,13 +18,12 @@ class CreateorEditMedicalRecordButton extends StatelessWidget {
       return ElevatedButton(
         onPressed: (controller.loading.isTrue)
             ? null
-            : () {
+            : () async {
                 controller.updateMedicalRecordInfo();
-                controller.createMedicalRecord();
+                await controller.createMedicalRecord(editPage);
                 Get.until(
                   ModalRoute.withName(MainPage.route),
                 );
-                Get.to(() => MedicalRecordPage());
               },
         style: ElevatedButton.styleFrom(
           elevation: 7.0,

@@ -1,11 +1,11 @@
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
-import 'package:clinic/features/time_line/pages/post/comment/comment_page.dart';
-import 'package:clinic/features/time_line/pages/post/comment/react_comment_button.dart';
-import 'package:clinic/features/time_line/pages/post/comment/react_reply_button.dart';
-import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/features/time_line/pages/post/comment/react_comment_widget.dart';
+import 'package:clinic/features/time_line/pages/post/comment/react_reply_widget.dart';
+import 'package:clinic/features/time_line/pages/post/common/doctor_specialization_info_widget.dart';
+import 'package:clinic/global/constants/user_type.dart';
+import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class CommentBottomWidget extends StatelessWidget {
   const CommentBottomWidget({
@@ -21,25 +21,16 @@ class CommentBottomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        isCommentPage || isReply
-            ? const SizedBox()
-            : IconButton(
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                onPressed: () => Get.to(CommentPage(comment: comment)),
-                icon: Icon(
-                  Icons.reply,
-                  color: (CommonFunctions.isLightMode(context))
-                      ? Colors.black87
-                      : Colors.white70,
-                ),
-              ),
-        const SizedBox(width: 2),
+        (comment.writer.userType == UserType.doctor)
+            ? DoctorSpecializationInfoWidget(
+                specialization:
+                    ((comment.writer) as DoctorModel).specialization)
+            : const SizedBox(),
         isReply
-            ? ReactReplyButton(reply: comment as ReplyModel)
-            : ReactCommentButton(comment: comment),
+            ? ReactReplyWidget(reply: comment as ReplyModel)
+            : ReactCommentWidget(comment: comment),
       ],
     );
   }

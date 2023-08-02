@@ -1,7 +1,8 @@
+import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/time_line/controller/post_controller.dart';
+import 'package:clinic/features/time_line/model/patient_gender.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/disease_widget.dart';
-import 'package:clinic/global/constants/gender.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,10 +11,11 @@ class CreateUserPostController extends GetxController {
   final postController = Get.lazyPut(() => PostController());
   final UserPostModel postModel = UserPostModel();
   List<DiseaseWidget> diseases = [];
-
+  final AuthenticationController _authenticationController =
+      AuthenticationController.find;
   bool maleSelected = true;
   bool femaleSelected = false;
-
+  bool babySelected = false;
   final TextEditingController tempController = TextEditingController();
 
   String? tempDiseaseName;
@@ -69,14 +71,25 @@ class CreateUserPostController extends GetxController {
   onMalePressed() {
     maleSelected = true;
     femaleSelected = false;
-    postModel.patientGender = Gender.male;
+    babySelected = false;
+
+    postModel.patientGender = PatientGender.male;
     update();
   }
 
   onFemalePressed() {
     femaleSelected = true;
     maleSelected = false;
-    postModel.patientGender = Gender.female;
+    babySelected = false;
+    postModel.patientGender = PatientGender.female;
+    update();
+  }
+
+  onBabyPressed() {
+    babySelected = true;
+    maleSelected = false;
+    femaleSelected = false;
+    postModel.patientGender = PatientGender.baby;
     update();
   }
 
@@ -94,4 +107,9 @@ class CreateUserPostController extends GetxController {
     tempController.text = diseaseName;
     update();
   }
+
+  String get currentUserId => _authenticationController.currentUserId;
+  String get currentUserName => _authenticationController.currentUserName;
+  String? get currentUserPersonalImage =>
+      _authenticationController.currentUserPersonalImage;
 }

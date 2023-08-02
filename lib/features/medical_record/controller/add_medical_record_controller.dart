@@ -308,7 +308,7 @@ class AddMedicalRecordController extends GetxController {
 
   /*--------- creation ---------*/
 
-  createMedicalRecord() async {
+  createMedicalRecord(bool isEditPage) async {
     loading.value = true;
     try {
       await _userDataController.medicalRecordsCollection
@@ -319,7 +319,11 @@ class AddMedicalRecordController extends GetxController {
       await _uploadList('medicines');
       await _uploadInfo();
       loading.value = false;
-      MySnackBar.showGetSnackbar('تم إنشاء السجل المرضي بنجاح', Colors.green);
+      MySnackBar.showGetSnackbar(
+          isEditPage
+              ? 'تم تعديل السجل المرضي بنجاح'
+              : 'تم إنشاء السجل المرضي بنجاح',
+          Colors.green);
     } catch (e) {
       loading.value = false;
       CommonFunctions.errorHappened();

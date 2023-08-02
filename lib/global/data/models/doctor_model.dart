@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/data/models/clinic_model.dart';
+import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
@@ -10,9 +10,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DoctorModel extends ParentUserModel {
   String degree = AppConstants.initialDoctorDegree;
   String specialization = AppConstants.initialDoctorSpecialization;
+
   File? medicalIdImage;
   String? medicalIdImageURL;
   List<ClinicModel> clinics = [];
+  int numberOfFollowers = 0;
+  int numberOfFollowing = 0;
+  int numberOfPosts = 0;
   DoctorModel() : super();
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -26,7 +30,7 @@ class DoctorModel extends ParentUserModel {
     data['personal_image_URL'] = personalImageURL;
     data['medical_id_image_URL'] = medicalIdImageURL;
     data['uid'] = userId;
-    data['user_type'] = userType.name;
+    data['user_type'] = 'doctor';
     return data;
   }
 
@@ -34,7 +38,8 @@ class DoctorModel extends ParentUserModel {
       DocumentSnapshot<Map<String, dynamic>> doctorSnapshot,
       {List<ClinicModel>? clinics}) {
     final data = doctorSnapshot.data();
-    return DoctorModel.fromJson(data!);
+
+    return DoctorModel.fromJson(data!, clinics: clinics);
   }
 
   DoctorModel.fromJson(Map<String, dynamic> data,

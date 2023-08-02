@@ -1,8 +1,9 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
-import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -19,26 +20,46 @@ class CommentRepliesController extends GetxController {
   final _authenticationController = AuthenticationController.find;
   final _userDataController = UserDataController.find;
   RxBool loading = false.obs;
-  RxList<CommentWidget> replies = <CommentWidget>[].obs;
+  RxBool noMoreReplies = false.obs;
+  RxBool moreRepliesloading = false.obs;
+  RxList<ReplyModel> replies = <ReplyModel>[].obs;
+  DocumentSnapshot? _lastShowenComment;
   late String commentId;
   CommentRepliesController(this.commentId);
+
   @override
   void onReady() {
-    loadCommentReplies(commentId);
+    loadCommentReplies(2, true);
     super.onReady();
   }
 
-  Future loadCommentReplies(String commentId) async {
-    loading.value = true;
+  Future loadCommentReplies(int limit, bool isRefresh) async {
+    if (isRefresh) {
+      loading.value = true;
+    }
+    moreRepliesloading.value = true;
+
     try {
-      QuerySnapshot snapshot = await _getCommentRepliesCollectionById(commentId)
-          .orderBy('comment_time', descending: false)
-          .get();
-      if (snapshot.size == 0) {
-        loading.value = false;
-        return;
+      QuerySnapshot snapshot;
+      if (isRefresh) {
+        snapshot = await _getCommentRepliesCollectionById(commentId)
+            .orderBy('comment_time', descending: false)
+            .limit(limit)
+            .get();
+      } else {
+        snapshot = await _getCommentRepliesCollectionById(commentId)
+            .orderBy('comment_time', descending: false)
+            .startAfterDocument(_lastShowenComment!)
+            .limit(limit)
+            .get();
       }
-      _showCommentReplies(snapshot);
+      if (snapshot.size < limit) {
+        noMoreReplies.value = true;
+      } else {
+        noMoreReplies.value = false;
+      }
+
+      _showCommentReplies(snapshot, isRefresh);
     } catch (e) {
       loading.value = false;
       Get.off(() => const ErrorPage(
@@ -50,15 +71,27 @@ class CommentRepliesController extends GetxController {
   }
 
   reactReply(String commentDocumentId, String replyDocumentId) async {
-    _getReplyReactsCollectionById(commentDocumentId, replyDocumentId)
-        .doc(_authenticationController.currentUser!.userId!)
-        .set({'reacted': true});
+    FollowerModel reacter = FollowerModel(
+      userType: currentUserType,
+      userId: currentUserId,
+      userName: currentUserName,
+      doctorGender:
+          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      doctorSpecialization: (currentUserType == UserType.doctor)
+          ? currentDoctorSpecialization
+          : null,
+    );
+    Map<String, dynamic> data = reacter.toJson();
+    data['react_time'] = Timestamp.now();
+    await _getReplyReactsCollectionById(commentDocumentId, replyDocumentId)
+        .doc(currentUserId)
+        .set(data);
     await _updateReplyReacts(commentDocumentId, replyDocumentId, true);
   }
 
   unReactReply(String commentDocumentId, String replyDocumentId) async {
     _getReplyReactsCollectionById(commentDocumentId, replyDocumentId)
-        .doc(_authenticationController.currentUser!.userId!)
+        .doc(currentUserId)
         .delete();
     await _updateReplyReacts(commentDocumentId, replyDocumentId, false);
   }
@@ -66,8 +99,18 @@ class CommentRepliesController extends GetxController {
   CollectionReference _getCommentRepliesCollectionById(String commentId) =>
       _userDataController.getCommentRepliesCollectionById(commentId);
 
-  Future<void> _showCommentReplies(QuerySnapshot<Object?> snapshot) async {
-    replies.clear();
+  Future<void> _showCommentReplies(
+      QuerySnapshot<Object?> snapshot, bool isRefresh) async {
+    if (isRefresh) {
+      replies.clear();
+    }
+
+    if (snapshot.size == 0) {
+      loading.value = false;
+      moreRepliesloading.value = false;
+      return;
+    }
+    _lastShowenComment = snapshot.docs.last;
     for (var replySnapshot in snapshot.docs) {
       final String uid = replySnapshot.get('uid');
       final UserType userType = replySnapshot.get('writer_type') == 'doctor'
@@ -85,18 +128,14 @@ class CommentRepliesController extends GetxController {
         writer: writer,
       );
       reply.reacted = await _userDataController.isUserReactedReply(
-        _authenticationController.currentUser!.userId!,
+        currentUserId,
         reply.commentId,
         reply.replyId,
       );
+      replies.add(reply);
       loading.value = false;
-      replies.add(
-        CommentWidget(
-          comment: reply,
-          isReply: true,
-        ),
-      );
     }
+    moreRepliesloading.value = false;
   }
 
   CollectionReference _getReplyReactsCollectionById(
@@ -149,7 +188,7 @@ class CommentRepliesController extends GetxController {
                       await _deleteReplyById(commentId, replyId)
                           .whenComplete(() async {
                         Get.back();
-                        await loadCommentReplies(commentId).then((value) =>
+                        await loadCommentReplies(3, true).then((value) =>
                             MySnackBar.showGetSnackbar(
                                 'تم حذف الرد بنجاح', Colors.green));
                       });
@@ -190,14 +229,21 @@ class CommentRepliesController extends GetxController {
     _userDataController.deleteReplyById(commentId, replyId);
   }
 
-  _getReplyDocumentRefById(
+  DocumentReference _getReplyDocumentRefById(
     String commentDocumentId,
     String replyDocumentId,
   ) =>
       _userDataController.getReplyDocumentById(
           commentDocumentId, replyDocumentId);
 
-  bool isCurrentUserReply(String uid) => (uid == _currentUserId);
+  bool isCurrentUserReply(String uid) => (uid == currentUserId);
 
-  get _currentUserId => _authenticationController.currentUserId;
+  UserType get currentUserType => _authenticationController.currentUserType;
+  String get currentUserId => _authenticationController.currentUserId;
+  String get currentUserName => _authenticationController.currentUserName;
+  String? get currentUserPersonalImage =>
+      _authenticationController.currentUserPersonalImage;
+  Gender get currentUserGender => _authenticationController.currentUserGender;
+  String get currentDoctorSpecialization =>
+      _authenticationController.currentDoctorSpecialization;
 }

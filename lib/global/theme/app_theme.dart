@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData _getThemeData(Brightness brightness) => ThemeData(
+        // ignore: deprecated_member_use
+        accentColor: AppColors.primaryColor,
         textTheme: AppTextTheme.getAppTextTheme(brightness),
         appBarTheme: AppBarTheme(
             backgroundColor: brightness == Brightness.light

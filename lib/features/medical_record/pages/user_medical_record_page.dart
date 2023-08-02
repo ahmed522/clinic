@@ -269,32 +269,35 @@ class UserMedicalRecordPage extends StatelessWidget {
                       ),
                     ),
                   )
-                : Container(
-                    decoration: BoxDecoration(
-                      color: (CommonFunctions.isLightMode(context))
-                          ? Colors.white
-                          : AppColors.darkThemeBackgroundColor,
-                      border: Border.all(
+                : Card(
+                    elevation: 5,
+                    shadowColor: AppColors.primaryColorLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      side: BorderSide(
                         color: (CommonFunctions.isLightMode(context))
                             ? AppColors.primaryColor
                             : Colors.white,
-                        width: 0.5,
+                        width: .2,
                       ),
-                      borderRadius: BorderRadius.circular(15),
                     ),
-                    padding: const EdgeInsets.all(10.0),
-                    width: size.width,
-                    child: Text(
-                      controller.medicalRecord!.moreInfo!,
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black87
-                                : Colors.white,
+                    color: (CommonFunctions.isLightMode(context))
+                        ? Colors.white
+                        : AppColors.darkThemeBottomNavBarColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        controller.medicalRecord!.moreInfo!,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          fontFamily: AppFonts.mainArabicFontFamily,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 15,
+                          color:
+                              (Theme.of(context).brightness == Brightness.light)
+                                  ? Colors.black87
+                                  : Colors.white,
+                        ),
                       ),
                     ),
                   ),

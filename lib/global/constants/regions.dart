@@ -1,5 +1,5 @@
 class Regions {
-  static const List<String> governorates = ['القاهرة', 'الجيزة'];
+  static const List<String> governorates = ['القاهرة'];
   static const Map<String, List<String>> regions = {
     'التبين': [
       'حلوان',

@@ -2,7 +2,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/controller/post_comments_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
-import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,17 +35,15 @@ class CreateCommentController extends GetxController {
     );
   }
 
-  getCurrentUserName() => CommonFunctions.getFullName(
-      _authenticationController.currentUser!.firstName!,
-      _authenticationController.currentUser!.lastName!);
-  getCurrentUserPic() =>
-      _authenticationController.currentUser!.personalImageURL;
-  getCurrentUserId() => _authenticationController.currentUser!.userId;
-  getCurrentUser() => _authenticationController.currentUser!;
-
   _getCommentDocumentById(String postId, String commentDocumentId) =>
       _userDataController.getCommentDocumentById(postId, commentDocumentId);
 
   _loadComments(String postId) =>
-      _postCommentsController.loadPostComments(postId);
+      _postCommentsController.loadPostComments(3, true);
+
+  String get currentUserId => _authenticationController.currentUserId;
+  String get currentUserName => _authenticationController.currentUserName;
+  String? get currentUserPersonalImage =>
+      _authenticationController.currentUserPersonalImage;
+  ParentUserModel get currentUser => _authenticationController.currentUser;
 }

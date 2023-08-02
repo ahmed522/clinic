@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,7 +52,7 @@ class UserNameAndPicWidget extends StatelessWidget {
         const SizedBox(width: 15),
         (userPic != null)
             ? CircleAvatar(
-                backgroundImage: NetworkImage(userPic!),
+                backgroundImage: CachedNetworkImageProvider(userPic!),
                 radius: 25,
               )
             : const CircleAvatar(

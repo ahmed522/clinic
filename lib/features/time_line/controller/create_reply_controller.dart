@@ -44,5 +44,5 @@ class CreateReplyController extends GetxController {
   DocumentReference _getCommentRepliesDocumentById(String commentId) =>
       _userDataController.getCommentRepliesDocumentById(commentId);
   _loadReplies(String commentId) =>
-      _commentRepliesController.loadCommentReplies(commentId);
+      _commentRepliesController.loadCommentReplies(3, true);
 }

@@ -18,7 +18,8 @@ class PostContentWidget extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: Text(
           postContent,
-          textAlign: TextAlign.end,
+          textAlign: TextAlign.right,
+          textDirection: TextDirection.rtl,
           style: TextStyle(
             fontFamily: AppFonts.mainArabicFontFamily,
             fontWeight: FontWeight.w400,

@@ -1,3 +1,4 @@
+import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/medical_record/model/medicine.dart';
 import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
@@ -41,6 +42,33 @@ class CommonFunctions {
 
     return Age(years: years, months: months, days: days);
   }
+
+  static String getNumberOfReactsText(int reacts) {
+    double newReacts;
+    if (reacts < 1000) {
+      return reacts.toString();
+    } else if (reacts >= 1000 && reacts < 1000000) {
+      newReacts = (reacts / 1000);
+      return newReacts
+          .toStringAsFixed(((newReacts * 10).floor() % 10 == 0) ? 0 : 1);
+    } else {
+      newReacts = (reacts / 1000000);
+      return newReacts
+          .toStringAsFixed(((newReacts * 10).floor() % 10 == 0) ? 0 : 1);
+    }
+  }
+
+  static String getMultiplierText(int reacts) {
+    if (reacts >= 1000 && reacts < 1000000) {
+      return 'ألف ';
+    } else {
+      return 'مليون ';
+    }
+  }
+
+  static bool isCurrentUser(String uid) => uid == currentUserId;
+  static String get currentUserId =>
+      AuthenticationController.find.currentUserId;
 }
 
 TimeOfDay setClinicOpenTime(

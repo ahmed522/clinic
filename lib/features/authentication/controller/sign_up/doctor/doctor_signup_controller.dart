@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/sign_up/common/signup_controller.dart';
-import 'package:clinic/features/authentication/pages/sign_up/doctor/clinic/clinic_page.dart';
+import 'package:clinic/features/clinic/pages/creation/create_clinic_page.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
+import 'package:clinic/global/data/services/location_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,15 +17,13 @@ class DoctorSignupController extends SignupController {
   int currentStep = 0;
   bool doctorValidation = false;
   RxBool locationValidation = false.obs;
-  double? latitude, longitude;
   bool clinicLocationLoading = false;
   List<StepState> states = [
     StepState.editing,
     StepState.indexed,
   ];
-  final List<ClinicPage> clinics = [];
-  List<bool> examineVezeetaValid = [];
-  List<bool> reexamineVezeetaValid = [];
+  final List<CreateClinicPage> clinics = [];
+
   validatePersonalImage(bool valid) {
     if (valid) {
       personalImageValidation = '';
@@ -72,7 +71,7 @@ class DoctorSignupController extends SignupController {
     update();
   }
 
-  addClinic(ClinicPage clinic) {
+  addClinic(CreateClinicPage clinic) {
     clinics.add(clinic);
     update();
   }
@@ -118,14 +117,16 @@ class DoctorSignupController extends SignupController {
     }
   }
 
-  updateClinicLocationFromCurrentLocation(int index) {
+  getCurrentLocation(int index) async {
+    updateClinicLocationLoading(true);
+    Map<String, double?> location = await LocationServices.getCurrentLocation();
+    double? latitude =
+        doctorModel.clinics[index].locationLatitude = location['lat'];
+    double? longitude =
+        doctorModel.clinics[index].locationLongitude = location['long'];
     if (latitude == null || longitude == null) {
-      doctorModel.clinics[index].locationLatitude = null;
-      doctorModel.clinics[index].locationLongitude = null;
       locationValidation.value = false;
     } else {
-      doctorModel.clinics[index].locationLatitude = latitude;
-      doctorModel.clinics[index].locationLongitude = longitude;
       locationValidation.value = true;
     }
     clinicLocationLoading = false;
@@ -134,16 +135,6 @@ class DoctorSignupController extends SignupController {
 
   updateClinicLocationLoading(bool value) {
     clinicLocationLoading = value;
-    update();
-  }
-
-  updateExamineVezeetaValidation(bool valid, int index) {
-    examineVezeetaValid[index] = valid;
-    update();
-  }
-
-  updateReexamineVezeetaValidation(bool valid, int index) {
-    reexamineVezeetaValid[index] = valid;
     update();
   }
 

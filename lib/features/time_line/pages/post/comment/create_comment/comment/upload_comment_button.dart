@@ -22,7 +22,7 @@ class UploadCommentButton extends StatelessWidget {
           FocusScope.of(context).unfocus();
           CommentModel comment = CommentModel(
             postId: postId,
-            writer: controller.getCurrentUser(),
+            writer: controller.currentUser,
             comment: controller.textController.text.trim(),
             commentTime: Timestamp.now(),
           );

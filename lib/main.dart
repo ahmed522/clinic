@@ -6,12 +6,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'global/theme/app_theme.dart';
+import 'package:flutter/services.dart';
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
       .then((value) => Get.put(AuthenticationController()));
-  runApp(const MainWidget());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(const MainWidget());
+  });
 }
 
 class MainWidget extends StatelessWidget {
@@ -26,7 +30,7 @@ class MainWidget extends StatelessWidget {
       themeMode: ThemeMode.system,
       routes: routes,
       home: const Center(
-        child: AppCircularProgressIndicator(width: 200, height: 200),
+        child: AppCircularProgressIndicator(width: 100, height: 100),
       ),
     );
   }

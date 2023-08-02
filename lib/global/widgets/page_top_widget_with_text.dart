@@ -28,7 +28,7 @@ class TopPageWidgetWithText extends StatelessWidget {
                   ? Colors.white
                   : Colors.black,
               fontFamily: AppFonts.mainArabicFontFamily,
-              fontSize: fontSize,
+              fontSize: (size.width > 350) ? fontSize : fontSize - 15,
               fontWeight: FontWeight.w600,
             ),
           ),

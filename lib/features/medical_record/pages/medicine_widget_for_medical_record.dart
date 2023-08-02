@@ -18,40 +18,42 @@ class MedicineWidgetForMedicalRecord extends StatelessWidget {
   final bool isMedicalRecordPage;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: (CommonFunctions.isLightMode(context))
-              ? Colors.white
-              : AppColors.darkThemeBackgroundColor,
-          border: Border.all(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Card(
+        elevation: 3,
+        shadowColor: AppColors.primaryColorLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+          side: BorderSide(
             color: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
-            width: 0.5,
+            width: .5,
           ),
-          borderRadius: BorderRadius.circular(15),
         ),
-        padding: const EdgeInsets.all(10.0),
-        width: size.width,
-        child: isMedicalRecordPage
-            ? MedicineWidgetForMedicalRecordContent(
-                isMedicalRecordPage: true,
-                medicineModel: medicine!,
-                medicineId: medicineId)
-            : GetBuilder<AddMedicalRecordController>(
-                builder: (controller) {
-                  int index = controller.medicalRecord.medicines.indexWhere(
-                    (medicineModel) => medicineModel.medicineId == medicineId,
-                  );
-                  MedicineModel medicineModel =
-                      controller.medicalRecord.medicines[index];
-                  return MedicineWidgetForMedicalRecordContent(
-                      medicineModel: medicineModel, medicineId: medicineId);
-                },
-              ),
+        color: (CommonFunctions.isLightMode(context))
+            ? Colors.white
+            : AppColors.darkThemeBottomNavBarColor,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: isMedicalRecordPage
+              ? MedicineWidgetForMedicalRecordContent(
+                  isMedicalRecordPage: true,
+                  medicineModel: medicine!,
+                  medicineId: medicineId)
+              : GetBuilder<AddMedicalRecordController>(
+                  builder: (controller) {
+                    int index = controller.medicalRecord.medicines.indexWhere(
+                      (medicineModel) => medicineModel.medicineId == medicineId,
+                    );
+                    MedicineModel medicineModel =
+                        controller.medicalRecord.medicines[index];
+                    return MedicineWidgetForMedicalRecordContent(
+                        medicineModel: medicineModel, medicineId: medicineId);
+                  },
+                ),
+        ),
       ),
     );
   }

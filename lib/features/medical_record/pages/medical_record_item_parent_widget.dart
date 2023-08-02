@@ -22,117 +22,120 @@ class MedicalRecordItemParentWidget extends StatelessWidget {
   final bool isMedicalRecordPage;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: (CommonFunctions.isLightMode(context))
-              ? Colors.white
-              : AppColors.darkThemeBackgroundColor,
-          border: Border.all(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Card(
+        elevation: 3,
+        shadowColor: AppColors.primaryColorLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+          side: BorderSide(
             color: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
-            width: 0.5,
+            width: .5,
           ),
-          borderRadius: BorderRadius.circular(15),
         ),
-        padding: const EdgeInsets.all(10.0),
-        width: size.width,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            isMedicalRecordPage
-                ? const SizedBox()
-                : Expanded(
-                    flex: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleButton(
-                          icon: const Icon(Icons.edit_rounded),
-                          onPressed: () => onEditItemButtonPressed!(),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        CircleButton(
-                          icon: const Icon(Icons.remove_rounded),
-                          backgroundColor: Colors.red,
-                          onPressed: () => onRemoveItemButtonPressed!(),
-                        ),
-                      ],
-                    ),
-                  ),
-            SizedBox(
-              width: isMedicalRecordPage ? 0 : 5,
-            ),
-            Expanded(
-              flex: 8,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    itemName,
-                    style: TextStyle(
-                      fontFamily: AppFonts.mainArabicFontFamily,
-                      color: (CommonFunctions.isLightMode(context))
-                          ? Colors.black
-                          : Colors.white,
-                      fontSize: 22,
-                    ),
-                  ),
-                  (itemInfo != null)
-                      ? Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: Text(
-                            itemInfo!,
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              fontFamily: AppFonts.mainArabicFontFamily,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15,
-                              color: (CommonFunctions.isLightMode(context))
-                                  ? Colors.black87
-                                  : Colors.white,
-                            ),
+        color: (CommonFunctions.isLightMode(context))
+            ? Colors.white
+            : AppColors.darkThemeBottomNavBarColor,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              isMedicalRecordPage
+                  ? const SizedBox()
+                  : Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CircleButton(
+                            icon: const Icon(Icons.edit_rounded),
+                            onPressed: () => onEditItemButtonPressed!(),
                           ),
-                        )
-                      : const SizedBox(),
-                  const SizedBox(height: 5),
-                  (surgeryDate != null)
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: Text(
-                                'تاريخ إجراء العملية',
-                                textAlign: TextAlign.end,
-                                style: Theme.of(context).textTheme.bodyText1,
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          CircleButton(
+                            icon: const Icon(Icons.remove_rounded),
+                            backgroundColor: Colors.red,
+                            onPressed: () => onRemoveItemButtonPressed!(),
+                          ),
+                        ],
+                      ),
+                    ),
+              SizedBox(
+                width: isMedicalRecordPage ? 0 : 5,
+              ),
+              Expanded(
+                flex: 8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      itemName,
+                      style: TextStyle(
+                        fontFamily: AppFonts.mainArabicFontFamily,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? Colors.black
+                            : Colors.white,
+                        fontSize: 22,
+                      ),
+                    ),
+                    (itemInfo != null)
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Text(
+                              itemInfo!,
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                fontFamily: AppFonts.mainArabicFontFamily,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 15,
+                                color: (CommonFunctions.isLightMode(context))
+                                    ? Colors.black87
+                                    : Colors.white,
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                surgeryDate!,
-                                style: TextStyle(
-                                  fontFamily: AppFonts.mainArabicFontFamily,
-                                  color: (CommonFunctions.isLightMode(context))
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 20,
+                          )
+                        : const SizedBox(),
+                    const SizedBox(height: 5),
+                    (surgeryDate != null)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: Text(
+                                  'تاريخ إجراء العملية',
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context).textTheme.bodyText1,
                                 ),
                               ),
-                            )
-                          ],
-                        )
-                      : const SizedBox(),
-                ],
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  surgeryDate!,
+                                  style: TextStyle(
+                                    fontFamily: AppFonts.mainArabicFontFamily,
+                                    color:
+                                        (CommonFunctions.isLightMode(context))
+                                            ? Colors.black
+                                            : Colors.white,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

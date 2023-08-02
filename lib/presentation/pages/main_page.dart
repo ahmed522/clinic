@@ -1,10 +1,14 @@
-import 'package:clinic/features/profile/pages/user_profile_page.dart';
+import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
+import 'package:clinic/features/doctor_profile/pages/doctor_profile_page.dart';
+import 'package:clinic/features/time_line/pages/post/doctor_post/create_doctor_post.dart';
+import 'package:clinic/features/user_profile/pages/user_profile_page.dart';
 import 'package:clinic/features/time_line/pages/time_line.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/presentation/widgets/bottom_navigation_bar/bottom_navigation_bar_custom_painter.dart';
 import 'package:clinic/presentation/widgets/bottom_navigation_bar/bottom_navigation_bar_custom_painter_border.dart';
-import 'package:clinic/features/time_line/pages/post/user_post/create_user_post.dart';
+import 'package:clinic/features/time_line/pages/post/user_post/create_user_post/create_user_post.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,9 +25,13 @@ class _MainPageState extends State<MainPage> {
   bool _searchSelected = false;
   bool _personalPageSelected = false;
   bool _timelineSelected = true;
+
   Widget page = const TimeLine();
+
   @override
   Widget build(BuildContext context) {
+    final AuthenticationController authenticationController =
+        AuthenticationController.find;
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -58,11 +66,14 @@ class _MainPageState extends State<MainPage> {
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Center(
                       child: FloatingActionButton(
-                        onPressed: () => Get.to(() => const CreateUserPost()),
+                        onPressed: () => _createPost(),
                         backgroundColor: AppColors.primaryColor,
-                        child: const Icon(
-                          Icons.question_mark_rounded,
-                          size: 30,
+                        child: Icon(
+                          (authenticationController.currentUserType ==
+                                  UserType.user)
+                              ? Icons.question_mark_rounded
+                              : Icons.add_rounded,
+                          size: 40,
                         ),
                       ),
                     ),
@@ -128,7 +139,15 @@ class _MainPageState extends State<MainPage> {
                                 _searchSelected = false;
                                 _timelineSelected = false;
                                 _personalPageSelected = true;
-                                page = const UserProfilePage();
+                                page =
+                                    (authenticationController.currentUserType ==
+                                            UserType.user)
+                                        ? const UserProfilePage()
+                                        : DoctorProfilePage(
+                                            isCurrentUser: true,
+                                            doctorId: authenticationController
+                                                .currentUserId,
+                                          );
                               });
                             },
                             icon: Icon(
@@ -175,5 +194,13 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
+  }
+
+  _createPost() {
+    if (AuthenticationController.find.currentUserType == UserType.user) {
+      Get.to(() => const CreateUserPost());
+    } else {
+      Get.to(() => const CreateDoctorPost());
+    }
   }
 }

@@ -1,8 +1,12 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
+import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/gender.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
@@ -15,9 +19,10 @@ import 'package:uuid/uuid.dart';
 
 class PostController extends GetxController {
   static PostController get find => Get.find();
-  final _authController = AuthenticationController.find;
+  final _authenticationController = AuthenticationController.find;
   final _userDataController = UserDataController.find;
   final _timeLineController = TimeLineController.find;
+
   uploadUserPost(UserPostModel post) async {
     String postDocumentId = '${post.user.userId}-${const Uuid().v4()}';
     post.postId = postDocumentId;
@@ -45,16 +50,39 @@ class PostController extends GetxController {
     );
   }
 
+  uploadDoctorPost(DoctorPostModel post) async {
+    String postDocumentId = '${post.doctorId}-${const Uuid().v4()}';
+    post.postId = postDocumentId;
+    await _getPostDocumentRefById(postDocumentId)
+        .set(post.toJson())
+        .whenComplete(() async {
+      await _loadPosts();
+      MySnackBar.showGetSnackbar('تم نشر منشورك بنجاح', Colors.green);
+    }).catchError(
+      (error) => CommonFunctions.errorHappened(),
+    );
+  }
+
   reactPost(String uid, String postDocumentId) async {
-    _getPostReactsCollectionById(postDocumentId)
-        .doc(_currentUserId)
-        .set({'reacted': true});
+    FollowerModel reacter = FollowerModel(
+      userType: currentUserType,
+      userId: currentUserId,
+      userName: currentUserName,
+      doctorGender:
+          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      doctorSpecialization: (currentUserType == UserType.doctor)
+          ? currentDoctorSpecialization
+          : null,
+    );
+    Map<String, dynamic> data = reacter.toJson();
+    data['react_time'] = Timestamp.now();
+    _getPostReactsCollectionById(postDocumentId).doc(currentUserId).set(data);
     await _updatePostReacts(uid, postDocumentId, true);
   }
 
   unReactPost(String uid, String postDocumentId) async {
     await _getPostReactsCollectionById(postDocumentId)
-        .doc(_authController.currentUser!.userId!)
+        .doc(currentUserId)
         .delete();
     await _updatePostReacts(uid, postDocumentId, false);
   }
@@ -78,7 +106,8 @@ class PostController extends GetxController {
     return reacts!;
   }
 
-  onPostSettingsButtonPressed(BuildContext context, String postId) {
+  onPostSettingsButtonPressed(BuildContext context, String postId,
+      [bool isDoctorPost = false]) {
     Get.bottomSheet(
       Column(
         mainAxisSize: MainAxisSize.min,
@@ -86,18 +115,24 @@ class PostController extends GetxController {
           ListTile(
             onTap: () => MyAlertDialog.showAlertDialog(
               context,
-              'حذف السؤال',
-              'هل انت متأكد من حذف هذا السؤال؟',
+              isDoctorPost ? 'حذف المنشور' : 'حذف السؤال',
+              isDoctorPost
+                  ? 'هل انت متأكد من حذف هذا المنشور؟'
+                  : 'هل انت متأكد من حذف هذا السؤال؟',
               MyAlertDialog.getAlertDialogActions(
                 {
                   'نعم': () async {
                     try {
                       _timeLineController.loadingPosts.value = true;
                       Get.back(closeOverlays: true);
-                      await _deletePostById(postId).whenComplete(() async {
+                      await _deletePostById(postId, isDoctorPost)
+                          .whenComplete(() async {
                         await _loadPosts();
                         MySnackBar.showGetSnackbar(
-                            'تم حذف السؤال بنجاح', Colors.green);
+                            isDoctorPost
+                                ? 'تم حذف المنشور بنجاح'
+                                : 'تم حذف السؤال بنجاح',
+                            Colors.green);
                       });
                     } catch (e) {
                       CommonFunctions.errorHappened();
@@ -110,7 +145,7 @@ class PostController extends GetxController {
             title: Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'حذف السؤال',
+                'حذف',
                 style: TextStyle(
                   color: (Theme.of(context).brightness == Brightness.dark)
                       ? Colors.white
@@ -131,15 +166,43 @@ class PostController extends GetxController {
     );
   }
 
-  Future _deletePostById(String postDocumentId) =>
-      _userDataController.deletePostById(postDocumentId);
+  Future _deletePostById(String postDocumentId, bool isDoctorPost) =>
+      _userDataController.deletePostById(postDocumentId, isDoctorPost);
   DocumentReference _getPostDocumentRefById(String postDocumentId) =>
       _userDataController.getAllUsersPostsCollection().doc(postDocumentId);
   CollectionReference _getPostReactsCollectionById(String postDocumentId) =>
       _userDataController.getPostReactsCollectionById(postDocumentId);
 
-  _loadPosts() => _timeLineController.loadPosts();
-  bool isCurrentUserPost(String uid) => (uid == _currentUserId);
+  _loadPosts() => _timeLineController.loadPosts(50, true);
+  bool isCurrentUserPost(String uid) => (uid == currentUserId);
 
-  get _currentUserId => _authController.currentUserId;
+  Future<String> getPostWriterName(String uid, String userType) async {
+    switch (userType) {
+      case 'doctor':
+        return await _userDataController.getUserNameById(uid, UserType.doctor);
+      default:
+        return await _userDataController.getUserNameById(uid, UserType.user);
+    }
+  }
+
+  Future<String?> getPostWriterPersonalImage(
+      String uid, String userType) async {
+    switch (userType) {
+      case 'doctor':
+        return await _userDataController.getUserPersonalImageURLById(
+            uid, UserType.doctor);
+      default:
+        return await _userDataController.getUserPersonalImageURLById(
+            uid, UserType.user);
+    }
+  }
+
+  UserType get currentUserType => _authenticationController.currentUserType;
+  String get currentUserId => _authenticationController.currentUserId;
+  String get currentUserName => _authenticationController.currentUserName;
+  String? get currentUserPersonalImage =>
+      _authenticationController.currentUserPersonalImage;
+  Gender get currentUserGender => _authenticationController.currentUserGender;
+  String get currentDoctorSpecialization =>
+      _authenticationController.currentDoctorSpecialization;
 }

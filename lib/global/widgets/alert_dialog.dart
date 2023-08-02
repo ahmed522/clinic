@@ -11,37 +11,38 @@ class MyAlertDialog {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            scrollable: true,
+            title: Text(
+              title,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+                color: (CommonFunctions.isLightMode(context))
+                    ? AppColors.darkThemeBackgroundColor
+                    : Colors.white,
               ),
-              scrollable: true,
-              title: Text(
-                title,
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  color: (CommonFunctions.isLightMode(context))
-                      ? AppColors.darkThemeBackgroundColor
-                      : Colors.white,
-                ),
-              ),
-              content: (content != null)
-                  ? Center(
-                      child: Text(
-                        content,
-                        textAlign: TextAlign.end,
-                        style: const TextStyle(
-                          fontFamily: AppFonts.mainArabicFontFamily,
-                          fontSize: 15,
-                        ),
+            ),
+            content: (content != null)
+                ? Center(
+                    child: Text(
+                      content,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                        fontFamily: AppFonts.mainArabicFontFamily,
+                        fontSize: 15,
                       ),
-                    )
-                  : const SizedBox(),
-              actionsAlignment: MainAxisAlignment.start,
-              actionsPadding: const EdgeInsets.only(left: 30, bottom: 30),
-              actions: actions);
+                    ),
+                  )
+                : const SizedBox(),
+            actionsAlignment: MainAxisAlignment.start,
+            actionsPadding: const EdgeInsets.only(left: 30, bottom: 30),
+            actions: actions,
+          );
         },
       );
   static List<Widget> getAlertDialogActions(

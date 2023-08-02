@@ -1,8 +1,9 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
-import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -18,30 +19,50 @@ class PostCommentsController extends GetxController {
   static PostCommentsController get find => Get.find();
   final _authenticationController = AuthenticationController.find;
   final _userDataController = UserDataController.find;
-  RxList<CommentWidget> comments = <CommentWidget>[].obs;
+  RxList<CommentModel> comments = <CommentModel>[].obs;
   late String postId;
+  DocumentSnapshot? _lastShowenComment;
   RxBool loading = false.obs;
+  RxBool noMoreComments = false.obs;
+  RxBool moreCommentsloading = false.obs;
 
   PostCommentsController(this.postId);
   @override
   void onReady() {
-    loadPostComments(postId);
+    loadPostComments(2, true);
     super.onReady();
   }
 
-  Future loadPostComments(String postId) async {
-    loading.value = true;
+  Future loadPostComments(int limit, bool isRefresh) async {
+    if (isRefresh) {
+      loading.value = true;
+    }
+    moreCommentsloading.value = true;
+
     try {
-      QuerySnapshot snapshot = await _getPostCommentsCollectionById(postId)
-          .orderBy('comment_time', descending: false)
-          .get();
-      if (snapshot.size == 0) {
-        loading.value = false;
-        return;
+      QuerySnapshot snapshot;
+      if (isRefresh) {
+        snapshot = await _getPostCommentsCollectionById(postId)
+            .orderBy('comment_time', descending: false)
+            .limit(limit)
+            .get();
+      } else {
+        snapshot = await _getPostCommentsCollectionById(postId)
+            .orderBy('comment_time', descending: false)
+            .startAfterDocument(_lastShowenComment!)
+            .limit(limit)
+            .get();
       }
-      _showPostComments(snapshot);
+      if (snapshot.size < limit) {
+        noMoreComments.value = true;
+      } else {
+        noMoreComments.value = false;
+      }
+
+      _showPostComments(snapshot, isRefresh);
     } catch (e) {
       loading.value = false;
+      moreCommentsloading.value = false;
       Get.off(() => const ErrorPage(
             imageAsset: 'assets/img/error.svg',
             message:
@@ -51,15 +72,27 @@ class PostCommentsController extends GetxController {
   }
 
   reactComment(String postDocumentId, String commentDocumentId) async {
-    _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
-        .doc(_authenticationController.currentUser!.userId!)
-        .set({'reacted': true});
+    FollowerModel reacter = FollowerModel(
+      userType: currentUserType,
+      userId: currentUserId,
+      userName: currentUserName,
+      doctorGender:
+          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      doctorSpecialization: (currentUserType == UserType.doctor)
+          ? currentDoctorSpecialization
+          : null,
+    );
+    Map<String, dynamic> data = reacter.toJson();
+    data['react_time'] = Timestamp.now();
+    await _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
+        .doc(_authenticationController.currentUser.userId!)
+        .set(data);
     await _updateCommentReacts(postDocumentId, commentDocumentId, true);
   }
 
   unReactComment(String postDocumentId, String commentDocumentId) async {
     _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
-        .doc(_authenticationController.currentUser!.userId!)
+        .doc(_authenticationController.currentUser.userId!)
         .delete();
     await _updateCommentReacts(postDocumentId, commentDocumentId, false);
   }
@@ -67,8 +100,17 @@ class PostCommentsController extends GetxController {
   CollectionReference _getPostCommentsCollectionById(String postId) =>
       _userDataController.getPostCommentsCollectionById(postId);
 
-  Future<void> _showPostComments(QuerySnapshot<Object?> snapshot) async {
-    comments.clear();
+  Future<void> _showPostComments(
+      QuerySnapshot<Object?> snapshot, bool isRefresh) async {
+    if (isRefresh) {
+      comments.clear();
+    }
+    if (snapshot.size == 0) {
+      loading.value = false;
+      moreCommentsloading.value = false;
+      return;
+    }
+    _lastShowenComment = snapshot.docs.last;
 
     for (var commentSnapshot in snapshot.docs) {
       final String uid = commentSnapshot.get('uid');
@@ -87,12 +129,13 @@ class PostCommentsController extends GetxController {
         writer: writer,
       );
       comment.reacted = await _userDataController.isUserReactedComment(
-          _authenticationController.currentUser!.userId!,
+          _authenticationController.currentUser.userId!,
           comment.postId,
           comment.commentId);
+      comments.add(comment);
       loading.value = false;
-      comments.add(CommentWidget(comment: comment));
     }
+    moreCommentsloading.value = false;
   }
 
   onCommentSettingsButtonPressed(BuildContext context, String commentId) {
@@ -114,7 +157,7 @@ class PostCommentsController extends GetxController {
                       await _deleteCommentById(postId, commentId)
                           .whenComplete(() async {
                         Get.back();
-                        await loadPostComments(postId).then((value) =>
+                        await loadPostComments(3, true).then((value) =>
                             MySnackBar.showGetSnackbar(
                                 'تم حذف التعليق بنجاح', Colors.green));
                       });
@@ -186,7 +229,14 @@ class PostCommentsController extends GetxController {
       _userDataController.getCommentDocumentById(
           postDocumentId, commentDocumentId);
 
-  bool isCurrentUserComment(String uid) => (uid == _currentUserId);
+  bool isCurrentUserComment(String uid) => (uid == currentUserId);
 
-  get _currentUserId => _authenticationController.currentUserId;
+  UserType get currentUserType => _authenticationController.currentUserType;
+  String get currentUserId => _authenticationController.currentUserId;
+  String get currentUserName => _authenticationController.currentUserName;
+  String? get currentUserPersonalImage =>
+      _authenticationController.currentUserPersonalImage;
+  Gender get currentUserGender => _authenticationController.currentUserGender;
+  String get currentDoctorSpecialization =>
+      _authenticationController.currentDoctorSpecialization;
 }

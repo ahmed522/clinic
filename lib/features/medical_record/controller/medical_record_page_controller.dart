@@ -11,7 +11,7 @@ class MedicalRecordPageController extends GetxController {
       AuthenticationController.find;
   final UserDataController _userDataController = UserDataController.find;
 
-  late final MedicalRecordModel? medicalRecord;
+  MedicalRecordModel? medicalRecord;
   bool medicalRecordIsSet = false;
   bool loading = true;
   bool errorHappend = false;

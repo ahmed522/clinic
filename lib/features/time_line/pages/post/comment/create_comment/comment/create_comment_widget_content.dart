@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clinic/features/time_line/controller/create_comment_controller.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/create_comment_text_field.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/upload_comment_button.dart';
@@ -27,10 +28,10 @@ class CreateCommentWidgetContent extends StatelessWidget {
             children: [
               const CreateCommentTextField(),
               const SizedBox(width: 5),
-              (controller.getCurrentUserPic() != null)
+              (controller.currentUserPersonalImage != null)
                   ? CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(controller.getCurrentUserPic()),
+                      backgroundImage: CachedNetworkImageProvider(
+                          controller.currentUserPersonalImage!),
                       radius: 25,
                     )
                   : const CircleAvatar(
