@@ -50,7 +50,7 @@ dependencies:
   flutter_svg: ^1.1.6
   cached_network_image: ^3.2.3
   map_launcher: ^2.5.0
-
+  flutter_offline: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -116,6 +116,10 @@ flutter:
     - assets/img/posts.png
     - assets/img/followers.png
     - assets/img/following.png
+    - assets/img/no-previous-chat.svg
+    - assets/img/chat-background.jpg
+    - assets/img/internet-error.svg
+    - assets/img/medical-record-disabled.png
     
 
 

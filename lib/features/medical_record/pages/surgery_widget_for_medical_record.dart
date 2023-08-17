@@ -126,7 +126,8 @@ onEditSurgeryButtonPressed(BuildContext context, SurgeryModel surgery) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 controller: TextEditingController(text: surgery.surgeryName),
                 maxLength: 25,
                 onChanged: (surgeryName) =>
@@ -159,7 +160,8 @@ onEditSurgeryButtonPressed(BuildContext context, SurgeryModel surgery) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 controller: TextEditingController(text: surgery.info),
                 maxLines: 4,
                 maxLength: 150,

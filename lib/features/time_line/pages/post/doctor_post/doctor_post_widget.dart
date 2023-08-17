@@ -59,7 +59,8 @@ class DoctorPostWidget extends StatelessWidget {
           child: Column(
             children: [
               PostTopWidget(
-                doctorId: post.doctorId,
+                userId: post.doctorId!,
+                userType: UserType.doctor,
                 setSideInfo: true,
                 isCurrentUserPost: controller.isCurrentUserPost(post.doctorId!),
                 userName: CommonFunctions.getFullName(

@@ -21,7 +21,8 @@ class AddMedicalRecordInfo extends StatelessWidget {
           controller:
               TextEditingController(text: controller.medicalRecord.moreInfo),
           autofocus: true,
-          textAlign: TextAlign.end,
+          textAlign: TextAlign.right,
+          textDirection: TextDirection.rtl,
           maxLength: 250,
           maxLines: 5,
           onChanged: (medicalRecordInfo) =>

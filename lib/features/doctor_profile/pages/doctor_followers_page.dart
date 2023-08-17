@@ -1,6 +1,7 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_followers_page_controller.dart';
 import 'package:clinic/features/following/pages/follower_card.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,10 +20,12 @@ class DoctorFollowersPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          RefreshIndicator(
-            displacement: size.height / 5,
-            child: _buildDoctorFollowersList(context),
-            onRefresh: () => controller.loadDoctorFollowers(20, true),
+          OfflinePageBuilder(
+            child: RefreshIndicator(
+              displacement: size.height / 5,
+              child: _buildDoctorFollowersList(context),
+              onRefresh: () => controller.loadDoctorFollowers(20, true),
+            ),
           ),
           const TopPageWidgetWithText(
             text: 'المتابِعون',
@@ -83,7 +86,11 @@ class DoctorFollowersPage extends StatelessWidget {
               if (index == controller.followers.length - 1) {
                 return Padding(
                   padding: EdgeInsets.only(
-                    top: index == 0 ? size.height / 4 - 50 : 0,
+                    top: index == 0
+                        ? (size.width < 330)
+                            ? size.height / 4
+                            : size.height / 4 - 30
+                        : 0,
                     bottom: 20.0,
                   ),
                   child: Column(
@@ -128,8 +135,12 @@ class DoctorFollowersPage extends StatelessWidget {
                 );
               }
               return Padding(
-                padding:
-                    EdgeInsets.only(top: index == 0 ? size.height / 4 - 50 : 0),
+                padding: EdgeInsets.only(
+                    top: index == 0
+                        ? (size.width < 330)
+                            ? size.height / 4
+                            : size.height / 4 - 30
+                        : 0),
                 child: FollowerCard(
                   follower: controller.followers[index],
                 ),

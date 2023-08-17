@@ -17,7 +17,7 @@ class CreateUserPostController extends GetxController {
   bool femaleSelected = false;
   bool babySelected = false;
   final TextEditingController tempController = TextEditingController();
-
+  double screenWidth = 370;
   String? tempDiseaseName;
   String? tempContent;
 

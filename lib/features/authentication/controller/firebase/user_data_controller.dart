@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/local_storage_controller.dart';
+import 'package:clinic/features/chat/model/chat_model.dart';
+import 'package:clinic/features/chat/model/message_model.dart';
+import 'package:clinic/features/chat/model/message_state.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/medical_record/controller/medical_record_page_controller.dart';
 import 'package:clinic/features/medical_record/model/disease_model.dart';
@@ -264,17 +267,24 @@ class UserDataController extends GetxController {
   Future<int> getDoctorNumberOfPosts(String doctorId) async =>
       await getAllUsersPostsCollection()
           .where('uid', isEqualTo: doctorId)
+          .count()
           .get()
           .then((snapshot) {
-        return snapshot.size;
+        return snapshot.count;
       });
   Future<int> getDoctorNumberOfFollowers(String doctorId) async =>
-      await getDoctorFollowersCollectionById(doctorId).get().then((snapshot) {
-        return snapshot.size;
+      await getDoctorFollowersCollectionById(doctorId)
+          .count()
+          .get()
+          .then((snapshot) {
+        return snapshot.count;
       });
   Future<int> getNumberOfFollowing(String userId) async =>
-      await getUserFollowingCollectionById(userId).get().then((snapshot) {
-        return snapshot.size;
+      await getUserFollowingCollectionById(userId)
+          .count()
+          .get()
+          .then((snapshot) {
+        return snapshot.count;
       });
 
   Future followDoctor(FollowerModel follower, FollowerModel following) async {
@@ -654,25 +664,29 @@ class UserDataController extends GetxController {
   }
 
   _deleteReplyReacts(DocumentReference replyDoc) async {
-    await replyDoc.collection('reply_reacts').get().then((replyReactsSnapshot) {
-      if (replyReactsSnapshot.size > 0) {
-        for (var reactDoc in replyReactsSnapshot.docs) {
-          reactDoc.reference.delete();
+    await replyDoc.collection('reply_reacts').get().then(
+      (replyReactsSnapshot) {
+        if (replyReactsSnapshot.size > 0) {
+          for (var reactDoc in replyReactsSnapshot.docs) {
+            reactDoc.reference.delete();
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   _deleteCommentReplies(String commentId) {
     getCommentRepliesDocumentById(commentId)
         .collection('comment_replies')
         .get()
-        .then((snapshot) {
-      for (var replyDoc in snapshot.docs) {
-        _deleteReplyReacts(replyDoc.reference);
-        replyDoc.reference.delete();
-      }
-    });
+        .then(
+      (snapshot) {
+        for (var replyDoc in snapshot.docs) {
+          _deleteReplyReacts(replyDoc.reference);
+          replyDoc.reference.delete();
+        }
+      },
+    );
     getCommentRepliesDocumentById(commentId).delete();
   }
   //==================================================
@@ -758,12 +772,247 @@ class UserDataController extends GetxController {
       _db.collection('medical_records');
 
   CollectionReference _getUserMedicinesCollection(String userId) =>
-      _db.collection('medical_records').doc(userId).collection('medicines');
+      medicalRecordsCollection.doc(userId).collection('medicines');
   CollectionReference _getUserDiseasesCollection(String userId) =>
-      _db.collection('medical_records').doc(userId).collection('diseases');
+      medicalRecordsCollection.doc(userId).collection('diseases');
   CollectionReference _getUserSurgeriesCollection(String userId) =>
-      _db.collection('medical_records').doc(userId).collection('surgeries');
+      medicalRecordsCollection.doc(userId).collection('surgeries');
 
   //==================================================
 
+  /// ----------------------------------------------------------------------
+  ///                                  Chats                               -
+  /// ----------------------------------------------------------------------
+
+  Future updateMessageStateById(
+          String chatId, String messageId, MessageState state) async =>
+      await _getMessageDocumentById(chatId, messageId)
+          .update({'message_state': state.name});
+
+  Future updateLastMessageState(String chatId, MessageState state) async {
+    getChatDocumentById(chatId)
+        .update({'last_message.message_state': state.name});
+  }
+
+  Future createChat(ChatModel chat) async {
+    try {
+      await getChatDocumentById(chat.chatId).set(chat.toJson());
+    } catch (e) {
+      CommonFunctions.errorHappened();
+    }
+  }
+
+  Future<ChatModel?> getSingleChat(String chatter1Id, String chatter2Id) async {
+    ChatModel? chatModel;
+    await chatsCollection
+        .where(FieldPath.documentId, whereIn: [
+          '$chatter1Id - $chatter2Id',
+          '$chatter2Id - $chatter1Id',
+        ])
+        .limit(1)
+        .get()
+        .then(
+          (snapshot) {
+            if (snapshot.size == 0) {
+              return;
+            }
+            chatModel = ChatModel.fromSnapshot(snapshot.docs.first);
+          },
+        );
+    return chatModel;
+  }
+
+  Future<MessageModel> getChatLastMessage(String chatId) async {
+    DocumentSnapshot? lastMessageSnapshot;
+    await getChatMessagesCollectionById(chatId)
+        .orderBy('message_time', descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) => lastMessageSnapshot = snapshot.docs.first);
+    return MessageModel.fromSnapshot(lastMessageSnapshot!);
+  }
+
+  Future<MessageState> uploadMessage(
+      MessageModel message, String chatId) async {
+    Map<String, dynamic> data = message.toJson();
+    data['message_state'] = MessageState.sentOnline.name;
+    try {
+      await getChatMessagesCollectionById(chatId)
+          .doc(message.messageId)
+          .set(data);
+      message.messageState = MessageState.sentOnline;
+      await updateChatLastMessage(message, chatId);
+    } catch (e) {
+      message.messageState = MessageState.error;
+    }
+    return message.messageState;
+  }
+
+  Future deleteOldMessages(String chatId, Timestamp oldestDeletionTime) async {
+    await getChatMessagesCollectionById(chatId)
+        .where('message_time', isLessThan: oldestDeletionTime)
+        .get()
+        .then((snapshot) {
+      for (var documentSnapshot in snapshot.docs) {
+        documentSnapshot.reference.delete();
+      }
+    });
+  }
+
+  Future updateChatLastMessage(MessageModel lastMessage, String chatId) async {
+    await getChatDocumentById(chatId).update({
+      'last_message_time': lastMessage.messageTime,
+      'last_message': lastMessage.toJson(),
+    });
+  }
+
+  Stream<bool> isUserTyping(String chatId, String userId) =>
+      getChatDocumentById(chatId).snapshots().map<bool>((snapshot) {
+        if (snapshot.exists) {
+          return snapshot.get(userId);
+        } else {
+          return false;
+        }
+      });
+
+  Future setIsUserTyping(String chatId, String userId, bool value) async {
+    await getChatDocumentById(chatId).update({'$userId.is_typing': value});
+  }
+
+  Future<MessageModel> deleteMessageById(
+      String chatId, MessageModel message) async {
+    if (message.isMedicalRecordMessage) {
+      await getMedicalRecordMessageDocument(chatId, message.messageId)
+          .collection('diseases')
+          .get()
+          .then(
+        (snapshot) {
+          for (var document in snapshot.docs) {
+            document.reference.delete();
+          }
+        },
+      );
+      await getMedicalRecordMessageDocument(chatId, message.messageId)
+          .collection('surgeries')
+          .get()
+          .then(
+        (snapshot) {
+          for (var document in snapshot.docs) {
+            document.reference.delete();
+          }
+        },
+      );
+      await getMedicalRecordMessageDocument(chatId, message.messageId)
+          .collection('medicines')
+          .get()
+          .then(
+        (snapshot) {
+          for (var document in snapshot.docs) {
+            document.reference.delete();
+          }
+        },
+      );
+    }
+    await getMedicalRecordMessageDocument(chatId, message.messageId).delete();
+    await getChatMessagesCollectionById(chatId).doc(message.messageId).delete();
+    MessageModel deletedMessage =
+        MessageModel.deletedMessage(message, Timestamp.now());
+    await getChatMessagesCollectionById(chatId)
+        .doc(message.messageId)
+        .set(deletedMessage.toJson());
+    return deletedMessage;
+  }
+  //=================== medical record message ========================
+
+  Future<MedicalRecordModel?> getMedicalRecordMessage(
+      String chatId, String messageId) async {
+    try {
+      DocumentSnapshot snapshot =
+          await getMedicalRecordMessageDocument(chatId, messageId).get();
+
+      String? moreInfo;
+      try {
+        moreInfo = snapshot.get('info');
+      } on StateError {
+        moreInfo = null;
+      }
+      return MedicalRecordModel.fromCloud(
+        diseases: await _getUserDiseasesForMessage(chatId, messageId),
+        medicines: await _getUserMedicinesForMessage(chatId, messageId),
+        surgeries: await _getUserSurgeriesForMessage(chatId, messageId),
+        moreInfo: moreInfo,
+      );
+    } on Exception {
+      CommonFunctions.errorHappened();
+      return null;
+    }
+  }
+
+  Future<List<DiseaseModel>?> _getUserDiseasesForMessage(
+      String chatId, String messageId) async {
+    List<DiseaseModel> diseases = [];
+    QuerySnapshot snapshot =
+        await getMedicalRecordMessageDocument(chatId, messageId)
+            .collection('diseases')
+            .get();
+    if (snapshot.size == 0) {
+      return null;
+    }
+    for (var disease in snapshot.docs) {
+      diseases.add(DiseaseModel.fromSnapshot(
+          disease as DocumentSnapshot<Map<String, dynamic>>));
+    }
+    return diseases;
+  }
+
+  Future<List<MedicineModel>?> _getUserMedicinesForMessage(
+      String chatId, String messageId) async {
+    List<MedicineModel> medicines = [];
+    QuerySnapshot snapshot =
+        await getMedicalRecordMessageDocument(chatId, messageId)
+            .collection('medicines')
+            .get();
+    if (snapshot.size == 0) {
+      return null;
+    }
+    for (var medicine in snapshot.docs) {
+      medicines.add(MedicineModel.fromSnapshot(
+          medicine as DocumentSnapshot<Map<String, dynamic>>));
+    }
+    return medicines;
+  }
+
+  Future<List<SurgeryModel>?> _getUserSurgeriesForMessage(
+      String chatId, String messageId) async {
+    List<SurgeryModel> surgeries = [];
+    QuerySnapshot snapshot =
+        await getMedicalRecordMessageDocument(chatId, messageId)
+            .collection('surgeries')
+            .get();
+    if (snapshot.size == 0) {
+      return null;
+    }
+    for (var surgery in snapshot.docs) {
+      surgeries.add(SurgeryModel.fromSnapshot(
+          surgery as DocumentSnapshot<Map<String, dynamic>>));
+    }
+    return surgeries;
+  }
+
+  //==============================================================
+  CollectionReference get chatsCollection => _db.collection('chats');
+  DocumentReference getChatDocumentById(String chatId) =>
+      chatsCollection.doc(chatId);
+  CollectionReference getChatMessagesCollectionById(String chatId) =>
+      getChatDocumentById(chatId).collection('messages');
+  DocumentReference _getMessageDocumentById(String chatId, String messageId) =>
+      getChatMessagesCollectionById(chatId).doc(messageId);
+  DocumentReference getMedicalRecordMessageDocument(
+          String chatId, String messageId) =>
+      getChatMessagesCollectionById(chatId)
+          .doc(messageId)
+          .collection('medical_record')
+          .doc('medical_record_document');
+
+  //==================================================
 }

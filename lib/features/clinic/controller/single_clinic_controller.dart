@@ -3,7 +3,7 @@ import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/data/services/location_services.dart';
-import 'package:clinic/presentation/pages/main_page.dart';
+import 'package:clinic/features/main_page/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';

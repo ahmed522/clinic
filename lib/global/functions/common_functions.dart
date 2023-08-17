@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/medical_record/model/medicine.dart';
 import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/age.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +13,7 @@ class CommonFunctions {
   static String getFullName(String firstName, String lastName) =>
       '$firstName $lastName';
   static ErrorPage get internetError => const ErrorPage(
-      imageAsset: 'assets/img/error.svg',
+      imageAsset: 'assets/img/internet-error.svg',
       message: 'حدثت مشكلة حاول الإتصال بالإنترنت وإعادة المحاولة');
   static void errorHappened() => Get.to(() => const ErrorPage(
         imageAsset: 'assets/img/error.svg',
@@ -66,9 +67,59 @@ class CommonFunctions {
     }
   }
 
+  static int calculateTimeDifferenceInMinutes(
+      DateTime startTime, DateTime endTime) {
+    final difference = endTime.difference(startTime);
+    return difference.inMinutes;
+  }
+
+  static String getTime(Timestamp time) {
+    DateTime timeInDateTime = time.toDate();
+    int hour = timeInDateTime.hour > 12
+        ? timeInDateTime.hour - 12
+        : timeInDateTime.hour;
+    String amOrPm = timeInDateTime.hour >= 12 ? 'PM' : 'AM';
+    String finalHour = hour < 10 ? '0$hour' : '$hour';
+    String minute = timeInDateTime.minute < 10
+        ? '0${timeInDateTime.minute}'
+        : '${timeInDateTime.minute}';
+
+    return '$finalHour:$minute' '$amOrPm';
+  }
+
+  static bool isToday(DateTime date) {
+    return ((DateTime.now().year == date.year) &&
+        (DateTime.now().month == date.month) &&
+        (DateTime.now().day == date.day));
+  }
+
+  static bool isYesterday(DateTime date) {
+    return ((DateTime.now().year == date.year) &&
+            (DateTime.now().month == date.month) &&
+            (DateTime.now().day - date.day == 1)) ||
+        ((DateTime.now().year == date.year) &&
+            (DateTime.now().month - date.month == 1) &&
+            (DateTime.now().day == 1)) ||
+        ((DateTime.now().year - date.year == 1) &&
+            (DateTime.now().month == 1) &&
+            (DateTime.now().day == 1));
+  }
+
+  static bool isSameDay(DateTime date1, DateTime date2) {
+    return ((date1.year == date2.year) &&
+        (date1.month == date2.month) &&
+        (date1.day == date2.day));
+  }
+
   static bool isCurrentUser(String uid) => uid == currentUserId;
   static String get currentUserId =>
       AuthenticationController.find.currentUserId;
+  static String get currentUserName =>
+      AuthenticationController.find.currentUserName;
+  static String? get currentUserPersonalImage =>
+      AuthenticationController.find.currentUserPersonalImage;
+  static UserType get currentUserType =>
+      AuthenticationController.find.currentUserType;
 }
 
 TimeOfDay setClinicOpenTime(

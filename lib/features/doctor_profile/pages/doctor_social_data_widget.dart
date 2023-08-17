@@ -22,9 +22,9 @@ class DoctorSocialDataWidget extends StatelessWidget {
       children: [
         Column(
           children: [
-            PresentNumberWidget(number: numberOfFollowing, fontSize: 18),
+            PresentNumberWidget(number: numberOfFollowing, fontSize: 20),
             const Text(
-              'عدد المتابَعون',
+              'المتابَعون',
               style: TextStyle(
                 fontSize: 15,
                 color: AppColors.primaryColor,
@@ -35,9 +35,9 @@ class DoctorSocialDataWidget extends StatelessWidget {
         ),
         Column(
           children: [
-            PresentNumberWidget(number: numberOfFollowers, fontSize: 18),
+            PresentNumberWidget(number: numberOfFollowers, fontSize: 20),
             const Text(
-              'عدد المتابِعون',
+              'المتابِعون',
               style: TextStyle(
                 fontSize: 15,
                 color: AppColors.primaryColor,
@@ -48,9 +48,9 @@ class DoctorSocialDataWidget extends StatelessWidget {
         ),
         Column(
           children: [
-            PresentNumberWidget(number: numberOfPosts, fontSize: 18),
+            PresentNumberWidget(number: numberOfPosts, fontSize: 20),
             const Text(
-              'عدد المشاركات',
+              'المشاركات',
               style: TextStyle(
                 fontSize: 15,
                 color: AppColors.primaryColor,

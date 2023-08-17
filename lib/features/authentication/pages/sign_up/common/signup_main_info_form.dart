@@ -242,6 +242,8 @@ class SignupMainInfoForm extends StatelessWidget {
                     icon: Icon(Icons.person),
                     hintText: 'Enter your first name',
                   ),
+                  textAlign: TextAlign.right,
+                  textDirection: TextDirection.rtl,
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -284,6 +286,8 @@ class SignupMainInfoForm extends StatelessWidget {
                     icon: Icon(Icons.person),
                     hintText: 'Enter your last name',
                   ),
+                  textAlign: TextAlign.right,
+                  textDirection: TextDirection.rtl,
                 ),
                 (userType == UserType.user)
                     ? Column(

@@ -7,16 +7,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 class UserQuestionsController extends GetxController {
+  UserQuestionsController(this.userId);
+
   static UserQuestionsController get find => Get.find();
-  final _authController = AuthenticationController.find;
+  final String userId;
+  final _authenticationController = AuthenticationController.find;
   final _userDataController = UserDataController.find;
   RxBool loadingPosts = true.obs;
   RxBool morePostsLoading = false.obs;
   RxBool noMorePosts = false.obs;
   DocumentSnapshot? _lastPostShown;
   RxList<UserPostModel> content = <UserPostModel>[].obs;
+  late final UserModel currentUser;
   @override
-  void onReady() {
+  void onReady() async {
+    if (isCurrentUserProfilePage) {
+      currentUser = _authenticationController.currentUser as UserModel;
+    } else {
+      currentUser = await _userDataController.getUserById(userId);
+    }
     loadUserPosts(10, true);
     super.onReady();
   }
@@ -31,14 +40,14 @@ class UserQuestionsController extends GetxController {
       if (isRefresh) {
         snapshot = await _userDataController
             .getAllUsersPostsCollection()
-            .where('uid', isEqualTo: _authController.currentUserId)
+            .where('uid', isEqualTo: userId)
             .orderBy('time_stamp', descending: true)
             .limit(limit)
             .get();
       } else {
         snapshot = await _userDataController
             .getAllUsersPostsCollection()
-            .where('uid', isEqualTo: _authController.currentUserId)
+            .where('uid', isEqualTo: userId)
             .orderBy('time_stamp', descending: true)
             .startAfterDocument(_lastPostShown!)
             .limit(limit)
@@ -77,13 +86,16 @@ class UserQuestionsController extends GetxController {
       final String postDocumentId = postSnapShot.id;
       UserPostModel post = UserPostModel.fromSnapShot(
         postSnapShot: postSnapShot as DocumentSnapshot<Map<String, dynamic>>,
-        writer: _authController.currentUser as UserModel,
+        writer: currentUser,
       );
-      post.reacted = await _userDataController.isUserReactedPost(
-          _authController.currentUserId, postDocumentId);
+      post.reacted =
+          await _userDataController.isUserReactedPost(userId, postDocumentId);
       content.add(post);
       loadingPosts.value = false;
     }
     morePostsLoading.value = false;
   }
+
+  bool get isCurrentUserProfilePage => (currentUserId == userId);
+  String get currentUserId => _authenticationController.currentUserId;
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clinic/features/chat/pages/chat_page/user_chats_page.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinics_page.dart';
 import 'package:clinic/features/doctor_profile/controller/doctor_profile_page_controller.dart';
+import 'package:clinic/features/doctor_profile/pages/chat_button.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_data_widget.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_followers_page.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_followings_page.dart';
@@ -13,10 +15,12 @@ import 'package:clinic/features/settings/Pages/settings_page.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/image_source_page.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,143 +41,163 @@ class DoctorProfilePage extends StatelessWidget {
         tag: doctorId);
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: GetX<DoctorProfilePageController>(
-          tag: doctorId,
-          builder: (controller) {
-            if (controller.loading.isTrue) {
-              return const Center(
-                child: AppCircularProgressIndicator(
-                  height: 100,
-                  width: 100,
-                ),
-              );
-            } else {
-              return Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(height: size.height / 4 + 50),
-                        DoctorDataWidget(
-                          doctorId: doctorId,
-                        ),
-                        const SizedBox(height: 20),
-                        isCurrentUser
-                            ? const SizedBox()
-                            : FollowButton(doctorId: doctorId),
-                        isCurrentUser
-                            ? const ProfileOptionButton(
-                                text: 'الدردشات',
-                                imageAsset: 'assets/img/chats.png',
-                                onPressed: null,
-                              )
-                            : const SizedBox(),
-                        ProfileOptionButton(
-                          text: 'المشاركات',
-                          imageAsset: 'assets/img/posts.png',
-                          onPressed: () => Get.to(
-                            () => DoctorPostsPage(
-                              doctorId: doctorId,
+      body: OfflinePageBuilder(
+        child: GetX<DoctorProfilePageController>(
+            tag: doctorId,
+            builder: (controller) {
+              if (controller.loading.isTrue) {
+                return const Center(
+                  child: AppCircularProgressIndicator(
+                    height: 100,
+                    width: 100,
+                  ),
+                );
+              } else {
+                return Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: size.height / 4 + 50),
+                          DoctorDataWidget(
+                            doctorId: doctorId,
+                          ),
+                          const SizedBox(height: 20),
+                          isCurrentUser
+                              ? const SizedBox()
+                              : Column(
+                                  children: [
+                                    FollowButton(doctorId: doctorId),
+                                    const SizedBox(height: 5),
+                                    ChatButton(
+                                      userId: doctorId,
+                                      userType: UserType.doctor,
+                                    ),
+                                  ],
+                                ),
+                          isCurrentUser
+                              ? ProfileOptionButton(
+                                  text: 'الدردشات',
+                                  imageAsset: 'assets/img/chats.png',
+                                  onPressed: () => Get.to(
+                                    () => const UserChatsPage(),
+                                  ),
+                                )
+                              : const SizedBox(),
+                          ProfileOptionButton(
+                            text: 'المشاركات',
+                            imageAsset: 'assets/img/posts.png',
+                            onPressed: () => Get.to(
+                              () => DoctorPostsPage(
+                                doctorId: doctorId,
+                              ),
                             ),
                           ),
-                        ),
-                        ProfileOptionButton(
-                          text: 'المتابَعون',
-                          imageAsset: 'assets/img/following.png',
-                          onPressed: () => Get.to(
-                            () => DoctorFollowingsPage(doctorId: doctorId),
+                          ProfileOptionButton(
+                            text: 'المتابَعون',
+                            imageAsset: 'assets/img/following.png',
+                            onPressed: () => Get.to(
+                              () => DoctorFollowingsPage(doctorId: doctorId),
+                            ),
                           ),
-                        ),
-                        ProfileOptionButton(
-                          text: 'المتابِعون',
-                          imageAsset: 'assets/img/followers.png',
-                          onPressed: () => Get.to(
-                            () => DoctorFollowersPage(doctorId: doctorId),
+                          ProfileOptionButton(
+                            text: 'المتابِعون',
+                            imageAsset: 'assets/img/followers.png',
+                            onPressed: () => Get.to(
+                              () => DoctorFollowersPage(doctorId: doctorId),
+                            ),
                           ),
-                        ),
-                        ProfileOptionButton(
-                          text: 'العيادات',
-                          imageAsset: 'assets/img/clinic.png',
-                          onPressed: () =>
-                              Get.to(() => ClinicsPage(doctorId: doctorId)),
-                        ),
-                        isCurrentUser
-                            ? ProfileOptionButton(
-                                text: 'الإعدادات',
-                                imageAsset: 'assets/img/settings.png',
-                                onPressed: () =>
-                                    Get.to(() => const SettingsPage()),
-                              )
-                            : const SizedBox(),
-                        const SizedBox(height: 100),
-                      ],
+                          ProfileOptionButton(
+                            text: 'العيادات',
+                            imageAsset: 'assets/img/clinic.png',
+                            onPressed: () =>
+                                Get.to(() => ClinicsPage(doctorId: doctorId)),
+                          ),
+                          isCurrentUser
+                              ? ProfileOptionButton(
+                                  text: 'الإعدادات',
+                                  imageAsset: 'assets/img/settings.png',
+                                  onPressed: () =>
+                                      Get.to(() => const SettingsPage()),
+                                )
+                              : const SizedBox(),
+                          const SizedBox(height: 100),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height / 4 + 35,
-                    child: Stack(
-                      children: [
-                        const DoctorProfileTopPageWidget(),
-                        Positioned(
-                          bottom: 0,
-                          left: 15,
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
+                    SizedBox(
+                      height: size.height / 4 + 35,
+                      child: Stack(
+                        children: [
+                          const DoctorProfileTopPageWidget(),
+                          Positioned(
+                            bottom: 0,
+                            left: 15,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        color: (CommonFunctions.isLightMode(
-                                                context))
-                                            ? Colors.grey.shade100
-                                            : AppColors
-                                                .darkThemeBackgroundColor,
-                                        width: 2)),
-                                child: GestureDetector(
-                                  onTap: () => _onPersonalImageClicked(
-                                      context, doctorId),
-                                  child: CircleAvatar(
-                                    backgroundImage: CachedNetworkImageProvider(
-                                      isCurrentUser
-                                          ? controller.currentUserPersonalImage!
-                                          : controller
-                                              .currentDoctor.personalImageURL!,
+                                      color:
+                                          (CommonFunctions.isLightMode(context))
+                                              ? Colors.grey.shade100
+                                              : AppColors
+                                                  .darkThemeBackgroundColor,
+                                      width: 2,
                                     ),
-                                    radius: 100,
-                                    backgroundColor:
-                                        (CommonFunctions.isLightMode(context))
-                                            ? Colors.grey.shade100
-                                            : AppColors
-                                                .darkThemeBackgroundColor,
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () => _onPersonalImageClicked(
+                                      context,
+                                      doctorId,
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                        isCurrentUser
+                                            ? controller
+                                                .currentUserPersonalImage!
+                                            : controller.currentDoctor
+                                                .personalImageURL!,
+                                      ),
+                                      radius: 100,
+                                      backgroundColor:
+                                          (CommonFunctions.isLightMode(context))
+                                              ? Colors.grey.shade100
+                                              : AppColors
+                                                  .darkThemeBackgroundColor,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                CommonFunctions.getFullName(
-                                    controller.currentDoctor.firstName!,
-                                    controller.currentDoctor.lastName!),
-                                style: TextStyle(
-                                  color: (CommonFunctions.isLightMode(context))
-                                      ? AppColors.darkThemeBackgroundColor
-                                      : Colors.white,
-                                  fontFamily: AppFonts.mainArabicFontFamily,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 5),
+                                Text(
+                                  CommonFunctions.getFullName(
+                                      controller.currentDoctor.firstName!,
+                                      controller.currentDoctor.lastName!),
+                                  style: TextStyle(
+                                    color:
+                                        (CommonFunctions.isLightMode(context))
+                                            ? AppColors.darkThemeBackgroundColor
+                                            : Colors.white,
+                                    fontFamily: AppFonts.mainArabicFontFamily,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-          }),
+                  ],
+                );
+              }
+            }),
+      ),
     );
   }
 

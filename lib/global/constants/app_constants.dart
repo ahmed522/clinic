@@ -9,7 +9,7 @@ class AppConstants {
   static const double dayBulletPhoneSize = 32.0;
   static const double dayBulletTabletSize = 45.0;
   static const double dayFontPhoneSize = 9.0;
-  static const double dayFontTabletSize = 14.0;
+  static const double dayFontTabletSize = 12.0;
   static const double phoneWidth = 420.0;
   static const double phoneheight = 750.0;
   static const Size phoneSize = Size(phoneWidth, phoneheight);

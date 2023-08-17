@@ -5,6 +5,7 @@ import 'package:clinic/features/time_line/pages/post/common/post_page_child.dart
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 
 class PostPage extends StatelessWidget {
@@ -18,39 +19,31 @@ class PostPage extends StatelessWidget {
   static const route = '/postPage';
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    String appBarTitleText = (writerType == UserType.user)
+        ? ' سؤال'
+            ' ${CommonFunctions.getFullName((post as UserPostModel).user.firstName!, (post as UserPostModel).user.lastName!)} '
+        : ' منشور الطبيب'
+            ' ${CommonFunctions.getFullName((post as DoctorPostModel).writer!.firstName!, (post as DoctorPostModel).writer!.lastName!)} ';
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              (writerType == UserType.user)
-                  ? CommonFunctions.getFullName(
-                      (post as UserPostModel).user.firstName!,
-                      (post as UserPostModel).user.lastName!)
-                  : CommonFunctions.getFullName(
-                      (post as DoctorPostModel).writer!.firstName!,
-                      (post as DoctorPostModel).writer!.lastName!),
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
+        title: Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            appBarTitleText,
+            style: TextStyle(
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontWeight: FontWeight.w700,
+              fontSize: (size.width < 330) ? 15 : 20,
             ),
-            Text(
-              (writerType == UserType.user) ? ' سؤال' : ' منشور الطبيب',
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
-      body: PostPageChild(
-        post: post,
-        writerType: writerType,
+      body: OfflinePageBuilder(
+        child: PostPageChild(
+          post: post,
+          writerType: writerType,
+        ),
       ),
     );
   }

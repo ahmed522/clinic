@@ -1,5 +1,7 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/firebase_options.dart';
+import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/routes/routes.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,8 +31,13 @@ class MainWidget extends StatelessWidget {
       darkTheme: AppTheme.getDarkTheme(),
       themeMode: ThemeMode.system,
       routes: routes,
-      home: const Center(
-        child: AppCircularProgressIndicator(width: 100, height: 100),
+      home: Container(
+        color: CommonFunctions.isLightMode(context)
+            ? Colors.white
+            : AppColors.darkThemeBackgroundColor,
+        child: const Center(
+          child: AppCircularProgressIndicator(width: 100, height: 100),
+        ),
       ),
     );
   }

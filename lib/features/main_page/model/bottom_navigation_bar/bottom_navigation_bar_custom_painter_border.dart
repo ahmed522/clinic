@@ -1,4 +1,4 @@
-import 'package:clinic/presentation/widgets/bottom_navigation_bar/bottom_navigation_bar_path.dart';
+import 'package:clinic/features/main_page/model/bottom_navigation_bar/bottom_navigation_bar_path.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBarCustomPainterBorder extends CustomPainter {
@@ -9,7 +9,7 @@ class BottomNavBarCustomPainterBorder extends CustomPainter {
     Paint paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.2;
+      ..strokeWidth = 0.01;
     Path path = BottomNavBarPath.getBottomNavBarPath(size);
     canvas.drawPath(path, paint);
   }

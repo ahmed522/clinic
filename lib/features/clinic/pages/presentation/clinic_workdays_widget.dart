@@ -45,8 +45,8 @@ class ClinicWorkDaysWidget extends StatelessWidget {
             3,
             (index) => Day(
               day: AppConstants.weekDays[index + 4],
-              size: (size.width < 330) ? 35 : 40,
-              fontSize: (size.width < 330) ? 10 : 13,
+              size: (size.width < 330) ? 37 : 42,
+              fontSize: (size.width < 330) ? 9 : 12,
               checked: clinic.workDays[AppConstants.weekDays[index + 4]]!,
             ),
           ),
@@ -60,8 +60,8 @@ class ClinicWorkDaysWidget extends StatelessWidget {
             4,
             (index) => Day(
               day: AppConstants.weekDays[index],
-              size: (size.width < 330) ? 35 : 40,
-              fontSize: (size.width < 330) ? 10 : 13,
+              size: (size.width < 330) ? 37 : 42,
+              fontSize: (size.width < 330) ? 9 : 12,
               checked: clinic.workDays[AppConstants.weekDays[index]]!,
             ),
           ),

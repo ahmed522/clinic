@@ -9,6 +9,7 @@ import 'package:clinic/features/time_line/pages/post/comment/create_comment/comm
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,46 +22,37 @@ class CommentPage extends StatelessWidget {
         Get.put(CommentRepliesController(comment.commentId));
     final reactsController = Get.put(CommentReactsController(
         postId: comment.postId, commentId: comment.commentId));
-
+    final size = MediaQuery.of(context).size;
+    String appBarTitleText =
+        '${comment.writer.userType == UserType.doctor ? ' تعليق الطبيب' : ' تعليق'} ${CommonFunctions.getFullName(comment.writer.firstName!, comment.writer.lastName!)}';
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              CommonFunctions.getFullName(
-                  comment.writer.firstName!, comment.writer.lastName!),
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
+        title: Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            appBarTitleText,
+            style: TextStyle(
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontWeight: FontWeight.w700,
+              fontSize: (size.width < 330) ? 15 : 20,
             ),
-            Text(
-              comment.writer.userType == UserType.doctor
-                  ? ' تعليق الطبيب'
-                  : ' تعليق',
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
-      body: RefreshIndicator(
-        child: getCommentPage(context),
-        onRefresh: () async {
-          if (reactsController.loading.isFalse &&
-              reactsController.moreReactsloading.isFalse) {
-            reactsController.loadCommentReacts(1, true);
-          }
-          if (repliesController.loading.isFalse &&
-              repliesController.moreRepliesloading.isFalse) {
-            repliesController.loadCommentReplies(2, true);
-          }
-        },
+      body: OfflinePageBuilder(
+        child: RefreshIndicator(
+          child: getCommentPage(context),
+          onRefresh: () async {
+            if (reactsController.loading.isFalse &&
+                reactsController.moreReactsloading.isFalse) {
+              reactsController.loadCommentReacts(1, true);
+            }
+            if (repliesController.loading.isFalse &&
+                repliesController.moreRepliesloading.isFalse) {
+              repliesController.loadCommentReplies(2, true);
+            }
+          },
+        ),
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:clinic/features/time_line/pages/post/user_post/create_user_post/
 import 'package:clinic/features/time_line/pages/post/user_post/create_user_post/create_user_post_searching_specialization_widget.dart';
 import 'package:clinic/global/data/models/user_model.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -77,35 +78,37 @@ class CreateUserPost extends StatelessWidget {
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              top: 20.0,
-              right: 10.0,
-              left: 10.0,
-              bottom: 20.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                UserNameAndPicWidget(
-                  userName: controller.currentUserName,
-                  userPic: controller.currentUserPersonalImage,
-                ),
-                const SizedBox(height: 30),
-                const CreateUserPostSearchingSpecializationWidget(),
-                const SizedBox(height: 30),
-                const CreateUserPostIsErgentWidget(),
-                const SizedBox(height: 30),
-                const CreateUserPostPatientAgeWidget(),
-                const SizedBox(height: 30),
-                const CreateUserPostPatientGenderWidget(),
-                const SizedBox(height: 30),
-                const CreateUserPostPatientDiseasesWidget(),
-                const SizedBox(height: 30),
-                const CreateUserPostQuestionWidget(),
-              ],
+      body: OfflinePageBuilder(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 20.0,
+                right: 10.0,
+                left: 10.0,
+                bottom: 20.0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UserNameAndPicWidget(
+                    userName: controller.currentUserName,
+                    userPic: controller.currentUserPersonalImage,
+                  ),
+                  const SizedBox(height: 30),
+                  const CreateUserPostSearchingSpecializationWidget(),
+                  const SizedBox(height: 30),
+                  const CreateUserPostIsErgentWidget(),
+                  const SizedBox(height: 30),
+                  const CreateUserPostPatientAgeWidget(),
+                  const SizedBox(height: 30),
+                  const CreateUserPostPatientGenderWidget(),
+                  const SizedBox(height: 30),
+                  const CreateUserPostPatientDiseasesWidget(),
+                  const SizedBox(height: 30),
+                  const CreateUserPostQuestionWidget(),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_posts_controller.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/doctor_post_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,7 +15,7 @@ class DoctorPostsPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          buildUserPostsList(context),
+          OfflinePageBuilder(child: buildUserPostsList(context)),
           const TopPageWidgetWithText(
             text: 'المنشورات',
             fontSize: 40,
@@ -87,7 +88,7 @@ class DoctorPostsPage extends StatelessWidget {
                 if (controller.content.length == 1) {
                   return Padding(
                     padding: EdgeInsets.only(
-                      top: size.height / 5 - 20,
+                      top: size.height / 5,
                       bottom: 10,
                     ),
                     child: DoctorPostWidget(
@@ -97,7 +98,7 @@ class DoctorPostsPage extends StatelessWidget {
                   );
                 }
                 return Padding(
-                  padding: EdgeInsets.only(top: size.height / 5 - 20),
+                  padding: EdgeInsets.only(top: size.height / 5),
                   child: DoctorPostWidget(
                     post: controller.content[index],
                     isProfilePage: true,

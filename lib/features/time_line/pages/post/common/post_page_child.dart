@@ -54,6 +54,7 @@ class PostPageChild extends StatelessWidget {
               ? UserPostWidget(
                   post: post as UserPostModel,
                   isPostPage: true,
+                  isProfilePage: true,
                 )
               : DoctorPostWidget(
                   post: post as DoctorPostModel,

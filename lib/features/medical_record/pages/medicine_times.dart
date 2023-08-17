@@ -22,11 +22,11 @@ class MedicineTimes extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           CircleButton(
-            icon: const Icon(Icons.add),
             onPressed: () => onIncreament(),
             backgroundColor: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : AppColors.darkThemeBackgroundColor,
+            child: const Icon(Icons.add),
           ),
           Text(
             times.toString(),
@@ -39,11 +39,11 @@ class MedicineTimes extends StatelessWidget {
             ),
           ),
           CircleButton(
-            icon: const Icon(Icons.remove),
             onPressed: () => onDecreament(),
             backgroundColor: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : AppColors.darkThemeBackgroundColor,
+            child: const Icon(Icons.remove),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:clinic/features/time_line/controller/comment_replies_controller.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/containered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +23,15 @@ class CommentRepliesWidget extends StatelessWidget {
             ),
           );
         }
+        if (controller.replies.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 20.0),
+            child: ContaineredText(
+              text: 'لا توجد ردود حتى الان',
+            ),
+          );
+        }
+
         return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,

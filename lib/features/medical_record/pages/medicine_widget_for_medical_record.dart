@@ -21,15 +21,14 @@ class MedicineWidgetForMedicalRecord extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5.0),
       child: Card(
-        elevation: 3,
-        shadowColor: AppColors.primaryColorLight,
+        elevation: 5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(10),
           side: BorderSide(
             color: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
-            width: .5,
+            width: 0.0001,
           ),
         ),
         color: (CommonFunctions.isLightMode(context))

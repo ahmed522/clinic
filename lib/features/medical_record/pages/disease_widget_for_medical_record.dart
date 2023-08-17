@@ -122,7 +122,8 @@ onEditDiseaseButtonPressed(BuildContext context, DiseaseModel disease) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 25,
                 controller: TextEditingController(text: disease.diseaseName),
                 onChanged: (diseaseName) =>
@@ -140,7 +141,8 @@ onEditDiseaseButtonPressed(BuildContext context, DiseaseModel disease) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 150,
                 maxLines: 4,
                 controller: TextEditingController(text: disease.info),

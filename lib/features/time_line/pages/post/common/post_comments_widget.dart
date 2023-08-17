@@ -5,6 +5,7 @@ import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/common/create_comment.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/containered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -49,6 +50,15 @@ class PostCommentsWidget extends StatelessWidget {
                 ),
               );
             }
+            if (controller.comments.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.only(bottom: 20.0),
+                child: ContaineredText(
+                  text: 'لا توجد تعليقات حتى الان',
+                ),
+              );
+            }
+
             return ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,

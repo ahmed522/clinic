@@ -5,6 +5,7 @@ import 'package:clinic/features/clinic/pages/presentation/add_clinic_button.dart
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,31 +30,35 @@ class AddClinicPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          GetBuilder<SingleClinicController>(
-            builder: (controller) {
-              if (controller.loading) {
-                return const Center(
-                  child: AppCircularProgressIndicator(height: 100, width: 100),
-                );
-              }
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: size.height / 5),
-                      CreateClinicPage(
-                          index: clinicIndex, mode: ClinicPageMode.createMode),
-                      const SizedBox(height: 40),
-                      AddClinicButton(
-                        onPressed: () => _addClinicButtonOnPressed(context),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
+          OfflinePageBuilder(
+            child: GetBuilder<SingleClinicController>(
+              builder: (controller) {
+                if (controller.loading) {
+                  return const Center(
+                    child:
+                        AppCircularProgressIndicator(height: 100, width: 100),
+                  );
+                }
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: size.height / 5),
+                        CreateClinicPage(
+                            index: clinicIndex,
+                            mode: ClinicPageMode.createMode),
+                        const SizedBox(height: 40),
+                        AddClinicButton(
+                          onPressed: () => _addClinicButtonOnPressed(context),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
           const TopPageWidgetWithText(text: 'إضافة عيادة', fontSize: 35),
         ],

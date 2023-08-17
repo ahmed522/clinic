@@ -1,25 +1,29 @@
 import 'package:clinic/features/following/pages/doctor_following_card_widget.dart';
 import 'package:clinic/features/user_profile/controller/user_following_page_controller.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class UserFollowingPage extends StatelessWidget {
-  const UserFollowingPage({super.key});
-
+  const UserFollowingPage({super.key, required this.userId});
+  final String userId;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final controller = Get.put(UserFollowingPageController());
+    final controller =
+        Get.put(UserFollowingPageController(userId), tag: userId);
     return Scaffold(
       body: Stack(
         children: [
-          RefreshIndicator(
-            displacement: size.height / 5,
-            child: _buildFollowingDoctorsList(context),
-            onRefresh: () => controller.loadFollowings(20, true),
+          OfflinePageBuilder(
+            child: RefreshIndicator(
+              displacement: size.height / 5,
+              child: _buildFollowingDoctorsList(context),
+              onRefresh: () => controller.loadFollowings(20, true),
+            ),
           ),
           const TopPageWidgetWithText(
             text: 'الأطباء المتابَعون',
@@ -33,6 +37,7 @@ class UserFollowingPage extends StatelessWidget {
   Widget _buildFollowingDoctorsList(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GetX<UserFollowingPageController>(
+      tag: userId,
       builder: (controller) {
         if (controller.loading.isTrue) {
           return SingleChildScrollView(
@@ -89,9 +94,10 @@ class UserFollowingPage extends StatelessWidget {
                       onUnfollowButtonPressed: () =>
                           controller.onUnfollowButtonPressed(
                               context, controller.followings[index]),
-                      isEditable: true,
+                      isEditable: controller.isCurrentUserProfilePage,
                     ),
                     GetX<UserFollowingPageController>(
+                      tag: userId,
                       builder: (controller) {
                         if (controller.noMoreFollowings.isTrue) {
                           return const SizedBox();
@@ -130,7 +136,7 @@ class UserFollowingPage extends StatelessWidget {
                 onUnfollowButtonPressed: () =>
                     controller.onUnfollowButtonPressed(
                         context, controller.followings[index]),
-                isEditable: true,
+                isEditable: controller.isCurrentUserProfilePage,
               ),
             );
           },

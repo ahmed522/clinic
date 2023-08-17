@@ -78,7 +78,8 @@ onAddMedicineButton(BuildContext context) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 25,
                 onChanged: (medicineName) =>
                     controller.updateTempMedicineName(medicineName),
@@ -139,7 +140,8 @@ onAddMedicineButton(BuildContext context) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLines: 4,
                 maxLength: 150,
                 onChanged: (medicineInfo) =>

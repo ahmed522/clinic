@@ -1,4 +1,6 @@
+import 'package:clinic/features/chat/controller/single_chat_page_controller.dart';
 import 'package:clinic/features/medical_record/controller/medical_record_page_controller.dart';
+import 'package:clinic/features/medical_record/model/medical_record_model.dart';
 import 'package:clinic/features/medical_record/pages/add_medical_record.dart';
 import 'package:clinic/features/medical_record/pages/medical_record_item_parent_widget.dart';
 import 'package:clinic/features/medical_record/pages/medicine_widget_for_medical_record.dart';
@@ -8,26 +10,47 @@ import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/age.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/containered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserMedicalRecordPage extends StatelessWidget {
-  const UserMedicalRecordPage({super.key});
-
+  const UserMedicalRecordPage(
+      {super.key, this.isMessage = false, this.chatterId});
+  final bool isMessage;
+  final String? chatterId;
   @override
   Widget build(BuildContext context) {
-    final controller = MedicalRecordPageController.find;
+    final controller = isMessage
+        ? SingleChatPageController.find(chatterId!)
+        : MedicalRecordPageController.find;
+
     final size = MediaQuery.of(context).size;
-    final Age userAge = controller.currntUserAge;
+    final Age userAge = isMessage
+        ? (controller as SingleChatPageController).medicalRecordUserAge
+        : (controller as MedicalRecordPageController).currntUserAge;
+    final Gender userGender = isMessage
+        ? (controller as SingleChatPageController).medicalRecordUserGender
+        : (controller as MedicalRecordPageController).currentUserGender;
+    final MedicalRecordModel medicalRecord = isMessage
+        ? (controller as SingleChatPageController).medicalRecord!
+        : (controller as MedicalRecordPageController).medicalRecord!;
     return SingleChildScrollView(
       child: Padding(
-        padding:
-            EdgeInsets.only(top: size.height / 5 - 10, left: 10, right: 10),
+        padding: EdgeInsets.only(
+            top: isMessage ? 10 : size.height / 5 - 10, left: 10, right: 10),
         child: Column(
           children: [
             UserNameAndPicWidget(
-              userName: controller.currentUserName,
-              userPic: controller.currentUserPersonalImage,
+              userName: isMessage
+                  ? (controller as SingleChatPageController)
+                      .medicalRecordUserName
+                  : (controller as MedicalRecordPageController).currentUserName,
+              userPic: isMessage
+                  ? (controller as SingleChatPageController)
+                      .medicalRecordUserPic
+                  : (controller as MedicalRecordPageController)
+                      .currentUserPersonalImage,
             ),
             const SizedBox(
               height: 30,
@@ -40,13 +63,14 @@ class UserMedicalRecordPage extends StatelessWidget {
               ),
             ),
             Icon(
-                (controller.currentUserGender == Gender.male)
-                    ? Icons.male_rounded
-                    : Icons.female_rounded,
-                color: (controller.currentUserGender == Gender.male)
-                    ? AppColors.primaryColor
-                    : Colors.pink,
-                size: 70),
+              (userGender == Gender.male)
+                  ? Icons.male_rounded
+                  : Icons.female_rounded,
+              color: (userGender == Gender.male)
+                  ? AppColors.primaryColor
+                  : Colors.pink,
+              size: 70,
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -114,7 +138,7 @@ class UserMedicalRecordPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            (controller.medicalRecord!.diseases.isEmpty)
+            (medicalRecord.diseases.isEmpty)
                 ? Center(
                     child: Container(
                       padding: const EdgeInsets.all(5.0),
@@ -135,13 +159,11 @@ class UserMedicalRecordPage extends StatelessWidget {
                   )
                 : Column(
                     children: List<MedicalRecordItemParentWidget>.generate(
-                      controller.medicalRecord!.diseases.length,
+                      medicalRecord.diseases.length,
                       (index) => MedicalRecordItemParentWidget(
                         isMedicalRecordPage: true,
-                        itemName: controller
-                            .medicalRecord!.diseases[index].diseaseName,
-                        itemInfo:
-                            controller.medicalRecord!.diseases[index].info,
+                        itemName: medicalRecord.diseases[index].diseaseName,
+                        itemInfo: medicalRecord.diseases[index].info,
                       ),
                     ),
                   ),
@@ -158,7 +180,7 @@ class UserMedicalRecordPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            (controller.medicalRecord!.surgeries.isEmpty)
+            (medicalRecord.surgeries.isEmpty)
                 ? Center(
                     child: Container(
                       padding: const EdgeInsets.all(5.0),
@@ -179,15 +201,12 @@ class UserMedicalRecordPage extends StatelessWidget {
                   )
                 : Column(
                     children: List<MedicalRecordItemParentWidget>.generate(
-                      controller.medicalRecord!.surgeries.length,
+                      medicalRecord.surgeries.length,
                       (index) => MedicalRecordItemParentWidget(
                         isMedicalRecordPage: true,
-                        itemName: controller
-                            .medicalRecord!.surgeries[index].surgeryName,
-                        itemInfo:
-                            controller.medicalRecord!.surgeries[index].info,
-                        surgeryDate: controller
-                            .medicalRecord!.surgeries[index].surgeryDate
+                        itemName: medicalRecord.surgeries[index].surgeryName,
+                        itemInfo: medicalRecord.surgeries[index].info,
+                        surgeryDate: medicalRecord.surgeries[index].surgeryDate
                             .toDate()
                             .toString()
                             .substring(0, 10),
@@ -207,7 +226,7 @@ class UserMedicalRecordPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            (controller.medicalRecord!.medicines.isEmpty)
+            (medicalRecord.medicines.isEmpty)
                 ? Center(
                     child: Container(
                       padding: const EdgeInsets.all(5.0),
@@ -228,12 +247,11 @@ class UserMedicalRecordPage extends StatelessWidget {
                   )
                 : Column(
                     children: List<MedicineWidgetForMedicalRecord>.generate(
-                      controller.medicalRecord!.medicines.length,
+                      medicalRecord.medicines.length,
                       (index) => MedicineWidgetForMedicalRecord(
                         isMedicalRecordPage: true,
-                        medicine: controller.medicalRecord!.medicines[index],
-                        medicineId: controller
-                            .medicalRecord!.medicines[index].medicineId,
+                        medicine: medicalRecord.medicines[index],
+                        medicineId: medicalRecord.medicines[index].medicineId,
                       ),
                     ),
                   ),
@@ -250,35 +268,18 @@ class UserMedicalRecordPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            (controller.medicalRecord!.moreInfo == null)
-                ? Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(5.0),
-                      decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(color: Colors.green),
-                          borderRadius: BorderRadius.circular(20)),
-                      child: const Text(
-                        'لا توجد معلومات أخرى',
-                        style: TextStyle(
-                          fontFamily: AppFonts.mainArabicFontFamily,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ),
-                  )
+            (medicalRecord.moreInfo == null)
+                ? const Center(
+                    child: ContaineredText(text: 'لا توجد معلومات أخرى'))
                 : Card(
                     elevation: 5,
-                    shadowColor: AppColors.primaryColorLight,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(10),
                       side: BorderSide(
                         color: (CommonFunctions.isLightMode(context))
                             ? AppColors.primaryColor
                             : Colors.white,
-                        width: .2,
+                        width: .0001,
                       ),
                     ),
                     color: (CommonFunctions.isLightMode(context))
@@ -287,7 +288,7 @@ class UserMedicalRecordPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        controller.medicalRecord!.moreInfo!,
+                        medicalRecord.moreInfo!,
                         textAlign: TextAlign.end,
                         style: TextStyle(
                           fontFamily: AppFonts.mainArabicFontFamily,
@@ -304,26 +305,30 @@ class UserMedicalRecordPage extends StatelessWidget {
             const SizedBox(
               height: 40,
             ),
-            ElevatedButton(
-              onPressed: () => Get.to(() => AddMedicalRecord(
-                    isMedicalRecordPage: true,
-                    medicalRecordModel: controller.medicalRecord,
-                  )),
-              style: ElevatedButton.styleFrom(
-                elevation: 7.0,
-                padding: const EdgeInsets.all(15.0),
-                side: BorderSide(
-                  width: .1,
-                  color: (CommonFunctions.isLightMode(context))
-                      ? AppColors.primaryColor
-                      : Colors.white,
-                ),
-              ),
-              child: Text(
-                'تعديل السجل المرضي',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-            ),
+            isMessage
+                ? const SizedBox()
+                : ElevatedButton(
+                    onPressed: () => Get.to(() => AddMedicalRecord(
+                          isMedicalRecordPage: true,
+                          medicalRecordModel:
+                              (controller as MedicalRecordPageController)
+                                  .medicalRecord,
+                        )),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 7.0,
+                      padding: const EdgeInsets.all(15.0),
+                      side: BorderSide(
+                        width: .1,
+                        color: (CommonFunctions.isLightMode(context))
+                            ? AppColors.primaryColor
+                            : Colors.white,
+                      ),
+                    ),
+                    child: Text(
+                      'تعديل السجل المرضي',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ),
             const SizedBox(
               height: 30,
             ),

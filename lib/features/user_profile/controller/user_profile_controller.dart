@@ -4,6 +4,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/user_model.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
@@ -13,19 +14,36 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserProfileController extends GetxController {
+  UserProfileController(this.userId);
+  final String userId;
+
   static UserProfileController get find => Get.find();
   final AuthenticationController _authenticationController =
       AuthenticationController.find;
   final UserDataController _userDataController = UserDataController.find;
-  RxBool updateImageLoading = false.obs;
+  RxBool loading = true.obs;
   final TimeLineController _timeLineController = TimeLineController.find;
-  get currentUserPersonalImage =>
-      _authenticationController.currentUserPersonalImage;
-  get currentUserName => _authenticationController.currentUserName;
+  late String? currentUserPersonalImage;
+  late String currentUserName;
   get currentUserId => _authenticationController.currentUserId;
-  get currentUserGender => _authenticationController.currentUserGender;
-  get currentUserBirthDate => _authenticationController.currentUserBirthDate;
+  @override
+  void onReady() async {
+    loading.value = true;
+    if (isCurrentUserProfilePage) {
+      currentUserName = _authenticationController.currentUserName;
+      currentUserPersonalImage =
+          _authenticationController.currentUserPersonalImage;
+    } else {
+      currentUserName =
+          await _userDataController.getUserNameById(userId, UserType.user);
+      currentUserPersonalImage = await _userDataController
+          .getUserPersonalImageURLById(userId, UserType.user);
+    }
+    loading.value = false;
+    super.onReady();
+  }
 
+  bool get isCurrentUserProfilePage => (currentUserId == userId);
   updateUserPersonalImage(BuildContext context) async {
     UserModel user = _authenticationController.currentUser as UserModel;
 
@@ -55,14 +73,14 @@ class UserProfileController extends GetxController {
   }
 
   deleteUserPersonalImage() async {
-    updateImageLoading.value = true;
+    loading.value = true;
 
     await _userDataController
-        .deleteUserPersonalImage(currentUserId, currentUserPersonalImage)
+        .deleteUserPersonalImage(currentUserId, currentUserPersonalImage!)
         .then((value) {
       _timeLineController.loadPosts(50, true);
       MySnackBar.showGetSnackbar('تم حذف الصورة الشخصية بنجاح', Colors.green);
-      updateImageLoading.value = false;
+      loading.value = false;
       update();
     });
   }
@@ -113,7 +131,7 @@ class UserProfileController extends GetxController {
                               foregroundColor: Colors.white,
                             ),
                             onPressed: () async {
-                              updateImageLoading.value = true;
+                              loading.value = true;
                               Get.back(closeOverlays: true);
                               await _userDataController
                                   .updateUserPersonalImage(currentUserId, user)
@@ -124,7 +142,7 @@ class UserProfileController extends GetxController {
                                       'تم تعديل الصورة الشخصية بنجاح',
                                       Colors.green);
                                 }
-                                updateImageLoading.value = false;
+                                loading.value = false;
                                 update();
                               });
                             },

@@ -15,6 +15,7 @@ class CreateUserPostPatientDiseasesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = CreateUserPostController.find;
+    controller.screenWidth = MediaQuery.of(context).size.width;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,7 +71,8 @@ class CreateUserPostPatientDiseasesWidget extends StatelessWidget {
                     content: Center(
                       child: TextField(
                         autofocus: true,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.right,
+                        textDirection: TextDirection.rtl,
                         maxLength: 25,
                         onChanged: (diseaseName) =>
                             controller.updateTempDiseaseName(diseaseName),
@@ -92,7 +94,10 @@ class CreateUserPostPatientDiseasesWidget extends StatelessWidget {
                               key: UniqueKey(),
                               diseaseName: controller.tempDiseaseName!.trim(),
                               onPressed: (diseaseName, key) =>
-                                  _onDiseaseButtonPressed(diseaseName, key),
+                                  _onDiseaseButtonPressed(
+                                diseaseName,
+                                key,
+                              ),
                             ),
                           );
                           controller.tempDiseaseName = null;
@@ -137,37 +142,93 @@ class CreateUserPostPatientDiseasesWidget extends StatelessWidget {
     CreateUserPostController controller = Get.find();
     int index = controller.diseases.indexWhere((disease) => disease.key == key);
     controller.updateTempControllerText(diseaseName);
-    Get.dialog(AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      scrollable: true,
-      title: const Text(
-        'تعديل إسم المرض المزمن',
-        textAlign: TextAlign.end,
-        style: TextStyle(
-          fontFamily: AppFonts.mainArabicFontFamily,
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-      ),
-      content: Center(
-        child: TextField(
-          controller: controller.tempController,
-          autofocus: true,
+        scrollable: true,
+        title: Text(
+          'تعديل إسم المرض المزمن',
           textAlign: TextAlign.end,
-          maxLength: 25,
+          style: TextStyle(
+            fontFamily: AppFonts.mainArabicFontFamily,
+            fontWeight: FontWeight.w700,
+            fontSize: (controller.screenWidth < 330) ? 17 : 20,
+          ),
+        ),
+        content: Center(
+          child: TextField(
+            controller: controller.tempController,
+            autofocus: true,
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            maxLength: 25,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
+        actionsPadding: const EdgeInsets.only(left: 5, right: 5, bottom: 30),
+        actions: (controller.screenWidth < 330)
+            ? _getIconedActions(diseaseName, key)
+            : MyAlertDialog.getAlertDialogActions({
+                'إزالة': () {
+                  controller.removeDisease(diseaseName);
+                  controller.removeDiseaseWidget(key!);
+                  Get.back();
+                },
+                'تأكيد': () {
+                  if (controller.tempController.text !=
+                          controller.diseases[index].diseaseName &&
+                      controller.tempController.text.trim() != '') {
+                    controller.updateDisease(
+                        index, controller.tempController.text.trim());
+                    controller.removeDiseaseWidget(key!);
+                    controller.addDiseaseWidget(
+                        index,
+                        DiseaseWidget(
+                          key: key,
+                          diseaseName: controller.tempController.text.trim(),
+                          onPressed: (diseaseName, key) =>
+                              _onDiseaseButtonPressed(diseaseName, key),
+                        ));
+                  }
+                  Get.back();
+                },
+                'إلغاء': () => Get.back(),
+              }),
+      ),
+    );
+  }
+
+  List<Widget> _getIconedActions(String diseaseName, Key? key) {
+    CreateUserPostController controller = Get.find();
+    int index = controller.diseases.indexWhere((disease) => disease.key == key);
+
+    List<Widget> actions = [
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+        ),
+        onPressed: () => Get.back(),
+        child: const Icon(
+          Icons.close_rounded,
+          color: Colors.white,
+          size: 20,
         ),
       ),
-      actionsAlignment: MainAxisAlignment.start,
-      actionsPadding: const EdgeInsets.only(left: 30, bottom: 30),
-      actions: MyAlertDialog.getAlertDialogActions({
-        'إزالة': () {
-          controller.removeDisease(diseaseName);
-          controller.removeDiseaseWidget(key!);
-          Get.back();
-        },
-        'تأكيد': () {
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+        ),
+        onPressed: () {
           if (controller.tempController.text !=
                   controller.diseases[index].diseaseName &&
               controller.tempController.text.trim() != '') {
@@ -185,8 +246,33 @@ class CreateUserPostPatientDiseasesWidget extends StatelessWidget {
           }
           Get.back();
         },
-        'إلغاء': () => Get.back(),
-      }),
-    ));
+        child: const Icon(
+          Icons.check_rounded,
+          color: Colors.white,
+          size: 20,
+        ),
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+        ),
+        onPressed: () {
+          controller.removeDisease(diseaseName);
+          controller.removeDiseaseWidget(key!);
+          Get.back();
+        },
+        child: const Icon(
+          Icons.delete_outline_rounded,
+          color: Colors.white,
+          size: 20,
+        ),
+      ),
+    ];
+
+    return actions;
   }
 }

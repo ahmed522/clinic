@@ -17,7 +17,8 @@ class MyAlertDialog {
             scrollable: true,
             title: Text(
               title,
-              textAlign: TextAlign.end,
+              textAlign: TextAlign.right,
+              textDirection: TextDirection.rtl,
               style: TextStyle(
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w700,
@@ -31,7 +32,8 @@ class MyAlertDialog {
                 ? Center(
                     child: Text(
                       content,
-                      textAlign: TextAlign.end,
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
                       style: const TextStyle(
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontSize: 15,
@@ -62,9 +64,10 @@ class MyAlertDialog {
           child: Text(
             text,
             style: const TextStyle(
-                color: Colors.white,
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontSize: 20),
+              color: Colors.white,
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontSize: 18,
+            ),
           ),
         ),
       );

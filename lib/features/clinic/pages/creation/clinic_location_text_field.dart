@@ -19,6 +19,8 @@ class ClinicLocationTextField extends StatelessWidget {
       padding: const EdgeInsets.only(right: 80.0),
       child: TextField(
         controller: TextEditingController(text: initialText),
+        textAlign: TextAlign.right,
+        textDirection: TextDirection.rtl,
         decoration: InputDecoration(
           icon: const Icon(
             Icons.location_on_outlined,

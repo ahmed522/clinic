@@ -79,7 +79,8 @@ onAddDiseaseButton(BuildContext context) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 25,
                 onChanged: (diseaseName) =>
                     controller.updateTempDiseaseName(diseaseName),
@@ -96,7 +97,8 @@ onAddDiseaseButton(BuildContext context) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLines: 4,
                 maxLength: 150,
                 onChanged: (diseaseInfo) =>

@@ -37,7 +37,8 @@ class CreateReplyTextField extends StatelessWidget {
         ),
         maxLength: 400,
         maxLines: 2,
-        textAlign: TextAlign.end,
+        textAlign: TextAlign.right,
+        textDirection: TextDirection.rtl,
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:clinic/features/doctor_profile/pages/doctor_profile_page.dart';
 import 'package:clinic/features/time_line/pages/post/common/post_side_info.dart';
 import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';
+import 'package:clinic/features/user_profile/pages/user_profile_page.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,11 +20,13 @@ class PostTopWidget extends StatelessWidget {
     required this.paddingValue,
     required this.onSettingsButtonPressed,
     required this.isCurrentUserPost,
-    this.doctorId,
     required this.isProfilePage,
+    required this.userId,
+    required this.userType,
   }) : super(key: key);
   final bool setSideInfo;
-  final String? doctorId;
+  final String userId;
+  final UserType userType;
   final String userName;
   final String? personalImageURL;
   final String? postSideInfoText;
@@ -37,14 +41,24 @@ class PostTopWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: doctorId == null || isProfilePage
+      onTap: isProfilePage
           ? null
-          : () => Get.to(
-                () => DoctorProfilePage(
-                  isCurrentUser: isCurrentUserPost,
-                  doctorId: doctorId!,
-                ),
-              ),
+          : () {
+              if (userType == UserType.user) {
+                Get.to(
+                  () => UserProfilePage(
+                    userId: userId,
+                  ),
+                );
+              } else {
+                Get.to(
+                  () => DoctorProfilePage(
+                    isCurrentUser: isCurrentUserPost,
+                    doctorId: userId,
+                  ),
+                );
+              }
+            },
       child: SizedBox(
         width: size.width - paddingValue,
         child: Row(

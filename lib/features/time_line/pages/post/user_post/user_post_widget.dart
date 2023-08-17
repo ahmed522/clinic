@@ -16,11 +16,13 @@ import 'package:get/get.dart';
 class UserPostWidget extends StatelessWidget {
   final UserPostModel post;
   final bool isPostPage;
+  final bool isProfilePage;
 
   const UserPostWidget({
     super.key,
     required this.post,
     this.isPostPage = false,
+    required this.isProfilePage,
   });
 
   @override
@@ -74,7 +76,9 @@ class UserPostWidget extends StatelessWidget {
                 paddingValue: 26,
                 onSettingsButtonPressed: () => controller
                     .onPostSettingsButtonPressed(context, post.postId!),
-                isProfilePage: false,
+                userId: post.user.userId!,
+                userType: UserType.user,
+                isProfilePage: isProfilePage,
               ),
               const SizedBox(
                 height: 10,

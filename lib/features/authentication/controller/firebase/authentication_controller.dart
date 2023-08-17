@@ -12,7 +12,7 @@ import 'package:clinic/global/data/models/user_model.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
-import 'package:clinic/presentation/pages/main_page.dart';
+import 'package:clinic/features/main_page/pages/main_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +30,14 @@ class AuthenticationController extends GetxController {
   RxBool loading = true.obs;
   @override
   void onReady() async {
-    await localStorageController.initLocalStorage();
-    firebaseUser = Rx<User?>(_firebaseAuth.currentUser);
-    firebaseUser.bindStream(_firebaseAuth.userChanges());
-    ever(firebaseUser, _setInitialScreen);
+    try {
+      await localStorageController.initLocalStorage();
+      firebaseUser = Rx<User?>(_firebaseAuth.currentUser);
+      firebaseUser.bindStream(_firebaseAuth.userChanges());
+      ever(firebaseUser, _setInitialScreen);
+    } catch (e) {
+      CommonFunctions.errorHappened();
+    }
   }
 
   _setInitialScreen(User? user) async {

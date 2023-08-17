@@ -25,15 +25,14 @@ class MedicalRecordItemParentWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5.0),
       child: Card(
-        elevation: 3,
-        shadowColor: AppColors.primaryColorLight,
+        elevation: 5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(10),
           side: BorderSide(
             color: (CommonFunctions.isLightMode(context))
                 ? AppColors.primaryColor
                 : Colors.white,
-            width: .5,
+            width: .0001,
           ),
         ),
         color: (CommonFunctions.isLightMode(context))
@@ -52,16 +51,16 @@ class MedicalRecordItemParentWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           CircleButton(
-                            icon: const Icon(Icons.edit_rounded),
                             onPressed: () => onEditItemButtonPressed!(),
+                            child: const Icon(Icons.edit_rounded),
                           ),
                           const SizedBox(
                             height: 10,
                           ),
                           CircleButton(
-                            icon: const Icon(Icons.remove_rounded),
                             backgroundColor: Colors.red,
                             onPressed: () => onRemoveItemButtonPressed!(),
+                            child: const Icon(Icons.remove_rounded),
                           ),
                         ],
                       ),

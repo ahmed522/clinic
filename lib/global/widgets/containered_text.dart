@@ -22,6 +22,8 @@ class ContaineredText extends StatelessWidget {
       ),
       child: Text(
         text,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.rtl,
         style: TextStyle(
           fontFamily: AppFonts.mainArabicFontFamily,
           fontWeight: FontWeight.w600,

@@ -1,20 +1,21 @@
 import 'package:clinic/features/time_line/pages/post/user_post/user_post_widget.dart';
 import 'package:clinic/features/user_profile/controller/user_questions_controller.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class UserQuestionsPage extends StatelessWidget {
-  const UserQuestionsPage({super.key});
-
+  const UserQuestionsPage({super.key, required this.userId});
+  final String userId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          buildUserPostsList(context),
+          OfflinePageBuilder(child: buildUserPostsList(context)),
           const TopPageWidgetWithText(
             text: 'الأسئلة',
             fontSize: 40,
@@ -27,7 +28,8 @@ class UserQuestionsPage extends StatelessWidget {
   buildUserPostsList(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GetX<UserQuestionsController>(
-      init: UserQuestionsController(),
+      tag: userId,
+      init: UserQuestionsController(userId),
       builder: (controller) {
         if (controller.loadingPosts.isTrue) {
           return RefreshIndicator(
@@ -88,6 +90,7 @@ class UserQuestionsPage extends StatelessWidget {
                   padding: EdgeInsets.only(top: size.height / 5 - 20),
                   child: UserPostWidget(
                     post: controller.content[index],
+                    isProfilePage: true,
                   ),
                 );
               } else if (index == controller.content.length - 1) {
@@ -95,8 +98,12 @@ class UserQuestionsPage extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Column(
                     children: [
-                      UserPostWidget(post: controller.content[index]),
+                      UserPostWidget(
+                        post: controller.content[index],
+                        isProfilePage: true,
+                      ),
                       GetX<UserQuestionsController>(
+                        tag: userId,
                         builder: (controller) {
                           if (controller.noMorePosts.isTrue) {
                             return const SizedBox();
@@ -130,7 +137,10 @@ class UserQuestionsPage extends StatelessWidget {
                   ),
                 );
               }
-              return UserPostWidget(post: controller.content[index]);
+              return UserPostWidget(
+                post: controller.content[index],
+                isProfilePage: true,
+              );
             },
           ),
         );

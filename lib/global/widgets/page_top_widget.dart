@@ -19,14 +19,15 @@ class TopPageWidget extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [
-                  AppColors.primaryColorLight.withOpacity(0.8),
-                  AppColors.primaryColor,
-                ],
-                begin: const FractionalOffset(0.0, 0.0),
-                end: const FractionalOffset(1.0, 0.0),
-                stops: const [0.0, 1.0],
-                tileMode: TileMode.clamp),
+              colors: [
+                AppColors.primaryColorLight.withOpacity(0.8),
+                AppColors.primaryColor,
+              ],
+              begin: const FractionalOffset(0.0, 0.0),
+              end: const FractionalOffset(1.0, 0.0),
+              stops: const [0.0, 1.0],
+              tileMode: TileMode.clamp,
+            ),
           ),
         ),
       ),

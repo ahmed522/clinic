@@ -2,7 +2,7 @@ import 'package:clinic/features/medical_record/controller/add_medical_record_con
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/presentation/pages/main_page.dart';
+import 'package:clinic/features/main_page/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

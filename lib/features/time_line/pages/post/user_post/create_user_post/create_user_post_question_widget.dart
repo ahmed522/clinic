@@ -35,7 +35,8 @@ class CreateUserPostQuestionWidget extends StatelessWidget {
           ),
           maxLength: 400,
           maxLines: 5,
-          textAlign: TextAlign.end,
+          textAlign: TextAlign.right,
+          textDirection: TextDirection.rtl,
           onChanged: (content) {
             controller.tempContent = content;
           },

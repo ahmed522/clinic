@@ -8,6 +8,7 @@ import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/time_line_page_clipper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -39,12 +40,14 @@ class TimeLine extends StatelessWidget {
         centerTitle: true,
         shape: TimeLinePageClipper(height: size.height / 25),
       ),
-      body: RefreshIndicator(
-        onRefresh: () => controller.loadPosts(50, true),
-        color: (CommonFunctions.isLightMode(context))
-            ? AppColors.primaryColor
-            : Colors.white,
-        child: buildTimeLine(context),
+      body: OfflinePageBuilder(
+        child: RefreshIndicator(
+          onRefresh: () => controller.loadPosts(50, true),
+          color: (CommonFunctions.isLightMode(context))
+              ? AppColors.primaryColor
+              : Colors.white,
+          child: buildTimeLine(context),
+        ),
       ),
     );
   }
@@ -100,7 +103,7 @@ class TimeLine extends StatelessWidget {
             if (index == 0) {
               return Padding(
                 padding:
-                    EdgeInsets.only(top: 40.0, bottom: singlePost ? 100 : 0),
+                    EdgeInsets.only(top: 50.0, bottom: singlePost ? 100 : 0),
                 child:
                     (controller.content[index].writerType! == UserType.doctor)
                         ? DoctorPostWidget(
@@ -108,6 +111,7 @@ class TimeLine extends StatelessWidget {
                           )
                         : UserPostWidget(
                             post: controller.content[index] as UserPostModel,
+                            isProfilePage: false,
                           ),
               );
             } else if (index == controller.content.length - 1) {
@@ -121,6 +125,7 @@ class TimeLine extends StatelessWidget {
                           )
                         : UserPostWidget(
                             post: controller.content[index] as UserPostModel,
+                            isProfilePage: false,
                           ),
                     GetX<TimeLineController>(
                       builder: (controller) {
@@ -169,6 +174,7 @@ class TimeLine extends StatelessWidget {
                   )
                 : UserPostWidget(
                     post: controller.content[index] as UserPostModel,
+                    isProfilePage: false,
                   );
           },
         );

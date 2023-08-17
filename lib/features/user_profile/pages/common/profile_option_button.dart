@@ -15,6 +15,8 @@ class ProfileOptionButton extends StatelessWidget {
   final void Function()? onPressed;
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Padding(
       padding: const EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
       child: ElevatedButton(
@@ -42,7 +44,7 @@ class ProfileOptionButton extends StatelessWidget {
                 color: (CommonFunctions.isLightMode(context))
                     ? AppColors.primaryColor
                     : Colors.white,
-                fontSize: 20,
+                fontSize: (text.length > 15 && size.width < 300) ? 17 : 20,
                 fontFamily: AppFonts.mainArabicFontFamily,
                 fontWeight: FontWeight.w600,
               ),

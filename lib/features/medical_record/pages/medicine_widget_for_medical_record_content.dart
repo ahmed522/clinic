@@ -60,18 +60,18 @@ class MedicineWidgetForMedicalRecordContent extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       CircleButton(
-                        icon: const Icon(Icons.edit_rounded),
                         onPressed: () =>
                             onEditMedicineButtonPressed(context, medicineModel),
+                        child: const Icon(Icons.edit_rounded),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       CircleButton(
-                        icon: const Icon(Icons.remove_rounded),
                         backgroundColor: Colors.red,
                         onPressed: () =>
                             onRemoveMedicineButtonPressed(context, medicineId),
+                        child: const Icon(Icons.remove_rounded),
                       ),
                     ],
                   ),
@@ -212,7 +212,8 @@ onEditMedicineButtonPressed(BuildContext context, MedicineModel medicine) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 25,
                 controller: TextEditingController(text: medicine.medicineName),
                 onChanged: (medicineName) =>
@@ -274,7 +275,8 @@ onEditMedicineButtonPressed(BuildContext context, MedicineModel medicine) {
               ),
               TextField(
                 autofocus: true,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
                 maxLength: 150,
                 maxLines: 4,
                 controller: TextEditingController(text: medicine.info),

@@ -5,6 +5,7 @@ import 'package:clinic/features/time_line/pages/post/comment/reply_reacts_widget
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,39 +16,33 @@ class ReplyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final reactsController = Get.put(ReplyReactsController(
         commentId: reply.commentId, replyId: reply.replyId));
+    final size = MediaQuery.of(context).size;
+    String appBarTitleText =
+        '${reply.writer.userType == UserType.doctor ? ' رد الطبيب' : ' رد'} ${CommonFunctions.getFullName(reply.writer.firstName!, reply.writer.lastName!)}';
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              CommonFunctions.getFullName(
-                  reply.writer.firstName!, reply.writer.lastName!),
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
+        title: Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            appBarTitleText,
+            style: TextStyle(
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontWeight: FontWeight.w700,
+              fontSize: (size.width < 330) ? 15 : 20,
             ),
-            Text(
-              reply.writer.userType == UserType.doctor ? ' رد الطبيب' : ' رد',
-              style: const TextStyle(
-                fontFamily: AppFonts.mainArabicFontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
-      body: RefreshIndicator(
-        child: getReplyPage(context),
-        onRefresh: () async {
-          if (reactsController.loading.isFalse &&
-              reactsController.moreReactsloading.isFalse) {
-            reactsController.loadReplyReacts(3, true);
-          }
-        },
+      body: OfflinePageBuilder(
+        child: RefreshIndicator(
+          child: getReplyPage(context),
+          onRefresh: () async {
+            if (reactsController.loading.isFalse &&
+                reactsController.moreReactsloading.isFalse) {
+              reactsController.loadReplyReacts(3, true);
+            }
+          },
+        ),
       ),
     );
   }

@@ -46,6 +46,8 @@ class CommentWidget extends StatelessWidget {
               PostTopWidget(
                 userName: CommonFunctions.getFullName(
                     comment.writer.firstName!, comment.writer.lastName!),
+                userId: comment.writer.userId!,
+                userType: comment.writer.userType,
                 isCurrentUserPost: isReply
                     ? (controller as CommentRepliesController)
                         .isCurrentUserReply(comment.writer.userId!)
@@ -71,9 +73,6 @@ class CommentWidget extends StatelessWidget {
                         .onCommentSettingsButtonPressed(
                             context, comment.commentId),
                 isProfilePage: false,
-                doctorId: (comment.writer.userType == UserType.doctor)
-                    ? comment.writer.userId
-                    : null,
               ),
               const SizedBox(
                 height: 10,

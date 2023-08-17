@@ -113,7 +113,7 @@ class DoctorFollowingCardWidget extends StatelessWidget {
                   child: CircleButton(
                     backgroundColor: Colors.red,
                     onPressed: () => onUnfollowButtonPressed(),
-                    icon: const Icon(Icons.remove),
+                    child: const Icon(Icons.remove),
                   ))
               : const SizedBox(),
         ],

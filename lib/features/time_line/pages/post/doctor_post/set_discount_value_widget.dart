@@ -31,11 +31,11 @@ class SetDiscountValueWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             CircleButton(
-              icon: const Icon(Icons.add),
               onPressed: () => controller.incrementDiscount(),
               backgroundColor: (CommonFunctions.isLightMode(context))
                   ? AppColors.primaryColor
                   : Colors.black,
+              child: const Icon(Icons.add),
             ),
             Text(
               '% $discount',
@@ -48,11 +48,11 @@ class SetDiscountValueWidget extends StatelessWidget {
               ),
             ),
             CircleButton(
-              icon: const Icon(Icons.remove),
               onPressed: () => controller.decrementDiscount(),
               backgroundColor: (CommonFunctions.isLightMode(context))
                   ? AppColors.primaryColor
                   : Colors.black,
+              child: const Icon(Icons.remove),
             ),
           ],
         ),

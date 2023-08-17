@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserFollowingPageController extends GetxController {
+  UserFollowingPageController(this.userId);
+
   static UserFollowingPageController get find => Get.find();
+  final String userId;
 
   final UserDataController _userDataController = UserDataController.find;
   final AuthenticationController _authenticationController =
@@ -34,13 +37,13 @@ class UserFollowingPageController extends GetxController {
       QuerySnapshot snapshot;
       if (isRefresh) {
         snapshot = await _userDataController
-            .getUserFollowingCollectionById(currentUserId)
+            .getUserFollowingCollectionById(userId)
             .orderBy('follow_time')
             .limit(limit)
             .get();
       } else {
         snapshot = await _userDataController
-            .getUserFollowingCollectionById(currentUserId)
+            .getUserFollowingCollectionById(userId)
             .orderBy('follow_time')
             .startAfterDocument(_lastFollowingShown!)
             .limit(limit)
@@ -106,8 +109,7 @@ class UserFollowingPageController extends GetxController {
             Get.back();
             loading.value = true;
             try {
-              await _userDataController.unFollowDoctor(
-                  follower.userId, currentUserId);
+              await _userDataController.unFollowDoctor(follower.userId, userId);
               loadFollowings(20, true);
             } on Exception {
               CommonFunctions.errorHappened();
@@ -117,6 +119,8 @@ class UserFollowingPageController extends GetxController {
       ),
     );
   }
+
+  bool get isCurrentUserProfilePage => (currentUserId == userId);
 
   String get currentUserId => _authenticationController.currentUserId;
 }

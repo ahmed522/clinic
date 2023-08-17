@@ -1,4 +1,5 @@
 import 'package:clinic/features/authentication/pages/sign_up/doctor/doctor_signup_page.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 
 class DoctorSignUpParent extends StatelessWidget {
@@ -16,7 +17,7 @@ class DoctorSignUpParent extends StatelessWidget {
           ),
         ),
       ),
-      body: const DoctorSignupPage(),
+      body: const OfflinePageBuilder(child: DoctorSignupPage()),
     );
   }
 }
