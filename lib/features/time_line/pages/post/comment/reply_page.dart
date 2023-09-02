@@ -25,6 +25,8 @@ class ReplyPage extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Text(
             appBarTitleText,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
             style: TextStyle(
               fontFamily: AppFonts.mainArabicFontFamily,
               fontWeight: FontWeight.w700,

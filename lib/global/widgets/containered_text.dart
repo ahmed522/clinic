@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 
 class ContaineredText extends StatelessWidget {
   final String text;
-  const ContaineredText({super.key, required this.text});
+  final Color color;
+  const ContaineredText({
+    super.key,
+    required this.text,
+    this.color = AppColors.primaryColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +19,7 @@ class ContaineredText extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border.all(
-          color: (CommonFunctions.isLightMode(context))
-              ? AppColors.primaryColor
-              : Colors.white,
+          color: (CommonFunctions.isLightMode(context)) ? color : Colors.white,
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -28,9 +31,7 @@ class ContaineredText extends StatelessWidget {
           fontFamily: AppFonts.mainArabicFontFamily,
           fontWeight: FontWeight.w600,
           fontSize: 13,
-          color: (CommonFunctions.isLightMode(context))
-              ? AppColors.primaryColor
-              : Colors.white,
+          color: (CommonFunctions.isLightMode(context)) ? color : Colors.white,
         ),
       ),
     );

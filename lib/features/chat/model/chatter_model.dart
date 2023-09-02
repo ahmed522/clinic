@@ -5,13 +5,12 @@ class ChatterModel {
   ChatterModel({
     required this.id,
     required this.name,
-    required this.picURL,
     required this.userType,
   });
   late final String id;
   late final String name;
-  late final String? picURL;
   late final UserType userType;
+  String? picUrl;
   bool isTyping = false;
   bool blocks = false;
   Timestamp? blocksTime;
@@ -23,7 +22,6 @@ class ChatterModel {
     Map<String, dynamic> data = {};
     data['id'] = id;
     data['name'] = name;
-    data['pic_url'] = picURL;
     data['user_type'] = userType.name;
     data['is_typing'] = isTyping;
     data['blocks'] = blocks;
@@ -36,7 +34,6 @@ class ChatterModel {
   ChatterModel.fromJson(Map<String, dynamic> data) {
     id = data['id']!;
     name = data['name']!;
-    picURL = data['pic_url'];
     userType = data['user_type'] == 'doctor' ? UserType.doctor : UserType.user;
     isTyping = data['is_typing'];
     blocks = data['blocks'];

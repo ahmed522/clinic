@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/local_storage_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_in/signin_controller.dart';
 import 'package:clinic/features/authentication/pages/common/email_verification_alert_dialog.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/start/pages/start_page.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -22,16 +23,20 @@ class AuthenticationController extends GetxController {
   static AuthenticationController get find => Get.find();
   final _firebaseAuth = FirebaseAuth.instance;
   late final Rx<User?> firebaseUser;
-  final userDataController = Get.put(UserDataController());
-  final LocalStorageController localStorageController =
+  final _userDataController = Get.put(UserDataController());
+  late final NotificationsController _notificationController;
+  final LocalStorageController _localStorageController =
       Get.put(LocalStorageController());
+
   ParentUserModel? _currentUser;
   RxBool isSigning = false.obs;
   RxBool loading = true.obs;
   @override
   void onReady() async {
     try {
-      await localStorageController.initLocalStorage();
+      _notificationController = Get.put(NotificationsController());
+      _notificationController.initNotifications();
+      await _localStorageController.initLocalStorage();
       firebaseUser = Rx<User?>(_firebaseAuth.currentUser);
       firebaseUser.bindStream(_firebaseAuth.userChanges());
       ever(firebaseUser, _setInitialScreen);
@@ -43,7 +48,8 @@ class AuthenticationController extends GetxController {
   _setInitialScreen(User? user) async {
     if (user != null && user.emailVerified) {
       if (loading.isFalse || isSigning.isFalse) {
-        await localStorageController.getCurrentUserData();
+        await _localStorageController.getCurrentUserData();
+
         Get.offAll(() => const MainPage());
       }
     } else {
@@ -74,8 +80,8 @@ class AuthenticationController extends GetxController {
           email: user.email!.trim(), password: user.getPassword!);
       user.userId = firebaseUser.value!.uid;
       user.personalImageURL =
-          await UserDataController.find.uploadUserPersonalImage(user);
-      await UserDataController.find.createUser(user);
+          await _userDataController.uploadUserPersonalImage(user);
+      await _userDataController.createUser(user);
       await sendVerificationEmail();
       loading.value = false;
       isSigning.value = false;
@@ -95,10 +101,10 @@ class AuthenticationController extends GetxController {
           email: doctor.email!.trim(), password: doctor.getPassword!);
       doctor.userId = firebaseUser.value!.uid;
       doctor.personalImageURL =
-          await UserDataController.find.uploadDoctorPersonalImage(doctor);
+          await _userDataController.uploadDoctorPersonalImage(doctor);
       doctor.medicalIdImageURL =
-          await UserDataController.find.uploadDoctorMedicalIdImage(doctor);
-      await UserDataController.find.createDoctor(doctor);
+          await _userDataController.uploadDoctorMedicalIdImage(doctor);
+      await _userDataController.createDoctor(doctor);
       await sendVerificationEmail();
       loading.value = false;
       isSigning.value = false;
@@ -114,20 +120,30 @@ class AuthenticationController extends GetxController {
       isSigning.value = true;
       await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password)
-          .then((value) async {
-        if (!firebaseUser.value!.emailVerified) {
-          loading.value = false;
-          isSigning.value = false;
-          Get.dialog(const EmailVerificationAlertDialog());
-        } else {
-          await localStorageController.storeCurrentUserData();
-          loading.value = false;
-          isSigning.value = false;
-          _setInitialScreen(firebaseUser.value);
-          Get.delete<SigninController>();
-          MySnackBar.showGetSnackbar('تم تسجيل الدخول بنجاح', Colors.green);
-        }
-      });
+          .then(
+        (value) async {
+          if (!firebaseUser.value!.emailVerified) {
+            loading.value = false;
+            isSigning.value = false;
+            Get.dialog(const EmailVerificationAlertDialog());
+          } else {
+            await _localStorageController.storeCurrentUserData();
+            await _userDataController.addNewUserToken(
+              currentUserId,
+              currentUserType,
+              _notificationController.currentToken!,
+              currentUserType == UserType.doctor
+                  ? currentDoctorSpecialization
+                  : null,
+            );
+            loading.value = false;
+            isSigning.value = false;
+            _setInitialScreen(firebaseUser.value);
+            Get.delete<SigninController>();
+            MySnackBar.showGetSnackbar('تم تسجيل الدخول بنجاح', Colors.green);
+          }
+        },
+      );
     } on FirebaseAuthException catch (e) {
       loading.value = false;
       isSigning.value = false;
@@ -137,8 +153,10 @@ class AuthenticationController extends GetxController {
   }
 
   Future<void> logout() async {
+    await _userDataController.removeUserToken(
+        currentUserId, _notificationController.currentToken!);
     _currentUser = null;
-    await localStorageController.removeCurrentUserData();
+    await _localStorageController.removeCurrentUserData();
     await _firebaseAuth.signOut();
   }
 

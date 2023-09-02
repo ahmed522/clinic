@@ -1,0 +1,16 @@
+enum NotificationType {
+  newFollow,
+  reactMyPost,
+  reactMyComment,
+  reactMyReply,
+  commentMyPost,
+  commentOnPostICommented,
+  replyMyComment,
+  replyOnMyPost,
+  replyOnCommentIReplied,
+  searchingForMySpecialization,
+  followedDoctorPost,
+  followedDoctorNewClinicPost,
+  followedDoctorDiscountPost,
+  followedDoctorMedicalInfoPost,
+}

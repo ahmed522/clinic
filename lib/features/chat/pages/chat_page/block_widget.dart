@@ -18,7 +18,13 @@ class BlockWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        (message != null) ? MessageWidget(message: message!) : const SizedBox(),
+        (message != null)
+            ? Column(
+                children: [
+                  MessageWidget(message: message!),
+                ],
+              )
+            : const SizedBox(),
         (chatter1.blocks)
             ? (chatter1.isBlocked)
                 ? (chatter1.blocksTime!.toDate().isBefore(

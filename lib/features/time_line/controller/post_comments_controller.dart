@@ -1,6 +1,7 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -71,7 +72,8 @@ class PostCommentsController extends GetxController {
     }
   }
 
-  reactComment(String postDocumentId, String commentDocumentId) async {
+  reactComment(String postDocumentId, String commentDocumentId,
+      String commentWriterId) async {
     FollowerModel reacter = FollowerModel(
       userType: currentUserType,
       userId: currentUserId,
@@ -85,14 +87,22 @@ class PostCommentsController extends GetxController {
     Map<String, dynamic> data = reacter.toJson();
     data['react_time'] = Timestamp.now();
     await _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
-        .doc(_authenticationController.currentUser.userId!)
+        .doc(currentUserId)
         .set(data);
     await _updateCommentReacts(postDocumentId, commentDocumentId, true);
+    if (currentUserId != commentWriterId) {
+      NotificationsController.find.notifyReact(
+        writerId: commentWriterId,
+        postId: postDocumentId,
+        commentId: commentDocumentId,
+        reactedComponent: 'تعليقك',
+      );
+    }
   }
 
   unReactComment(String postDocumentId, String commentDocumentId) async {
     _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
-        .doc(_authenticationController.currentUser.userId!)
+        .doc(currentUserId)
         .delete();
     await _updateCommentReacts(postDocumentId, commentDocumentId, false);
   }

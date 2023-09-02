@@ -1,9 +1,10 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/time_line/controller/post_comments_controller.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
-import 'package:clinic/global/widgets/error_page.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,23 +17,25 @@ class CreateCommentController extends GetxController {
   final _userDataController = UserDataController.find;
   final _postCommentsController = PostCommentsController.find;
   final textController = TextEditingController();
-  uploadComment(CommentModel comment) async {
+  uploadComment(CommentModel comment, String postWriterId) async {
     String commentDocumentId = '${comment.postId}-${const Uuid().v4()}';
     comment.commentId = commentDocumentId;
-
-    final DocumentReference postCommentsDocument =
-        _getCommentDocumentById(comment.postId, commentDocumentId);
-    await postCommentsDocument.set(comment.toJson()).whenComplete(() async {
+    try {
+      final DocumentReference postCommentsDocument =
+          _getCommentDocumentById(comment.postId, commentDocumentId);
+      await postCommentsDocument.set(comment.toJson());
       await _loadComments(comment.postId);
       MySnackBar.showGetSnackbar('تم نشر تعليقك بنجاح', Colors.green);
-    }).catchError(
-      (error) => Get.to(
-        () => const ErrorPage(
-          imageAsset: 'assets/img/error.svg',
-          message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-        ),
-      ),
-    );
+
+      NotificationsController.find.notifyComment(
+        postWriterId: postWriterId,
+        commentedComponent: 'comment',
+        postId: comment.postId,
+        commentId: comment.commentId,
+      );
+    } catch (error) {
+      CommonFunctions.errorHappened();
+    }
   }
 
   _getCommentDocumentById(String postId, String commentDocumentId) =>

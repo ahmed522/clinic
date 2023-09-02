@@ -1,6 +1,7 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
@@ -38,7 +39,8 @@ class PostController extends GetxController {
           ),
         )
         .whenComplete(() async {
-      await _loadPosts();
+      NotificationsController.find
+          .notifyDoctorsWithSameSearchingSpecialization(post);
       MySnackBar.showGetSnackbar('تم نشر سؤالك بنجاح', Colors.green);
     }).catchError(
       (error) => Get.to(
@@ -56,7 +58,7 @@ class PostController extends GetxController {
     await _getPostDocumentRefById(postDocumentId)
         .set(post.toJson())
         .whenComplete(() async {
-      await _loadPosts();
+      NotificationsController.find.notifyFollowingDoctorPost(post);
       MySnackBar.showGetSnackbar('تم نشر منشورك بنجاح', Colors.green);
     }).catchError(
       (error) => CommonFunctions.errorHappened(),
@@ -78,6 +80,13 @@ class PostController extends GetxController {
     data['react_time'] = Timestamp.now();
     _getPostReactsCollectionById(postDocumentId).doc(currentUserId).set(data);
     await _updatePostReacts(uid, postDocumentId, true);
+    if (currentUserId != uid) {
+      NotificationsController.find.notifyReact(
+        writerId: uid,
+        postId: postDocumentId,
+        reactedComponent: 'منشورك',
+      );
+    }
   }
 
   unReactPost(String uid, String postDocumentId) async {
@@ -100,8 +109,7 @@ class PostController extends GetxController {
   Future<int> _getPostReactsById(String postDocumentId) async {
     int? reacts;
     await _getPostDocumentRefById(postDocumentId).get().then((value) {
-      final data = value.data() as Map<String, dynamic>;
-      reacts = data['reacts'];
+      reacts = value['reacts'];
     });
     return reacts!;
   }
@@ -169,7 +177,7 @@ class PostController extends GetxController {
   Future _deletePostById(String postDocumentId, bool isDoctorPost) =>
       _userDataController.deletePostById(postDocumentId, isDoctorPost);
   DocumentReference _getPostDocumentRefById(String postDocumentId) =>
-      _userDataController.getAllUsersPostsCollection().doc(postDocumentId);
+      _userDataController.getAllUsersPostsCollection.doc(postDocumentId);
   CollectionReference _getPostReactsCollectionById(String postDocumentId) =>
       _userDataController.getPostReactsCollectionById(postDocumentId);
 

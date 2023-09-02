@@ -9,10 +9,8 @@ import 'package:clinic/features/doctor_profile/pages/doctor_data_widget.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_followers_page.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_followings_page.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_posts_page.dart';
-import 'package:clinic/features/doctor_profile/pages/doctor_profile_top_page_widget.dart';
 import 'package:clinic/features/doctor_profile/pages/follow_button.dart';
 import 'package:clinic/features/settings/Pages/settings_page.dart';
-import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
@@ -21,6 +19,7 @@ import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/image_source_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
+import 'package:clinic/global/widgets/page_top_widget.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -79,9 +78,11 @@ class DoctorProfilePage extends StatelessWidget {
                               ? ProfileOptionButton(
                                   text: 'الدردشات',
                                   imageAsset: 'assets/img/chats.png',
-                                  onPressed: () => Get.to(
-                                    () => const UserChatsPage(),
-                                  ),
+                                  onPressed: () {
+                                    Get.to(
+                                      () => const UserChatsPage(),
+                                    );
+                                  },
                                 )
                               : const SizedBox(),
                           ProfileOptionButton(
@@ -126,10 +127,10 @@ class DoctorProfilePage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      height: size.height / 4 + 35,
+                      height: size.height / 4 + 40,
                       child: Stack(
                         children: [
-                          const DoctorProfileTopPageWidget(),
+                          TopPageWidget(height: size.height / 4),
                           Positioned(
                             bottom: 0,
                             left: 15,
@@ -357,12 +358,12 @@ confirmImageUpdateDialog(BuildContext context, String doctorId) async {
                               .updatePersonalImage()
                               .then((successed) {
                             if (successed) {
+                              controller.currentDoctor.personalImageURL =
+                                  controller.currentUserPersonalImage;
                               MySnackBar.showGetSnackbar(
                                   'تم تعديل الصورة الشخصية بنجاح',
                                   Colors.green);
                             }
-                            TimeLineController.find.loadPosts(50, true);
-
                             controller.loading.value = false;
                             controller.update();
                           });

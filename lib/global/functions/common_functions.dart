@@ -19,6 +19,11 @@ class CommonFunctions {
         imageAsset: 'assets/img/error.svg',
         message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
       ));
+  static void deletedElement() => Get.to(
+        () => const ErrorPage(
+            imageAsset: 'assets/img/error.svg',
+            message: 'المحتوى غير متوفر بعد الأن'),
+      );
 
   static bool isLightMode(BuildContext context) =>
       (Theme.of(context).brightness == Brightness.light);
@@ -73,6 +78,12 @@ class CommonFunctions {
     return difference.inMinutes;
   }
 
+  static int calculateTimeDifferenceInDays(
+      DateTime startTime, DateTime endTime) {
+    final difference = endTime.difference(startTime);
+    return difference.inDays;
+  }
+
   static String getTime(Timestamp time) {
     DateTime timeInDateTime = time.toDate();
     int hour = timeInDateTime.hour > 12
@@ -94,15 +105,10 @@ class CommonFunctions {
   }
 
   static bool isYesterday(DateTime date) {
-    return ((DateTime.now().year == date.year) &&
-            (DateTime.now().month == date.month) &&
-            (DateTime.now().day - date.day == 1)) ||
-        ((DateTime.now().year == date.year) &&
-            (DateTime.now().month - date.month == 1) &&
-            (DateTime.now().day == 1)) ||
-        ((DateTime.now().year - date.year == 1) &&
-            (DateTime.now().month == 1) &&
-            (DateTime.now().day == 1));
+    DateTime yesterdayDate = DateTime.now().subtract(const Duration(days: 1));
+    return ((yesterdayDate.year == date.year) &&
+        (yesterdayDate.month == date.month) &&
+        (yesterdayDate.day == date.day));
   }
 
   static bool isSameDay(DateTime date1, DateTime date2) {

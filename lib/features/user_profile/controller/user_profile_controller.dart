@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
-import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/user_model.dart';
@@ -22,7 +21,6 @@ class UserProfileController extends GetxController {
       AuthenticationController.find;
   final UserDataController _userDataController = UserDataController.find;
   RxBool loading = true.obs;
-  final TimeLineController _timeLineController = TimeLineController.find;
   late String? currentUserPersonalImage;
   late String currentUserName;
   get currentUserId => _authenticationController.currentUserId;
@@ -78,7 +76,8 @@ class UserProfileController extends GetxController {
     await _userDataController
         .deleteUserPersonalImage(currentUserId, currentUserPersonalImage!)
         .then((value) {
-      _timeLineController.loadPosts(50, true);
+      currentUserPersonalImage =
+          _authenticationController.currentUserPersonalImage;
       MySnackBar.showGetSnackbar('تم حذف الصورة الشخصية بنجاح', Colors.green);
       loading.value = false;
       update();
@@ -137,7 +136,9 @@ class UserProfileController extends GetxController {
                                   .updateUserPersonalImage(currentUserId, user)
                                   .then((successed) {
                                 if (successed) {
-                                  _timeLineController.loadPosts(50, true);
+                                  currentUserPersonalImage =
+                                      _authenticationController
+                                          .currentUserPersonalImage;
                                   MySnackBar.showGetSnackbar(
                                       'تم تعديل الصورة الشخصية بنجاح',
                                       Colors.green);

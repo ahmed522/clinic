@@ -19,11 +19,14 @@ class CommentWidget extends StatelessWidget {
   final CommentModel comment;
   final bool isCommentPage;
   final bool isReply;
+  final String? postWriterId;
+
   const CommentWidget({
     super.key,
     required this.comment,
     this.isCommentPage = false,
     this.isReply = false,
+    this.postWriterId,
   });
   @override
   Widget build(BuildContext context) {
@@ -97,7 +100,10 @@ class CommentWidget extends StatelessWidget {
     if (isReply) {
       Get.to(() => ReplyPage(reply: comment as ReplyModel));
     } else {
-      Get.to(() => CommentPage(comment: comment));
+      Get.to(() => CommentPage(
+            comment: comment,
+            postWriterId: postWriterId!,
+          ));
     }
   }
 }

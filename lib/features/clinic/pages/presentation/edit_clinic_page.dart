@@ -6,8 +6,8 @@ import 'package:clinic/features/clinic/pages/presentation/edit_clinic_button.dar
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/appbar_widget.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
-import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,36 +27,37 @@ class EditClinicPage extends StatelessWidget {
     Get.put(SingleClinicController(
         tempClinic: tempClinic, clinicIndex: clinicIndex));
     return Scaffold(
-      body: Stack(
-        children: [
-          OfflinePageBuilder(
-            child: GetBuilder<SingleClinicController>(builder: (controller) {
-              if (controller.loading) {
-                return const Center(
-                  child: AppCircularProgressIndicator(height: 100, width: 100),
-                );
-              }
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: size.height / 5),
-                      CreateClinicPage(
-                          index: clinicIndex, mode: ClinicPageMode.editMode),
-                      const SizedBox(height: 40),
-                      EditClinicButton(
-                        onPressed: () => _updateClinicButtonOnPressed(context),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(size.height / 6),
+        child: const AppBarWidget(text: '        تعديل العيادة'),
+      ),
+      body: OfflinePageBuilder(
+        child: GetBuilder<SingleClinicController>(builder: (controller) {
+          if (controller.loading) {
+            return SizedBox(
+              height: 2 * size.height / 3,
+              child: const Center(
+                child: AppCircularProgressIndicator(height: 100, width: 100),
+              ),
+            );
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  CreateClinicPage(
+                      index: clinicIndex, mode: ClinicPageMode.editMode),
+                  const SizedBox(height: 40),
+                  EditClinicButton(
+                    onPressed: () => _updateClinicButtonOnPressed(context),
                   ),
-                ),
-              );
-            }),
-          ),
-          const TopPageWidgetWithText(text: 'تعديل العيادة', fontSize: 35),
-        ],
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

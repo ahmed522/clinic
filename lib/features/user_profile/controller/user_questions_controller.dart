@@ -38,15 +38,13 @@ class UserQuestionsController extends GetxController {
     try {
       QuerySnapshot snapshot;
       if (isRefresh) {
-        snapshot = await _userDataController
-            .getAllUsersPostsCollection()
+        snapshot = await _userDataController.getAllUsersPostsCollection
             .where('uid', isEqualTo: userId)
             .orderBy('time_stamp', descending: true)
             .limit(limit)
             .get();
       } else {
-        snapshot = await _userDataController
-            .getAllUsersPostsCollection()
+        snapshot = await _userDataController.getAllUsersPostsCollection
             .where('uid', isEqualTo: userId)
             .orderBy('time_stamp', descending: true)
             .startAfterDocument(_lastPostShown!)

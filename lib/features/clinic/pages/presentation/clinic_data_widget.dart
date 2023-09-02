@@ -27,12 +27,10 @@ class ClinicDataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Center(
         child: Column(
           children: [
-            SizedBox(height: isDoctorPost ? 0 : size.height / 5 + 20),
             ClinicLocationWidget(
               clinicIndex: clinicIndex,
               isDoctorPost: isDoctorPost,

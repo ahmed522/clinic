@@ -8,8 +8,10 @@ class UploadCommentButton extends StatelessWidget {
   const UploadCommentButton({
     Key? key,
     required this.postId,
+    required this.postWriterId,
   }) : super(key: key);
   final String postId;
+  final String postWriterId;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class UploadCommentButton extends StatelessWidget {
             comment: controller.textController.text.trim(),
             commentTime: Timestamp.now(),
           );
-          controller.uploadComment(comment);
+          controller.uploadComment(comment, postWriterId);
         }
         controller.textController.clear();
       },

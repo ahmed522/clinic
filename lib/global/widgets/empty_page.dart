@@ -15,28 +15,28 @@ class EmptyPage extends StatelessWidget {
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      child: SizedBox(
-        height: size.height + size.height / 5,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/img/empty.svg',
-              width: 200,
-              height: 200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: size.height / 6,
+          ),
+          SvgPicture.asset(
+            'assets/img/empty.svg',
+            width: 200,
+            height: 200,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodyText2,
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.bodyText2,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -12,12 +12,16 @@ import 'package:flutter/services.dart';
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
-      .then((value) => Get.put(AuthenticationController()));
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(const MainWidget());
-  });
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform).then(
+    (_) {
+      Get.put(AuthenticationController());
+    },
+  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+    (_) {
+      runApp(const MainWidget());
+    },
+  );
 }
 
 class MainWidget extends StatelessWidget {

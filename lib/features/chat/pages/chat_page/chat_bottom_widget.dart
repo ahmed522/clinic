@@ -1,5 +1,6 @@
 import 'package:clinic/features/chat/controller/single_chat_page_controller.dart';
 import 'package:clinic/features/chat/pages/chat_page/message_text_field.dart';
+import 'package:clinic/features/chat/pages/chat_page/new_message_in_chat_notification_widget.dart';
 import 'package:clinic/features/chat/pages/chat_page/scroll_to_bottom_button.dart';
 import 'package:clinic/features/chat/pages/chat_page/send_medical_record_button.dart';
 import 'package:clinic/features/chat/pages/chat_page/send_message_button.dart';
@@ -25,8 +26,27 @@ class ChatBottomWidget extends StatelessWidget {
           builder: (controller) {
             return Column(
               children: [
-                controller.showGoToBottomButton.isTrue
-                    ? ScrollToBottomButton(chatterId: chatterId)
+                controller.showGoToBottomButton.isTrue ||
+                        (controller.newMessages.isTrue &&
+                            controller.scrolledup.isTrue)
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Stack(
+                          children: [
+                            ScrollToBottomButton(chatterId: chatterId),
+                            (controller.newMessages.isTrue &&
+                                    controller.scrolledup.isTrue)
+                                ? Positioned(
+                                    left: 8,
+                                    child: NewMessagesInChatNotificationWidget(
+                                      newMessages:
+                                          controller.numberOfNewMessages.value,
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        ),
+                      )
                     : const SizedBox(),
                 const SizedBox(height: 10),
                 Row(

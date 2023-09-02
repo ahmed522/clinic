@@ -18,6 +18,11 @@ class AppConstants {
   static const String vezeetaValidationRegExp = r"^[0-9]*$";
   static const String zero = '0';
 
+  static const String baseFCMUrl = 'https://fcm.googleapis.com/fcm/send';
+  static const String fcmAutherizationKey =
+      'AAAAs-thRzo:APA91bE7MaNacc3obm7fk66gATMw_szUooBSXpL4j_119nSHW-aLpUJHvI_zbfUxV64Mijut4tuas7xHa-pcq-G2pUoOZz9DzAK28blIF4ujnx0iTWucklGGVs9zIC1F5AiXTaLXP8tr';
+  static const String userStandardPic =
+      'https://firebasestorage.googleapis.com/v0/b/tabib-56f14.appspot.com/o/assets%2Fuser.png?alt=media&token=c74cec98-a38b-4602-87c1-3603d5832386';
   static const List<String> doctorDegrees = [
     'طبيب امتياز',
     'طبيب مقيم',

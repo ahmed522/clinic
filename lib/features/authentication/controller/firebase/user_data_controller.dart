@@ -10,9 +10,17 @@ import 'package:clinic/features/medical_record/model/disease_model.dart';
 import 'package:clinic/features/medical_record/model/medical_record_model.dart';
 import 'package:clinic/features/medical_record/model/medicine_model.dart';
 import 'package:clinic/features/medical_record/model/surgery_model.dart';
+import 'package:clinic/features/notifications/model/notification_model.dart';
+import 'package:clinic/features/notifications/model/notification_type.dart';
+import 'package:clinic/features/time_line/model/comment_model.dart';
+import 'package:clinic/features/time_line/model/doctor_post_model.dart';
+import 'package:clinic/features/time_line/model/parent_post_model.dart';
+import 'package:clinic/features/time_line/model/reply_model.dart';
+import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/features/clinic/model/clinic_model.dart';
+import 'package:clinic/global/data/models/age.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/models/parent_user_model.dart';
 import 'package:clinic/global/data/models/user_model.dart';
@@ -237,7 +245,7 @@ class UserDataController extends GetxController {
   Future<void> _deleteClinicFromPostsById(
       String doctorId, String clinicId) async {
     try {
-      await getAllUsersPostsCollection()
+      await getAllUsersPostsCollection
           .where('uid', isEqualTo: doctorId)
           .get()
           .then((snapshot) async {
@@ -248,7 +256,7 @@ class UserDataController extends GetxController {
                 postSnapshot['selected_clinics'].contains(clinicId)) {
               List<String> newSelectedClinics = _getNewSelectedClinics(
                   postSnapshot['selected_clinics'], clinicId);
-              await getAllUsersPostsCollection()
+              await getAllUsersPostsCollection
                   .doc(postSnapshot.id)
                   .update({'selected_clinics': newSelectedClinics});
             }
@@ -265,7 +273,7 @@ class UserDataController extends GetxController {
   /// ----------------------------------------------------------------------
 
   Future<int> getDoctorNumberOfPosts(String doctorId) async =>
-      await getAllUsersPostsCollection()
+      await getAllUsersPostsCollection
           .where('uid', isEqualTo: doctorId)
           .count()
           .get()
@@ -522,12 +530,68 @@ class UserDataController extends GetxController {
     return reacted;
   }
 
+  Future<String> getPostWriterId(String postId) async {
+    DocumentSnapshot postSnapshot =
+        await getAllUsersPostsCollection.doc(postId).get();
+    return postSnapshot.get('uid');
+  }
+
+  Future<DoctorPostModel?> getDoctorPostById(String postId,
+      [DoctorModel? postWriter]) async {
+    DocumentSnapshot postSnapshot =
+        await getAllUsersPostsCollection.doc(postId).get();
+    if (!postSnapshot.exists) {
+      return null;
+    }
+    DoctorModel writer =
+        postWriter ?? await getDoctorById(postSnapshot.get('uid'));
+    return DoctorPostModel.fromSnapShot(
+      postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
+      writer: writer,
+    );
+  }
+
+  Future<UserPostModel?> getUserPostById(String postId,
+      [UserModel? postWriter]) async {
+    DocumentSnapshot postSnapshot =
+        await getAllUsersPostsCollection.doc(postId).get();
+    if (!postSnapshot.exists) {
+      return null;
+    }
+    UserModel writer = postWriter ?? await getUserById(postSnapshot.get('uid'));
+    return UserPostModel.fromSnapShot(
+      postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
+      writer: writer,
+    );
+  }
+
+  Future<ParentPostModel?> getPostById(String postId) async {
+    DocumentSnapshot postSnapshot =
+        await getAllUsersPostsCollection.doc(postId).get();
+    if (!postSnapshot.exists) {
+      return null;
+    }
+    if (postSnapshot['user_type'] == 'user') {
+      UserModel writer = await getUserById(postSnapshot.get('uid'));
+      return UserPostModel.fromSnapShot(
+        postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
+        writer: writer,
+      );
+    } else {
+      DoctorModel writer = await getDoctorById(postSnapshot.get('uid'));
+      return DoctorPostModel.fromSnapShot(
+        postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
+        writer: writer,
+      );
+    }
+  }
+
   DocumentReference getPostReactsDocumentById(String postDocumentId) =>
       _db.collection('reacts').doc(postDocumentId);
   CollectionReference getPostReactsCollectionById(String postDocumentId) =>
       getPostReactsDocumentById(postDocumentId).collection('post_reacts');
 
-  CollectionReference getAllUsersPostsCollection() =>
+  CollectionReference get getAllUsersPostsCollection =>
       _db.collection('all_users_posts');
   // ===================== post deletion =====================
   Future deletePostById(String postId, bool isDoctorPost) async {
@@ -540,7 +604,7 @@ class UserDataController extends GetxController {
   }
 
   _deletePostFromAllUsersPostsCollectionById(String postId) async =>
-      await getAllUsersPostsCollection().doc(postId).delete();
+      await getAllUsersPostsCollection.doc(postId).delete();
   _deletePostCommentsFromCommentsCollectionById(String postId) async =>
       await getPostCommentsCollectionById(postId).get().then((snapshot) {
         for (var commentDoc in snapshot.docs) {
@@ -592,6 +656,28 @@ class UserDataController extends GetxController {
       }
     });
     return reacted;
+  }
+
+  Future<CommentModel?> getCommentById(String postId, String commentId,
+      [ParentUserModel? commentWriter]) async {
+    DocumentSnapshot commentSnapshot =
+        await getCommentDocumentById(postId, commentId).get();
+    if (!commentSnapshot.exists) {
+      return null;
+    }
+    ParentUserModel writer;
+    if (commentWriter != null) {
+      writer = commentWriter;
+    } else {
+      writer = (commentSnapshot['writer_type'] == 'doctor')
+          ? await getDoctorById(commentSnapshot.get('uid'))
+          : await getUserById(commentSnapshot.get('uid'));
+    }
+    return CommentModel.fromSnapshot(
+      commentSnapshot:
+          commentSnapshot as DocumentSnapshot<Map<String, dynamic>>,
+      writer: writer,
+    );
   }
 
   // ===================== comment deletion =====================
@@ -648,6 +734,27 @@ class UserDataController extends GetxController {
       }
     });
     return reacted;
+  }
+
+  Future<ReplyModel?> getReplyById(String commentId, String replyId,
+      [ParentUserModel? replyWriter]) async {
+    DocumentSnapshot replySnapshot =
+        await getReplyDocumentById(commentId, replyId).get();
+    if (!replySnapshot.exists) {
+      return null;
+    }
+    ParentUserModel writer;
+    if (replyWriter != null) {
+      writer = replyWriter;
+    } else {
+      writer = (replySnapshot.get('writer_type') == 'doctor')
+          ? await getDoctorById(replySnapshot.get('uid'))
+          : await getUserById(replySnapshot.get('uid'));
+    }
+    return ReplyModel.fromSnapshot(
+      commentSnapshot: replySnapshot as DocumentSnapshot<Map<String, dynamic>>,
+      writer: writer,
+    );
   }
 
   //================== reply deletion ==================
@@ -924,24 +1031,28 @@ class UserDataController extends GetxController {
   }
   //=================== medical record message ========================
 
-  Future<MedicalRecordModel?> getMedicalRecordMessage(
+  Future<Map<String, dynamic>?> getMedicalRecordMessage(
       String chatId, String messageId) async {
     try {
       DocumentSnapshot snapshot =
           await getMedicalRecordMessageDocument(chatId, messageId).get();
-
+      Map<String, dynamic> medicalRecordMessageData = {};
+      medicalRecordMessageData['age'] = Age.fromJson(snapshot.get('age'));
+      medicalRecordMessageData['gender'] =
+          snapshot.get('gender') == 'male' ? Gender.male : Gender.female;
       String? moreInfo;
       try {
         moreInfo = snapshot.get('info');
       } on StateError {
         moreInfo = null;
       }
-      return MedicalRecordModel.fromCloud(
+      medicalRecordMessageData['medical_record'] = MedicalRecordModel.fromCloud(
         diseases: await _getUserDiseasesForMessage(chatId, messageId),
         medicines: await _getUserMedicinesForMessage(chatId, messageId),
         surgeries: await _getUserSurgeriesForMessage(chatId, messageId),
         moreInfo: moreInfo,
       );
+      return medicalRecordMessageData;
     } on Exception {
       CommonFunctions.errorHappened();
       return null;
@@ -1015,4 +1126,140 @@ class UserDataController extends GetxController {
           .doc('medical_record_document');
 
   //==================================================
+
+  /// ----------------------------------------------------------------------
+  ///                            Notifications                             -
+  /// ----------------------------------------------------------------------
+  Future addNewUserToken(String uid, UserType userType, String token,
+      [String? specialization]) async {
+    await getUserTokensDocumentById(uid).set({
+      'user_type': userType.name,
+      'specialization': specialization,
+    });
+    await getUserTokensCollectionById(uid).doc(token).set(
+      {
+        'active': true,
+      },
+    );
+  }
+
+  Future removeUserToken(String uid, String token) async =>
+      await getUserTokensCollectionById(uid).doc(token).delete();
+
+  Future<List<String>> getUserTokensById(String uid) async {
+    List<String> tokens = [];
+    await getUserTokensCollectionById(uid).get().then(
+      (snapshot) {
+        for (var token in snapshot.docs) {
+          tokens.add(token.id);
+        }
+      },
+    );
+    return tokens;
+  }
+
+  Future<List<String>> getDoctorsTokensWithSearchingSpechialization(
+    Map<String, dynamic> data,
+    Timestamp time,
+    String notifierId,
+    String notifierName,
+    Gender notifierGender,
+    UserType notifierType,
+  ) async {
+    List<String> tokens = [];
+    if (data['specialization'] != 'طبيب عام') {
+      await usersTokensCollection
+          .where('specialization', isEqualTo: data['specialization'])
+          .get()
+          .then(
+        (snapshot) async {
+          NotificationModel notification = NotificationModel(
+            id: const Uuid().v4(),
+            type: NotificationType.searchingForMySpecialization,
+            time: time,
+            data: data,
+            notifierId: notifierId,
+            notifierName: notifierName,
+            notifierGender: notifierGender,
+            notifierType: notifierType,
+          );
+          for (var doc in snapshot.docs) {
+            uploadNotification(notification, doc.id);
+            await doc.reference.collection('tokens').get().then(
+              (value) {
+                for (var token in value.docs) {
+                  tokens.add(token.id);
+                }
+              },
+            );
+          }
+        },
+      );
+    } else {
+      await usersTokensCollection
+          .where('user_type', isEqualTo: 'doctor')
+          .get()
+          .then(
+        (snapshot) async {
+          NotificationModel notification = NotificationModel(
+            id: const Uuid().v4(),
+            type: NotificationType.searchingForMySpecialization,
+            time: Timestamp.now(),
+            data: data,
+            notifierId: notifierId,
+            notifierName: notifierName,
+            notifierGender: notifierGender,
+            notifierType: notifierType,
+          );
+          for (var doc in snapshot.docs) {
+            uploadNotification(notification, doc.id);
+
+            await doc.reference.collection('tokens').get().then(
+              (value) {
+                for (var token in value.docs) {
+                  tokens.add(token.id);
+                }
+              },
+            );
+          }
+        },
+      );
+    }
+    return tokens;
+  }
+
+  uploadNotification(NotificationModel notification, String uid) async =>
+      getUserNotificationsCollectionById(uid)
+          .doc(notification.id)
+          .set(notification.toJson());
+
+  updateNotificationSeen(String uid, String notificationId) async =>
+      getUserNotificationsCollectionById(uid).doc(notificationId).update({
+        'seen': true,
+        'seen_time': Timestamp.now(),
+      });
+
+  Future<bool> isNewNotifications(String uid) =>
+      getUserNotificationsCollectionById(uid)
+          .where('seen', isEqualTo: false)
+          .limit(1)
+          .get()
+          .then((snapshot) => snapshot.size > 0);
+
+  CollectionReference getUserTokensCollectionById(String uid) =>
+      getUserTokensDocumentById(uid).collection('tokens');
+  DocumentReference getUserTokensDocumentById(String uid) =>
+      usersTokensCollection.doc(uid);
+  CollectionReference get usersTokensCollection =>
+      _db.collection('users_tokens');
+
+  DocumentReference getSingleNotificationDocumentById(
+          String uid, String notificationId) =>
+      getUserNotificationsCollectionById(uid).doc(notificationId);
+  CollectionReference getUserNotificationsCollectionById(String uid) =>
+      getUserNotificationsDocumentById(uid).collection('notifications');
+  DocumentReference getUserNotificationsDocumentById(String uid) =>
+      usersNotificationsCollection.doc(uid);
+  CollectionReference get usersNotificationsCollection =>
+      _db.collection('users_notifications');
 }

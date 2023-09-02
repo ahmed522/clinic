@@ -14,8 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CommentPage extends StatelessWidget {
-  const CommentPage({super.key, required this.comment});
+  const CommentPage(
+      {super.key, required this.comment, required this.postWriterId});
   final CommentModel comment;
+  final String postWriterId;
   @override
   Widget build(BuildContext context) {
     final repliesController =
@@ -31,6 +33,8 @@ class CommentPage extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Text(
             appBarTitleText,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
             style: TextStyle(
               fontFamily: AppFonts.mainArabicFontFamily,
               fontWeight: FontWeight.w700,
@@ -76,24 +80,16 @@ class CommentPage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText2,
             ),
           ),
-          (comment.writer.userType == UserType.doctor)
-              ? (authenticationController.currentUserType == UserType.doctor)
-                  ? CreateCommentWidget(
-                      postId: comment.postId,
-                      isReply: true,
-                      commentId: comment.commentId,
-                    )
-                  : const SizedBox()
-              : ((authenticationController.currentUserType ==
-                          UserType.doctor) ||
-                      (authenticationController.currentUserId ==
-                          comment.writer.userId))
-                  ? CreateCommentWidget(
-                      postId: comment.postId,
-                      isReply: true,
-                      commentId: comment.commentId,
-                    )
-                  : const SizedBox(),
+          ((authenticationController.currentUserType == UserType.doctor) ||
+                  (authenticationController.currentUserId == postWriterId))
+              ? CreateCommentWidget(
+                  postId: comment.postId,
+                  isReply: true,
+                  commentId: comment.commentId,
+                  commentWriterId: comment.writer.userId,
+                  postWriterId: postWriterId,
+                )
+              : const SizedBox(),
           const CommentRepliesWidget(),
         ],
       ),

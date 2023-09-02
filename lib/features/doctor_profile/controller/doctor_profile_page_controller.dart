@@ -1,11 +1,15 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
+import 'package:clinic/features/notifications/model/notification_model.dart';
+import 'package:clinic/features/notifications/model/notification_type.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 class DoctorProfilePageController extends GetxController {
   static DoctorProfilePageController get find => Get.find();
@@ -52,8 +56,7 @@ class DoctorProfilePageController extends GetxController {
         userType: currentUserType,
         userId: currentUserId,
         userName: currentUserName,
-        doctorGender:
-            (currentUserType == UserType.doctor) ? currentUserGender : null,
+        doctorGender: currentUserGender,
         doctorSpecialization: (currentUserType == UserType.doctor)
             ? currentDoctorSpecialization
             : null,
@@ -67,6 +70,17 @@ class DoctorProfilePageController extends GetxController {
         doctorSpecialization: currentDoctor.specialization,
       );
       await _userDataController.followDoctor(follower, following);
+      NotificationModel notification = NotificationModel(
+        id: const Uuid().v4(),
+        type: NotificationType.newFollow,
+        time: Timestamp.now(),
+        data: {},
+        notifierId: currentUserId,
+        notifierName: currentUserName,
+        notifierGender: currentUserGender,
+        notifierType: currentUserType,
+      );
+      _userDataController.uploadNotification(notification, doctorId!);
     }
     followed = await _userDataController.isUserFollowingDoctor(
         doctorId!, currentUserId);

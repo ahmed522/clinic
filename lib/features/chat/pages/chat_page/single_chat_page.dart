@@ -104,11 +104,12 @@ class SingleChatPage extends StatelessWidget {
                             }
                             return const NoPreviousMessagesPage();
                           }
+
                           return ListView.builder(
                             controller: controller.scrollController,
                             reverse: true,
                             itemCount: snapshot.data!.docs.length,
-                            physics: const BouncingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             itemBuilder: (contex, index) {
                               MessageModel message = MessageModel.fromSnapshot(
                                 snapshot.data!.docs[index],
@@ -122,6 +123,7 @@ class SingleChatPage extends StatelessWidget {
                                 previousMessage = MessageModel.fromSnapshot(
                                     snapshot.data!.docs[index - 1]);
                               }
+
                               if (index == snapshot.data!.size - 1) {
                                 return Column(
                                   children: [
@@ -136,9 +138,10 @@ class SingleChatPage extends StatelessWidget {
                                       padding: EdgeInsets.only(
                                         bottom: (index > 0) &&
                                                 _setPaddingBeforeMessage(
-                                                    currentMessage: message,
-                                                    previousMessage:
-                                                        previousMessage!)
+                                                  currentMessage: message,
+                                                  previousMessage:
+                                                      previousMessage!,
+                                                )
                                             ? 5
                                             : (index == 0)
                                                 ? 80
@@ -152,8 +155,31 @@ class SingleChatPage extends StatelessWidget {
                                               chatter2: controller
                                                   .chat!.value.chatter2,
                                             )
-                                          : MessageWidget(
-                                              message: message,
+                                          : Column(
+                                              children: [
+                                                MessageWidget(
+                                                  message: message,
+                                                ),
+                                                _getMessagesDateDifference(
+                                                  message.messageTime.toDate(),
+                                                  previousMessage!.messageTime
+                                                      .toDate(),
+                                                )
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        child: ContaineredText(
+                                                          text:
+                                                              _getMessagesDate(
+                                                            previousMessage
+                                                                .messageTime
+                                                                .toDate(),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : const SizedBox(),
+                                              ],
                                             ),
                                     ),
                                   ],

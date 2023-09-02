@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/chat/model/chat_model.dart';
 import 'package:clinic/features/chat/model/message_state.dart';
 import 'package:clinic/features/chat/pages/chat_page/single_chat_page.dart';
@@ -10,23 +11,40 @@ import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SingleChatListTile extends StatelessWidget {
+class SingleChatListTile extends StatefulWidget {
   const SingleChatListTile({
     Key? key,
     required this.chat,
   }) : super(key: key);
   final ChatModel chat;
+
+  @override
+  State<SingleChatListTile> createState() => _SingleChatListTileState();
+}
+
+class _SingleChatListTileState extends State<SingleChatListTile> {
+  String? _chatterPic;
+  @override
+  void initState() {
+    _getImage();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String subTiltle = '${(chat.lastMessage.sendedMessage) ? ' أنت : ' : ''}'
-        '${chat.lastMessage.content}';
+    _getImage();
+    String subTiltle =
+        '${(widget.chat.lastMessage.sendedMessage) ? ' أنت : ' : ''}'
+        '${widget.chat.lastMessage.content}';
     return ListTile(
-      onTap: () => Get.to(() => SingleChatPage(
-            chatterId: chat.chatter2.id,
-            chatterType: chat.chatter2.userType,
-            chatId: chat.chatId,
-          )),
-      trailing: (chat.chatter2.picURL == null)
+      onTap: () => Get.to(
+        () => SingleChatPage(
+          chatterId: widget.chat.chatter2.id,
+          chatterType: widget.chat.chatter2.userType,
+          chatId: widget.chat.chatId,
+        ),
+      ),
+      trailing: (_chatterPic == null)
           ? CircleAvatar(
               backgroundImage: const AssetImage('assets/img/user.png'),
               radius: 25,
@@ -36,7 +54,7 @@ class SingleChatListTile extends StatelessWidget {
             )
           : CircleAvatar(
               backgroundImage: CachedNetworkImageProvider(
-                chat.chatter2.picURL!,
+                _chatterPic!,
               ),
               radius: 25,
               backgroundColor:
@@ -47,7 +65,7 @@ class SingleChatListTile extends StatelessWidget {
       title: Align(
         alignment: Alignment.centerRight,
         child: Text(
-          chat.chatter2.name,
+          widget.chat.chatter2.name,
           style: const TextStyle(
             fontFamily: AppFonts.mainArabicFontFamily,
             fontSize: 18,
@@ -55,7 +73,7 @@ class SingleChatListTile extends StatelessWidget {
           ),
         ),
       ),
-      subtitle: chat.chatter2.isTyping
+      subtitle: widget.chat.chatter2.isTyping
           ? Text(
               'يكتب',
               style: Theme.of(context).textTheme.bodyText1,
@@ -69,14 +87,18 @@ class SingleChatListTile extends StatelessWidget {
               textDirection: TextDirection.rtl,
               style: TextStyle(
                 fontFamily: AppFonts.mainArabicFontFamily,
-                fontSize: (!chat.lastMessage.sendedMessage &&
-                        chat.lastMessage.messageState != MessageState.seen &&
-                        chat.lastMessage.messageState != MessageState.deleted)
+                fontSize: (!widget.chat.lastMessage.sendedMessage &&
+                        widget.chat.lastMessage.messageState !=
+                            MessageState.seen &&
+                        widget.chat.lastMessage.messageState !=
+                            MessageState.deleted)
                     ? 15
                     : 14,
-                fontWeight: (!chat.lastMessage.sendedMessage &&
-                        chat.lastMessage.messageState != MessageState.seen &&
-                        chat.lastMessage.messageState != MessageState.deleted)
+                fontWeight: (!widget.chat.lastMessage.sendedMessage &&
+                        widget.chat.lastMessage.messageState !=
+                            MessageState.seen &&
+                        widget.chat.lastMessage.messageState !=
+                            MessageState.deleted)
                     ? FontWeight.w700
                     : FontWeight.w400,
               ),
@@ -84,14 +106,14 @@ class SingleChatListTile extends StatelessWidget {
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CommonFunctions.isToday(chat.lastMessage.messageTime.toDate())
+          CommonFunctions.isToday(widget.chat.lastMessage.messageTime.toDate())
               ? const Text(
                   'اليوم',
                   style: TextStyle(
                       fontFamily: AppFonts.mainArabicFontFamily, fontSize: 9),
                 )
               : CommonFunctions.isYesterday(
-                      chat.lastMessage.messageTime.toDate())
+                      widget.chat.lastMessage.messageTime.toDate())
                   ? const Text(
                       'أمس',
                       style: TextStyle(
@@ -99,7 +121,7 @@ class SingleChatListTile extends StatelessWidget {
                           fontSize: 9),
                     )
                   : Text(
-                      chat.lastMessage.messageTime
+                      widget.chat.lastMessage.messageTime
                           .toDate()
                           .toString()
                           .substring(0, 10),
@@ -108,15 +130,15 @@ class SingleChatListTile extends StatelessWidget {
                         fontSize: 9,
                       ),
                     ),
-          MessageTimeWidget(messageTime: chat.lastMessage.messageTime),
-          (chat.lastMessage.sendedMessage ||
-                  chat.lastMessage.messageState == MessageState.deleted)
+          MessageTimeWidget(messageTime: widget.chat.lastMessage.messageTime),
+          (widget.chat.lastMessage.sendedMessage ||
+                  widget.chat.lastMessage.messageState == MessageState.deleted)
               ? Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MessageStateWidget(
-                        messageState: chat.lastMessage.messageState),
-                    chat.lastMessage.isMedicalRecordMessage
+                        messageState: widget.chat.lastMessage.messageState),
+                    widget.chat.lastMessage.isMedicalRecordMessage
                         ? const Icon(
                             Icons.medical_information,
                             color: AppColors.primaryColor,
@@ -128,14 +150,14 @@ class SingleChatListTile extends StatelessWidget {
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    chat.lastMessage.messageState != MessageState.seen
+                    widget.chat.lastMessage.messageState != MessageState.seen
                         ? const Icon(
                             Icons.notifications_active_rounded,
                             color: Colors.green,
                             size: 15,
                           )
                         : const SizedBox(),
-                    chat.lastMessage.isMedicalRecordMessage
+                    widget.chat.lastMessage.isMedicalRecordMessage
                         ? const Icon(
                             Icons.medical_information,
                             color: AppColors.primaryColor,
@@ -147,5 +169,20 @@ class SingleChatListTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _getImage() {
+    UserDataController.find
+        .getUserPersonalImageURLById(
+            widget.chat.chatter2.id, widget.chat.chatter2.userType)
+        .then((value) {
+      if (mounted) {
+        setState(
+          () {
+            _chatterPic = value;
+          },
+        );
+      }
+    });
   }
 }

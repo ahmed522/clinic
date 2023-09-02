@@ -1,8 +1,8 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_followings_page_controller.dart';
 import 'package:clinic/features/following/pages/doctor_following_card_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/appbar_widget.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
-import 'package:clinic/global/widgets/page_top_widget_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -18,20 +18,15 @@ class DoctorFollowingsPage extends StatelessWidget {
       tag: doctorId,
     );
     return Scaffold(
-      body: Stack(
-        children: [
-          OfflinePageBuilder(
-            child: RefreshIndicator(
-              displacement: size.height / 5,
-              child: _buildDoctorFollowingsList(context),
-              onRefresh: () => controller.loadDoctorFollowings(20, true),
-            ),
-          ),
-          const TopPageWidgetWithText(
-            text: 'المتابَعون',
-            fontSize: 40,
-          ),
-        ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(size.height / 6),
+        child: const AppBarWidget(text: '        المتابَعون'),
+      ),
+      body: OfflinePageBuilder(
+        child: RefreshIndicator(
+          child: _buildDoctorFollowingsList(context),
+          onRefresh: () => controller.loadDoctorFollowings(20, true),
+        ),
       ),
     );
   }
@@ -44,14 +39,14 @@ class DoctorFollowingsPage extends StatelessWidget {
         if (controller.loading.isTrue) {
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: size.height / 2),
-                const Center(
-                  child: AppCircularProgressIndicator(width: 100, height: 100),
-                )
-              ],
+            child: SizedBox(
+              height: 5 * size.height / 6,
+              child: const Center(
+                child: AppCircularProgressIndicator(
+                  width: 100,
+                  height: 100,
+                ),
+              ),
             ),
           );
         } else if (controller.followings.isEmpty) {
@@ -60,7 +55,7 @@ class DoctorFollowingsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: size.height / 3),
+                SizedBox(height: size.height / 5),
                 SvgPicture.asset(
                   'assets/img/empty.svg',
                   width: 200,
@@ -85,12 +80,7 @@ class DoctorFollowingsPage extends StatelessWidget {
           itemBuilder: (context, index) {
             if (index == controller.followings.length - 1) {
               return Padding(
-                padding: EdgeInsets.only(
-                  top: index == 0
-                      ? (size.width < 330)
-                          ? size.height / 4
-                          : size.height / 4 - 30
-                      : 0,
+                padding: const EdgeInsets.only(
                   bottom: 20.0,
                 ),
                 child: Column(
@@ -140,17 +130,13 @@ class DoctorFollowingsPage extends StatelessWidget {
                 ),
               );
             }
-            return Padding(
-              padding:
-                  EdgeInsets.only(top: index == 0 ? size.height / 4 - 50 : 0),
-              child: DoctorFollowingCardWidget(
-                follower: controller.followings[index],
-                isEditable: controller.currentUserId == doctorId,
-                onUnfollowButtonPressed: (controller.currentUserId == doctorId)
-                    ? () => controller.onUnfollowButtonPressed(
-                        context, controller.followings[index])
-                    : () {},
-              ),
+            return DoctorFollowingCardWidget(
+              follower: controller.followings[index],
+              isEditable: controller.currentUserId == doctorId,
+              onUnfollowButtonPressed: (controller.currentUserId == doctorId)
+                  ? () => controller.onUnfollowButtonPressed(
+                      context, controller.followings[index])
+                  : () {},
             );
           },
         );

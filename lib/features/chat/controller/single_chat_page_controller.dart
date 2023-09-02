@@ -7,6 +7,7 @@ import 'package:clinic/features/chat/model/chatter_model.dart';
 import 'package:clinic/features/chat/model/message_model.dart';
 import 'package:clinic/features/chat/model/message_state.dart';
 import 'package:clinic/features/medical_record/model/medical_record_model.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/age.dart';
@@ -21,23 +22,47 @@ import 'package:uuid/uuid.dart';
 class SingleChatPageController extends GetxController {
   static SingleChatPageController find(String tag) => Get.find(tag: tag);
   SingleChatPageController({
+    this.chatId,
     required this.chatterId,
     required this.chatterType,
     required this.screenHeight,
-    this.chatId,
   });
+
+  //================================ attributes ================================
   String? chatId;
-  double screenHeight;
-  RxBool loading = true.obs;
-  RxBool messageLoading = true.obs;
-  RxBool chatCreatedListener = false.obs;
-  RxBool showGoToBottomButton = false.obs;
-  bool deleteMessageLoading = false;
-  Rx<ChatModel>? chat;
   final String chatterId;
   final UserType chatterType;
+  double screenHeight;
+
+  /* private */
+  String? chatter2PicUrl;
+  //================================ ========== ================================
+
+  //================================ listeners =================================
+  RxBool loading = true.obs;
+  RxBool messageLoading = true.obs;
+  bool deleteMessageLoading = false;
+  Rx<ChatModel>? chat;
+  RxBool chatCreatedListener = false.obs;
+  RxBool showGoToBottomButton = false.obs;
+  RxBool scrolledup = false.obs;
+  RxBool newMessages = false.obs;
+  RxInt numberOfNewMessages = 0.obs;
+  //================================ ========= =================================
+
+  //=============================== controllers ================================
   final AuthenticationController _authenticationController =
       AuthenticationController.find;
+  final UserDataController _userDataController = UserDataController.find;
+  final NotificationsController _notificationController =
+      NotificationsController.find;
+  final ScrollController scrollController =
+      ScrollController(keepScrollOffset: false);
+  TextEditingController textController = TextEditingController();
+  final debouncer = Debouncer(milliseconds: 1000);
+  //=============================== =========== ================================
+
+  //===================== medical record message variables =====================
   MedicalRecordModel? medicalRecord;
   Age? medicalRecordUserAge;
   Gender? medicalRecordUserGender;
@@ -47,14 +72,13 @@ class SingleChatPageController extends GetxController {
   List<String> selectedSurgeries = [];
   List<String> selectedMedicines = [];
   bool includeMedicalRecordMoreInfo = false;
-  final debouncer = Debouncer(milliseconds: 1000);
-  final UserDataController _userDataController = UserDataController.find;
-  final ScrollController scrollController =
-      ScrollController(keepScrollOffset: false);
-  TextEditingController textController = TextEditingController();
+  //===================== ================================ =====================
+
   @override
   void onReady() async {
     updateLoading(true);
+    chatter2PicUrl = await _userDataController.getUserPersonalImageURLById(
+        chatterId, chatterType);
     if (chatId == null) {
       await _getChat();
     } else {
@@ -63,15 +87,12 @@ class SingleChatPageController extends GetxController {
         chatter1: ChatterModel(
           id: currentUserId,
           name: currentUserName,
-          picURL: currentUserPersonalImage,
           userType: currentUserType,
         ),
         chatter2: ChatterModel(
           id: chatterId,
           name:
               await _userDataController.getUserNameById(chatterId, chatterType),
-          picURL: await _userDataController.getUserPersonalImageURLById(
-              chatterId, chatterType),
           userType: chatterType,
         ),
         lastMessage: MessageModel(
@@ -90,15 +111,28 @@ class SingleChatPageController extends GetxController {
       const Duration(seconds: 1),
     );
     messageLoading.value = false;
-    scrollController.addListener(() {
-      if (scrollController.position.pixels -
-              scrollController.position.minScrollExtent >
-          2 * screenHeight) {
-        showGoToBottomButton.value = true;
-      } else {
-        showGoToBottomButton.value = false;
-      }
-    });
+    scrollController.addListener(
+      () {
+        if (scrollController.position.pixels -
+                scrollController.position.minScrollExtent >
+            80) {
+          scrolledup.value = true;
+        } else {
+          scrolledup.value = false;
+          newMessages.value = false;
+          numberOfNewMessages.value = 0;
+        }
+        if (scrollController.position.pixels -
+                scrollController.position.minScrollExtent >
+            2 * screenHeight) {
+          showGoToBottomButton.value = true;
+        } else {
+          showGoToBottomButton.value = false;
+        }
+      },
+    );
+    newMessages.bindStream(newMessagesListener);
+    numberOfNewMessages.bindStream(numberOfNewMessagesListener);
     super.onReady();
   }
 
@@ -124,6 +158,36 @@ class SingleChatPageController extends GetxController {
     }
   }
 
+  Stream<bool> get newMessagesListener => chatMessagesStream.map<bool>(
+        (event) {
+          if (event.docs.first['sender_id'] != currentUserId &&
+              event.docs.first['message_state'] != 'seen' &&
+              event.docs.first['message_state'] != 'deleted') {
+            return true;
+          } else {
+            return newMessages.value;
+          }
+        },
+      );
+  Stream<int> get numberOfNewMessagesListener => chatMessagesStream.map<int>(
+        (event) {
+          int number = event.docs.where(
+            (element) {
+              if (element.get('sender_id') != currentUserId &&
+                  element.get('message_state') != 'seen' &&
+                  element.get('message_state') != 'deleted') {}
+              return element.get('sender_id') != currentUserId &&
+                  element.get('message_state') != 'seen' &&
+                  element.get('message_state') != 'deleted';
+            },
+          ).length;
+          if (number > numberOfNewMessages.value) {
+            return number;
+          } else {
+            return numberOfNewMessages.value;
+          }
+        },
+      );
   Stream<ChatModel> get chatStream => _userDataController
           .getChatDocumentById(chatId!)
           .snapshots()
@@ -193,15 +257,12 @@ class SingleChatPageController extends GetxController {
         chatter1: ChatterModel(
           id: currentUserId,
           name: currentUserName,
-          picURL: currentUserPersonalImage,
           userType: currentUserType,
         ),
         chatter2: ChatterModel(
           id: chatterId,
           name:
               await _userDataController.getUserNameById(chatterId, chatterType),
-          picURL: await _userDataController.getUserPersonalImageURLById(
-              chatterId, chatterType),
           userType: chatterType,
         ),
         lastMessage: MessageModel(
@@ -217,7 +278,6 @@ class SingleChatPageController extends GetxController {
       ever(chatCreatedListener, _onChatCreated);
     } else {
       chatCreatedListener.value = true;
-
       chat = tempChat.obs;
       chatId = tempChat.chatId;
       chat!.bindStream(chatStream);
@@ -255,6 +315,12 @@ class SingleChatPageController extends GetxController {
         duration: Duration(milliseconds: milliseconds),
         curve: Curves.easeInOut,
       );
+    }
+  }
+
+  void jumpToBottom() {
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(scrollController.position.minScrollExtent);
     }
   }
 
@@ -406,23 +472,20 @@ class SingleChatPageController extends GetxController {
 
   onOpenMedicalRecordButtonPressed(String messageId, bool sendedMessage) async {
     messageLoading.value = true;
-    medicalRecord =
+    Map<String, dynamic>? medicalRecordMessageData =
         await _userDataController.getMedicalRecordMessage(chatId!, messageId);
+    medicalRecord = medicalRecordMessageData!['medical_record'];
+
     if (sendedMessage) {
-      medicalRecordUserAge = currntUserAge;
       medicalRecordUserGender = currentUserGender;
       medicalRecordUserName = currentUserName;
       medicalRecordUserPic = currentUserPersonalImage;
     } else {
-      DocumentSnapshot snapshot = await _userDataController
-          .getMedicalRecordMessageDocument(chatId!, messageId)
-          .get();
-      medicalRecordUserAge = Age.fromJson(snapshot.get('age'));
-      medicalRecordUserGender =
-          snapshot.get('gender') == 'male' ? Gender.male : Gender.female;
+      medicalRecordUserGender = medicalRecordMessageData['gender'];
       medicalRecordUserName = chat!.value.chatter2.name;
-      medicalRecordUserPic = chat!.value.chatter2.picURL;
+      medicalRecordUserPic = chatter2PicUrl;
     }
+    medicalRecordUserAge = medicalRecordMessageData['age'];
     messageLoading.value = false;
   }
 
@@ -485,6 +548,11 @@ class SingleChatPageController extends GetxController {
         updateIsTypingValue(false);
       }
       await _userDataController.uploadMessage(message, chatId!);
+      _notificationController.sendNewMessageNotification(
+        chatterId,
+        chatId!,
+        message.content,
+      );
       if (chat!.value.chatter2.deleteChat || chat!.value.chatter1.deleteChat) {
         Map<String, dynamic> updatedData = {};
         updatedData.addIf(

@@ -9,9 +9,13 @@ class CreateReplyWidgetContent extends StatelessWidget {
     Key? key,
     required this.postId,
     required this.commentId,
+    required this.commentWriterId,
+    required this.postWriterId,
   }) : super(key: key);
   final String postId;
   final String commentId;
+  final String commentWriterId;
+  final String postWriterId;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,12 @@ class CreateReplyWidgetContent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        UploadReplyButton(postId: postId, commentId: commentId),
+        UploadReplyButton(
+          postId: postId,
+          commentId: commentId,
+          commentWriterId: commentWriterId,
+          postWriterId: postWriterId,
+        ),
         Padding(
           padding: const EdgeInsets.only(top: 5.0, right: 5.0),
           child: Row(
@@ -27,10 +36,10 @@ class CreateReplyWidgetContent extends StatelessWidget {
             children: [
               const CreateReplyTextField(),
               const SizedBox(width: 5),
-              (controller.getCurrentUserPic() != null)
+              (controller.currentUserPersonalImage != null)
                   ? CircleAvatar(
                       backgroundImage:
-                          NetworkImage(controller.getCurrentUserPic()),
+                          NetworkImage(controller.currentUserPersonalImage!),
                       radius: 25,
                     )
                   : const CircleAvatar(

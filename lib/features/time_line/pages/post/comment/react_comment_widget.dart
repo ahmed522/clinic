@@ -35,7 +35,9 @@ class ReactCommentWidget extends StatelessWidget {
                         comment.loading = true;
                         controller.update();
                         await controller.unReactComment(
-                            comment.postId, comment.commentId);
+                          comment.postId,
+                          comment.commentId,
+                        );
                         --comment.reacts;
                         comment.reacted = false;
                         comment.loading = false;
@@ -44,7 +46,10 @@ class ReactCommentWidget extends StatelessWidget {
                         comment.loading = true;
                         controller.update();
                         await controller.reactComment(
-                            comment.postId, comment.commentId);
+                          comment.postId,
+                          comment.commentId,
+                          comment.writer.userId!,
+                        );
                         ++comment.reacts;
                         comment.reacted = true;
                         comment.loading = false;

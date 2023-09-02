@@ -9,9 +9,13 @@ class UploadReplyButton extends StatelessWidget {
     Key? key,
     required this.postId,
     required this.commentId,
+    required this.commentWriterId,
+    required this.postWriterId,
   }) : super(key: key);
   final String postId;
   final String commentId;
+  final String commentWriterId;
+  final String postWriterId;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +28,13 @@ class UploadReplyButton extends StatelessWidget {
           FocusScope.of(context).unfocus();
           ReplyModel reply = ReplyModel(
             postId: postId,
-            writer: controller.getCurrentUser(),
+            writer: controller.currentUser,
             comment: controller.textController.text.trim(),
             commentTime: Timestamp.now(),
           );
           reply.commentId = commentId;
 
-          controller.uploadReply(reply);
+          controller.uploadReply(reply, commentWriterId, postWriterId);
         }
         controller.textController.clear();
       },

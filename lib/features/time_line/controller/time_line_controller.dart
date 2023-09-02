@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 
 class TimeLineController extends GetxController {
   static TimeLineController get find => Get.find();
-  final _authenticationController = AuthenticationController.find;
   RxBool loadingPosts = true.obs;
   RxBool morePostsLoading = false.obs;
   RxBool noMorePosts = false.obs;
@@ -25,6 +24,7 @@ class TimeLineController extends GetxController {
     super.onReady();
   }
 
+  final _authenticationController = AuthenticationController.find;
   final _userDataController = UserDataController.find;
   Future<void> loadPosts(int limit, bool isRefresh) async {
     if (isRefresh) {
@@ -34,14 +34,12 @@ class TimeLineController extends GetxController {
     try {
       QuerySnapshot snapshot;
       if (isRefresh) {
-        snapshot = await _userDataController
-            .getAllUsersPostsCollection()
+        snapshot = await _userDataController.getAllUsersPostsCollection
             .orderBy('time_stamp', descending: true)
             .limit(limit)
             .get();
       } else {
-        snapshot = await _userDataController
-            .getAllUsersPostsCollection()
+        snapshot = await _userDataController.getAllUsersPostsCollection
             .orderBy('time_stamp', descending: true)
             .startAfterDocument(_lastPostShown!)
             .limit(limit)

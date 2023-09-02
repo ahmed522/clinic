@@ -9,11 +9,9 @@ class MedicalRecordIsNotSet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.only(top: size.height / 5 + 20),
+        padding: const EdgeInsets.only(top: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -35,7 +33,9 @@ class MedicalRecordIsNotSet extends StatelessWidget {
             ProfileOptionButton(
               text: 'إنشاء السجل المرضي',
               imageAsset: 'assets/img/medical-record.png',
-              onPressed: () => Get.to(() => const AddMedicalRecord()),
+              onPressed: () => Get.to(
+                () => const AddMedicalRecord(),
+              ),
             ),
             const SizedBox(
               height: 50,

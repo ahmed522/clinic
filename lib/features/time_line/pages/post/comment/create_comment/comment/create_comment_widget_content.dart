@@ -10,9 +10,11 @@ class CreateCommentWidgetContent extends StatelessWidget {
   const CreateCommentWidgetContent({
     Key? key,
     required this.postId,
+    required this.postWriterId,
   }) : super(key: key);
 
   final String postId;
+  final String postWriterId;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,10 @@ class CreateCommentWidgetContent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        UploadCommentButton(postId: postId),
+        UploadCommentButton(
+          postId: postId,
+          postWriterId: postWriterId,
+        ),
         Padding(
           padding: const EdgeInsets.only(top: 5.0, right: 5.0),
           child: Row(

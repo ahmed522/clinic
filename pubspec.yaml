@@ -1,5 +1,5 @@
 name: clinic
-description: A new Flutter project.
+description: clinic on phone!
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -51,6 +51,9 @@ dependencies:
   cached_network_image: ^3.2.3
   map_launcher: ^2.5.0
   flutter_offline: ^2.0.0
+  firebase_messaging: ^14.6.6
+  http: ^0.13.5
+  flutter_notification_channel: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -101,8 +104,6 @@ flutter:
     - assets/img/suppository.png
     - assets/img/nasal-spray.png
     - assets/img/mouth-rinse.png
-    - assets/img/doctor-profile-page-icon-black.png
-    - assets/img/doctor-profile-page-icon-white.png
     - assets/img/clinic.png
     - assets/img/degree.png
     - assets/img/announcement.png
@@ -120,6 +121,7 @@ flutter:
     - assets/img/chat-background.jpg
     - assets/img/internet-error.svg
     - assets/img/medical-record-disabled.png
+    - assets/img/search.svg
     
 
 

@@ -25,7 +25,6 @@ class UserMedicalRecordPage extends StatelessWidget {
         ? SingleChatPageController.find(chatterId!)
         : MedicalRecordPageController.find;
 
-    final size = MediaQuery.of(context).size;
     final Age userAge = isMessage
         ? (controller as SingleChatPageController).medicalRecordUserAge
         : (controller as MedicalRecordPageController).currntUserAge;
@@ -37,8 +36,11 @@ class UserMedicalRecordPage extends StatelessWidget {
         : (controller as MedicalRecordPageController).medicalRecord!;
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.only(
-            top: isMessage ? 10 : size.height / 5 - 10, left: 10, right: 10),
+        padding: const EdgeInsets.only(
+          top: 10,
+          left: 10,
+          right: 10,
+        ),
         child: Column(
           children: [
             UserNameAndPicWidget(

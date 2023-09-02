@@ -1,4 +1,5 @@
 import 'package:clinic/features/time_line/controller/post_comments_controller.dart';
+import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/parent_post_model.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart';
@@ -32,12 +33,18 @@ class PostCommentsWidget extends StatelessWidget {
         ),
         (writerType == UserType.doctor)
             ? (controller.currentUserType == UserType.doctor)
-                ? CreateCommentWidget(postId: post.postId!)
+                ? CreateCommentWidget(
+                    postId: post.postId!,
+                    postWriterId: (post as DoctorPostModel).writer!.userId!,
+                  )
                 : const SizedBox()
             : ((controller.currentUserType == UserType.doctor) ||
                     (controller.isCurrentUserComment(
                         (post as UserPostModel).user.userId!)))
-                ? CreateCommentWidget(postId: post.postId!)
+                ? CreateCommentWidget(
+                    postId: post.postId!,
+                    postWriterId: (post as UserPostModel).user.userId!,
+                  )
                 : const SizedBox(),
         GetX<PostCommentsController>(
           builder: (controller) {
@@ -69,7 +76,12 @@ class PostCommentsWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 20.0),
                     child: Column(
                       children: [
-                        CommentWidget(comment: controller.comments[index]),
+                        CommentWidget(
+                          comment: controller.comments[index],
+                          postWriterId: (post.writerType == UserType.user)
+                              ? (post as UserPostModel).user.userId
+                              : (post as DoctorPostModel).doctorId,
+                        ),
                         GetX<PostCommentsController>(
                           builder: (controller) {
                             if (controller.noMoreComments.isTrue) {
@@ -104,7 +116,12 @@ class PostCommentsWidget extends StatelessWidget {
                     ),
                   );
                 }
-                return CommentWidget(comment: controller.comments[index]);
+                return CommentWidget(
+                  comment: controller.comments[index],
+                  postWriterId: (post.writerType == UserType.user)
+                      ? (post as UserPostModel).user.userId
+                      : (post as DoctorPostModel).doctorId,
+                );
               },
             );
           },

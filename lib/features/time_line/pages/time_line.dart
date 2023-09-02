@@ -34,6 +34,14 @@ class TimeLine extends StatelessWidget {
               color: Colors.white,
               fontFamily: AppFonts.mainArabicFontFamily,
               fontWeight: FontWeight.bold,
+              shadows: [
+                BoxShadow(
+                  color: Colors.black38,
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: Offset(0, 1.5),
+                ),
+              ],
             ),
           ),
         ),
@@ -148,9 +156,11 @@ class TimeLine extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () => controller.loadPosts(25, false),
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(7))),
+                                backgroundColor: AppColors.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                              ),
                               child: const Text(
                                 'المزيد',
                                 style: TextStyle(

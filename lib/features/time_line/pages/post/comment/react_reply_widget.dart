@@ -41,7 +41,11 @@ class ReactReplyWidget extends StatelessWidget {
                         reply.loading = true;
                         controller.update();
                         await controller.reactReply(
-                            reply.commentId, reply.replyId);
+                          reply.commentId,
+                          reply.replyId,
+                          reply.writer.userId!,
+                          reply.postId,
+                        );
                         ++reply.reacts;
                         reply.reacted = true;
                         reply.loading = false;

@@ -20,9 +20,12 @@ class AddMedicalRecord extends StatelessWidget {
   final MedicalRecordModel? medicalRecordModel;
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AddMedicalRecordController(
+    final controller = Get.put(
+      AddMedicalRecordController(
         medicalRecord:
-            isMedicalRecordPage ? medicalRecordModel! : MedicalRecordModel()));
+            isMedicalRecordPage ? medicalRecordModel! : MedicalRecordModel(),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Align(

@@ -111,7 +111,8 @@ class DoctorFollowingsPageController extends GetxController {
             try {
               await _userDataController.unFollowDoctor(
                   follower.userId, currentUserId);
-              loadDoctorFollowings(20, true);
+              followings.remove(follower);
+              loading.value = false;
             } on Exception {
               CommonFunctions.errorHappened();
             }

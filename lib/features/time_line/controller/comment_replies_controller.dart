@@ -1,6 +1,7 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
+import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -70,7 +71,8 @@ class CommentRepliesController extends GetxController {
     }
   }
 
-  reactReply(String commentDocumentId, String replyDocumentId) async {
+  reactReply(String commentDocumentId, String replyDocumentId,
+      String replyWriterId, String postId) async {
     FollowerModel reacter = FollowerModel(
       userType: currentUserType,
       userId: currentUserId,
@@ -87,6 +89,15 @@ class CommentRepliesController extends GetxController {
         .doc(currentUserId)
         .set(data);
     await _updateReplyReacts(commentDocumentId, replyDocumentId, true);
+    if (currentUserId != replyWriterId) {
+      NotificationsController.find.notifyReact(
+        writerId: replyWriterId,
+        postId: postId,
+        commentId: commentDocumentId,
+        replyId: replyDocumentId,
+        reactedComponent: 'ردك',
+      );
+    }
   }
 
   unReactReply(String commentDocumentId, String replyDocumentId) async {

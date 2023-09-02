@@ -184,11 +184,11 @@ class SingleChatPageAppBarWidget extends StatelessWidget {
                           );
                         }),
                     const SizedBox(width: 10),
-                    controller.chat!.value.chatter2.picURL != null
+                    controller.chatter2PicUrl != null
                         ? CircleAvatar(
                             backgroundColor: AppColors.primaryColor,
                             backgroundImage: CachedNetworkImageProvider(
-                                controller.chat!.value.chatter2.picURL!),
+                                controller.chatter2PicUrl!),
                             radius: (size.width < 330) ? 18 : 22,
                           )
                         : CircleAvatar(

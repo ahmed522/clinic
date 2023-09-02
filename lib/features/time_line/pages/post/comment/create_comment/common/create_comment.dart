@@ -9,8 +9,13 @@ class CreateCommentWidget extends StatelessWidget {
     required this.postId,
     this.isReply = false,
     this.commentId = '',
+    required this.postWriterId,
+    this.commentWriterId,
   });
   final String postId;
+  final String postWriterId;
+  final String? commentWriterId;
+
   final bool isReply;
   final String commentId;
   @override
@@ -25,8 +30,16 @@ class CreateCommentWidget extends StatelessWidget {
       child: CommentContainer(
         borderWidth: 1,
         child: isReply
-            ? CreateReplyWidgetContent(postId: postId, commentId: commentId)
-            : CreateCommentWidgetContent(postId: postId),
+            ? CreateReplyWidgetContent(
+                postId: postId,
+                commentId: commentId,
+                commentWriterId: commentWriterId!,
+                postWriterId: postWriterId,
+              )
+            : CreateCommentWidgetContent(
+                postId: postId,
+                postWriterId: postWriterId,
+              ),
       ),
     );
   }

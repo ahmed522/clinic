@@ -18,7 +18,7 @@ class ScrollToBottomButton extends StatelessWidget {
     return CircleButton(
       onPressed: () {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.scrollToBottom(2000);
+          controller.jumpToBottom();
         });
       },
       backgroundColor: CommonFunctions.isLightMode(context)

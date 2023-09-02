@@ -22,6 +22,8 @@ class UserChatsPageController extends GetxController {
     super.onReady();
   }
 
+  Future<String?> getChatterPic(String chatterId, UserType chatterType) async =>
+      _userDataController.getUserPersonalImageURLById(chatterId, chatterType);
   Stream<QuerySnapshot> get chatsStream => _userDataController.chatsCollection
       .where('chatters_ids', arrayContains: currentUserId)
       .orderBy('last_message_time', descending: true)

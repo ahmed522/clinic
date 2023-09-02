@@ -94,5 +94,5 @@ class DoctorPostsController extends GetxController {
   }
 
   CollectionReference get _allUsersPostsCollection =>
-      _userDataController.getAllUsersPostsCollection();
+      _userDataController.getAllUsersPostsCollection;
 }
