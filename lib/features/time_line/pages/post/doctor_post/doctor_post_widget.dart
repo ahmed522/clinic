@@ -19,10 +19,12 @@ class DoctorPostWidget extends StatelessWidget {
     required this.post,
     this.isProfilePage = false,
     this.isClickable = true,
+    this.isPreview = false,
   });
   final DoctorPostModel post;
   final bool isProfilePage;
   final bool isClickable;
+  final bool isPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class DoctorPostWidget extends StatelessWidget {
       onTap: isClickable
           ? () => Get.to(
                 () => PostPage(post: post, writerType: UserType.doctor),
+                transition: Transition.rightToLeftWithFade,
               )
           : null,
       child: Padding(
@@ -49,7 +52,9 @@ class DoctorPostWidget extends StatelessWidget {
                       ? Colors.blueAccent
                       : post.postType == DoctorPostType.medicalInfo
                           ? AppColors.primaryColor
-                          : Colors.blueGrey,
+                          : post.postType == DoctorPostType.newDegree
+                              ? AppColors.newDegreeColor
+                              : Colors.blueGrey,
               width: 1.8,
             ),
             borderRadius: BorderRadius.circular(15),
@@ -62,7 +67,8 @@ class DoctorPostWidget extends StatelessWidget {
                 userId: post.doctorId!,
                 userType: UserType.doctor,
                 setSideInfo: true,
-                isCurrentUserPost: controller.isCurrentUserPost(post.doctorId!),
+                isCurrentUserPost:
+                    controller.isCurrentUserPost(post.doctorId!) && !isPreview,
                 userName: CommonFunctions.getFullName(
                     post.writer!.firstName!, post.writer!.lastName!),
                 personalImageURL: post.writer!.personalImageURL,
@@ -89,7 +95,11 @@ class DoctorPostWidget extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              DoctorPostBottomWidget(post: post, isPostPage: false),
+              DoctorPostBottomWidget(
+                post: post,
+                isPostPage: false,
+                isPreview: isPreview,
+              ),
             ],
           ),
         ),

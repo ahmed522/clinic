@@ -8,6 +8,7 @@ class DoctorPostModel extends ParentPostModel {
   String? doctorId;
   DoctorPostType postType = DoctorPostType.other;
   int? discount;
+  String? degree;
   List<String>? selectedClinics;
   DoctorModel? writer;
 
@@ -26,6 +27,8 @@ class DoctorPostModel extends ParentPostModel {
       data['selected_clinics'] = selectedClinics;
     } else if (postType == DoctorPostType.newClinic) {
       data['selected_clinics'] = selectedClinics;
+    } else if (postType == DoctorPostType.newDegree) {
+      data['degree'] = degree;
     }
     return data;
   }
@@ -55,6 +58,10 @@ class DoctorPostModel extends ParentPostModel {
       if (postData['selected_clinics'] != null) {
         selectedClinics = _getClinics(postData['selected_clinics']);
       }
+    } else if (postType == DoctorPostType.newDegree) {
+      if (postData['degree'] != null) {
+        degree = postData['degree'];
+      }
     }
   }
 
@@ -66,6 +73,8 @@ class DoctorPostModel extends ParentPostModel {
         return DoctorPostType.medicalInfo;
       case 'newClinic':
         return DoctorPostType.newClinic;
+      case 'newDegree':
+        return DoctorPostType.newDegree;
       default:
         return DoctorPostType.other;
     }

@@ -6,7 +6,7 @@ import 'package:clinic/features/user_profile/controller/user_profile_controller.
 import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
 import 'package:clinic/features/user_profile/pages/user_following_page.dart';
 import 'package:clinic/features/user_profile/pages/user_questions_page.dart';
-import 'package:clinic/features/settings/Pages/settings_page.dart';
+import 'package:clinic/features/settings/Pages/common/settings_page.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
@@ -50,7 +50,8 @@ class UserProfilePage extends StatelessWidget {
                         SizedBox(height: size.height / 4),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: controller.isCurrentUserProfilePage
+                          child: controller.isCurrentUserProfilePage ||
+                                  controller.currentUserType == UserType.user
                               ? const SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.only(right: 20.0),
@@ -65,6 +66,7 @@ class UserProfilePage extends StatelessWidget {
                                 imageAsset: 'assets/img/chats.png',
                                 onPressed: () => Get.to(
                                   () => const UserChatsPage(),
+                                  transition: Transition.rightToLeftWithFade,
                                 ),
                               )
                             : const SizedBox(),
@@ -75,29 +77,37 @@ class UserProfilePage extends StatelessWidget {
                             () => UserQuestionsPage(
                               userId: userId,
                             ),
+                            transition: Transition.rightToLeftWithFade,
                           ),
                         ),
                         ProfileOptionButton(
                           text: 'الأطباء المتابَعون',
                           imageAsset: 'assets/img/following-doctors.png',
-                          onPressed: () => Get.to(() => UserFollowingPage(
-                                userId: userId,
-                              )),
+                          onPressed: () => Get.to(
+                            () => UserFollowingPage(
+                              userId: userId,
+                            ),
+                            transition: Transition.rightToLeftWithFade,
+                          ),
                         ),
                         controller.isCurrentUserProfilePage
                             ? ProfileOptionButton(
                                 text: 'السجل المرضي',
                                 imageAsset: 'assets/img/medical-record.png',
-                                onPressed: () =>
-                                    Get.to(() => const MedicalRecordPage()),
+                                onPressed: () => Get.to(
+                                  () => const MedicalRecordPage(),
+                                  transition: Transition.rightToLeftWithFade,
+                                ),
                               )
                             : const SizedBox(),
                         controller.isCurrentUserProfilePage
                             ? ProfileOptionButton(
                                 text: 'الإعدادات',
                                 imageAsset: 'assets/img/settings.png',
-                                onPressed: () =>
-                                    Get.to(() => const SettingsPage()),
+                                onPressed: () => Get.to(
+                                  () => const SettingsPage(),
+                                  transition: Transition.rightToLeftWithFade,
+                                ),
                               )
                             : const SizedBox(),
                         const SizedBox(height: 100),

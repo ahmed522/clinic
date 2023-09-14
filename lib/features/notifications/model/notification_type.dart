@@ -11,6 +11,7 @@ enum NotificationType {
   searchingForMySpecialization,
   followedDoctorPost,
   followedDoctorNewClinicPost,
+  followedDoctorNewDegreePost,
   followedDoctorDiscountPost,
   followedDoctorMedicalInfoPost,
 }

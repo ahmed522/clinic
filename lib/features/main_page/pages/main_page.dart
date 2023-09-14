@@ -164,7 +164,7 @@ class MainPage extends StatelessWidget {
     controller.pageController.animateToPage(
       page,
       duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
+      curve: Curves.easeInOut,
     );
   }
 }

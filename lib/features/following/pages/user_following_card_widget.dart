@@ -21,6 +21,7 @@ class UserFollowingCardWidget extends StatelessWidget {
         () => UserProfilePage(
           userId: follower.userId,
         ),
+        transition: Transition.rightToLeftWithFade,
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),

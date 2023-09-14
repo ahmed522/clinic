@@ -17,22 +17,13 @@ class DoctorDegreeWidget extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        (CommonFunctions.isLightMode(context))
-            ? SizedBox(
-                width: (size.width > 330) ? 35 : 25,
-                height: (size.width > 330) ? 35 : 25,
-                child: Image.asset('assets/img/degree.png'),
-              )
-            : ColorFiltered(
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcATop,
-                ),
-                child: SizedBox(
-                  width: (size.width > 330) ? 35 : 25,
-                  height: (size.width > 330) ? 35 : 25,
-                  child: Image.asset('assets/img/degree.png'),
-                )),
+        Icon(
+          Icons.school_rounded,
+          color: (CommonFunctions.isLightMode(context))
+              ? AppColors.primaryColor
+              : Colors.white,
+          size: 35,
+        ),
         const SizedBox(width: 8),
         Text(
           degree,

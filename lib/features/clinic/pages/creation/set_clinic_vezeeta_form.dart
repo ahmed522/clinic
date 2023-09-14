@@ -1,3 +1,4 @@
+import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 
 class SetClinicVezeetaForm extends StatelessWidget {
@@ -43,6 +44,10 @@ class SetClinicVezeetaForm extends StatelessWidget {
                   maxLength: 4,
                   decoration: const InputDecoration(
                     counter: Offstage(),
+                    errorStyle: TextStyle(
+                      fontFamily: AppFonts.mainArabicFontFamily,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -70,6 +75,10 @@ class SetClinicVezeetaForm extends StatelessWidget {
                       : reexamineVezeeta.toString(),
                   decoration: const InputDecoration(
                     counter: Offstage(),
+                    errorStyle: TextStyle(
+                      fontFamily: AppFonts.mainArabicFontFamily,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

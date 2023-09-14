@@ -4,10 +4,15 @@ import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/age.dart';
+import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class CommonFunctions {
   static String getFullName(String firstName, String lastName) =>
@@ -98,6 +103,17 @@ class CommonFunctions {
     return '$finalHour:$minute' '$amOrPm';
   }
 
+  static String getDate(Timestamp date) {
+    DateTime dateInDateTime = date.toDate();
+    if (isToday(dateInDateTime)) {
+      return 'اليوم';
+    } else if (isYesterday(dateInDateTime)) {
+      return 'أمس';
+    } else {
+      return dateInDateTime.toString().substring(0, 10);
+    }
+  }
+
   static bool isToday(DateTime date) {
     return ((DateTime.now().year == date.year) &&
         (DateTime.now().month == date.month) &&
@@ -115,6 +131,119 @@ class CommonFunctions {
     return ((date1.year == date2.year) &&
         (date1.month == date2.month) &&
         (date1.day == date2.day));
+  }
+
+  static List<TextSpan> extractText(BuildContext context, String rawString,
+      {Color linkTextColor = Colors.blue, Color phoneTextColor = Colors.blue}) {
+    List<TextSpan> textSpan = [];
+    final urlRegExp = RegExp(AppConstants.urlRegex);
+    final phoneRegExp = RegExp(AppConstants.phoneNumberRegex);
+
+    getLink(String linkString) {
+      if (linkString.startsWith('www')) {
+        linkString = 'https://$linkString';
+      }
+      textSpan.add(
+        TextSpan(
+          text: linkString,
+          style: TextStyle(
+            color: linkTextColor,
+            fontStyle: FontStyle.italic,
+            shadows: const [
+              BoxShadow(
+                color: Colors.black38,
+                spreadRadius: 0.5,
+                blurRadius: 1,
+                offset: Offset(0, 0.5),
+              ),
+            ],
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              MyAlertDialog.showAlertDialog(
+                context,
+                'الإنتقال إلى الرابط',
+                'هل أنت متأكد من الإنتقال إلى الرابط التالي:\n $linkString',
+                MyAlertDialog.getAlertDialogActions(
+                  {
+                    'العودة': () => Get.back(),
+                    'الإنتقال': () async {
+                      Get.back();
+                      if (await canLaunchUrlString(linkString)) {
+                        launchUrlString(
+                          linkString,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      } else {
+                        errorHappened();
+                      }
+                    }
+                  },
+                ),
+              );
+            },
+        ),
+      );
+      return linkString;
+    }
+
+    getPhoneNumber(String phoneString) {
+      textSpan.add(
+        TextSpan(
+          text: phoneString,
+          style: TextStyle(
+            color: phoneTextColor,
+            shadows: const [
+              BoxShadow(
+                color: Colors.black38,
+                spreadRadius: 0.5,
+                blurRadius: 1,
+                offset: Offset(0, 0.5),
+              ),
+            ],
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () async {
+              Uri phoneUrl = Uri(
+                scheme: 'tel',
+                path: phoneString,
+              );
+              if (await canLaunchUrl(phoneUrl)) {
+                launchUrl(
+                  phoneUrl,
+                  mode: LaunchMode.externalApplication,
+                );
+              } else {
+                errorHappened();
+              }
+            },
+        ),
+      );
+      return phoneString;
+    }
+
+    getNormalText(String normalText) {
+      textSpan.add(
+        TextSpan(
+          text: normalText,
+        ),
+      );
+      return normalText;
+    }
+
+    rawString.splitMapJoin(
+      urlRegExp,
+      onMatch: (m) => getLink("${m.group(0)}"),
+    );
+    rawString.splitMapJoin(
+      phoneRegExp,
+      onMatch: (m) => getPhoneNumber("${m.group(0)}"),
+    );
+    rawString.splitMapJoin(
+      RegExp('(${urlRegExp.pattern})|(${phoneRegExp.pattern})'),
+      onNonMatch: (n) => getNormalText(n.substring(0)),
+    );
+    return textSpan;
   }
 
   static bool isCurrentUser(String uid) => uid == currentUserId;

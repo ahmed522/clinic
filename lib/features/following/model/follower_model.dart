@@ -6,15 +6,15 @@ class FollowerModel {
   late final String userId;
   late final UserType userType;
   late final String userName;
+  late final Gender gender;
   String? userPersonalImage;
-  Gender? doctorGender;
   String? doctorSpecialization;
 
   FollowerModel({
     required this.userType,
     required this.userId,
     required this.userName,
-    this.doctorGender,
+    required this.gender,
     this.doctorSpecialization,
   });
 
@@ -23,8 +23,7 @@ class FollowerModel {
     data['follower_type'] = userType.name;
     data['follower_id'] = userId;
     data['follower_name'] = userName;
-    data['doctor_gender'] =
-        (doctorGender != null) ? doctorGender!.name : doctorGender;
+    data['gender'] = gender.name;
     data['doctor_specialization'] = doctorSpecialization;
     return data;
   }
@@ -39,7 +38,7 @@ class FollowerModel {
     userType = _getUserType(data!['follower_type']);
     userId = data['follower_id'];
     userName = data['follower_name'];
-    doctorGender = _getDoctorGender(data['doctor_gender']);
+    gender = _getGender(data['gender']);
     doctorSpecialization = data['doctor_specialization'];
   }
 
@@ -51,10 +50,7 @@ class FollowerModel {
     }
   }
 
-  Gender? _getDoctorGender(String? doctorGenderName) {
-    if (doctorGenderName == null) {
-      return null;
-    }
+  Gender _getGender(String doctorGenderName) {
     if (doctorGenderName == 'male') {
       return Gender.male;
     } else {

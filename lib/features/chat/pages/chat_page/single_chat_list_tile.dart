@@ -8,6 +8,7 @@ import 'package:clinic/features/chat/pages/message/message_time_widget.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/notify_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -43,6 +44,7 @@ class _SingleChatListTileState extends State<SingleChatListTile> {
           chatterType: widget.chat.chatter2.userType,
           chatId: widget.chat.chatId,
         ),
+        transition: Transition.rightToLeftWithFade,
       ),
       trailing: (_chatterPic == null)
           ? CircleAvatar(
@@ -103,69 +105,69 @@ class _SingleChatListTileState extends State<SingleChatListTile> {
                     : FontWeight.w400,
               ),
             ),
-      leading: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CommonFunctions.isToday(widget.chat.lastMessage.messageTime.toDate())
-              ? const Text(
-                  'اليوم',
-                  style: TextStyle(
-                      fontFamily: AppFonts.mainArabicFontFamily, fontSize: 9),
-                )
-              : CommonFunctions.isYesterday(
-                      widget.chat.lastMessage.messageTime.toDate())
-                  ? const Text(
-                      'أمس',
-                      style: TextStyle(
-                          fontFamily: AppFonts.mainArabicFontFamily,
-                          fontSize: 9),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                CommonFunctions.getDate(widget.chat.lastMessage.messageTime),
+                style: const TextStyle(
+                  fontFamily: AppFonts.mainArabicFontFamily,
+                  fontSize: 9,
+                ),
+              ),
+              MessageTimeWidget(
+                  messageTime: widget.chat.lastMessage.messageTime),
+              (widget.chat.lastMessage.sendedMessage ||
+                      widget.chat.lastMessage.messageState ==
+                          MessageState.deleted)
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        MessageStateWidget(
+                            messageState: widget.chat.lastMessage.messageState),
+                        widget.chat.lastMessage.isMedicalRecordMessage
+                            ? const Icon(
+                                Icons.medical_information,
+                                color: AppColors.primaryColor,
+                                size: 10,
+                              )
+                            : const SizedBox(),
+                      ],
                     )
-                  : Text(
-                      widget.chat.lastMessage.messageTime
-                          .toDate()
-                          .toString()
-                          .substring(0, 10),
-                      style: const TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        fontSize: 9,
-                      ),
-                    ),
-          MessageTimeWidget(messageTime: widget.chat.lastMessage.messageTime),
-          (widget.chat.lastMessage.sendedMessage ||
-                  widget.chat.lastMessage.messageState == MessageState.deleted)
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    MessageStateWidget(
-                        messageState: widget.chat.lastMessage.messageState),
-                    widget.chat.lastMessage.isMedicalRecordMessage
-                        ? const Icon(
-                            Icons.medical_information,
-                            color: AppColors.primaryColor,
-                            size: 12,
-                          )
-                        : const SizedBox(),
-                  ],
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        widget.chat.lastMessage.messageState !=
+                                MessageState.seen
+                            ? const NotifyWidget(
+                                color: Colors.green,
+                                shadowColor: Colors.lightGreen,
+                                size: 10,
+                              )
+                            : const SizedBox(),
+                        widget.chat.lastMessage.isMedicalRecordMessage
+                            ? const Padding(
+                                padding: EdgeInsets.only(left: 2.0),
+                                child: Icon(
+                                  Icons.medical_information,
+                                  color: AppColors.primaryColor,
+                                  size: 10,
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    )
+            ],
+          ),
+          widget.chat.chatter1.muteNotifications
+              ? const Icon(
+                  Icons.volume_mute_rounded,
+                  size: 25,
                 )
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    widget.chat.lastMessage.messageState != MessageState.seen
-                        ? const Icon(
-                            Icons.notifications_active_rounded,
-                            color: Colors.green,
-                            size: 15,
-                          )
-                        : const SizedBox(),
-                    widget.chat.lastMessage.isMedicalRecordMessage
-                        ? const Icon(
-                            Icons.medical_information,
-                            color: AppColors.primaryColor,
-                            size: 12,
-                          )
-                        : const SizedBox(),
-                  ],
-                )
+              : const SizedBox(),
         ],
       ),
     );

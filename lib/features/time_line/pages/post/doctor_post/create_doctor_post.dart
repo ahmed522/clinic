@@ -105,7 +105,7 @@ class CreateDoctorPost extends StatelessWidget {
                       ),
                     ),
                     maxLength: 1000,
-                    maxLines: 10,
+                    maxLines: null,
                     textAlign: TextAlign.right,
                     textDirection: TextDirection.rtl,
                     onChanged: (content) {

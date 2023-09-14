@@ -55,6 +55,9 @@ class DoctorFollowersPageController extends GetxController {
         noMoreFollowers.value = false;
       }
       if (snapshot.size == 0) {
+        if (isRefresh) {
+          followers.clear();
+        }
         loading.value = false;
         moreFollowersLoading.value = false;
         return;

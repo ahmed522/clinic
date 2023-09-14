@@ -22,7 +22,7 @@ import 'package:get/get.dart';
 class AuthenticationController extends GetxController {
   static AuthenticationController get find => Get.find();
   final _firebaseAuth = FirebaseAuth.instance;
-  late final Rx<User?> firebaseUser;
+  late final Rx<User?> _firebaseUser;
   final _userDataController = Get.put(UserDataController());
   late final NotificationsController _notificationController;
   final LocalStorageController _localStorageController =
@@ -34,12 +34,12 @@ class AuthenticationController extends GetxController {
   @override
   void onReady() async {
     try {
+      await _localStorageController.initLocalStorage();
+      _firebaseUser = Rx<User?>(_firebaseAuth.currentUser);
+      _firebaseUser.bindStream(_firebaseAuth.userChanges());
       _notificationController = Get.put(NotificationsController());
       _notificationController.initNotifications();
-      await _localStorageController.initLocalStorage();
-      firebaseUser = Rx<User?>(_firebaseAuth.currentUser);
-      firebaseUser.bindStream(_firebaseAuth.userChanges());
-      ever(firebaseUser, _setInitialScreen);
+      ever(_firebaseUser, _setInitialScreen);
     } catch (e) {
       CommonFunctions.errorHappened();
     }
@@ -49,7 +49,6 @@ class AuthenticationController extends GetxController {
     if (user != null && user.emailVerified) {
       if (loading.isFalse || isSigning.isFalse) {
         await _localStorageController.getCurrentUserData();
-
         Get.offAll(() => const MainPage());
       }
     } else {
@@ -60,16 +59,16 @@ class AuthenticationController extends GetxController {
   }
 
   String getCurrenUserId() {
-    return firebaseUser.value!.uid;
+    return _firebaseUser.value!.uid;
   }
 
   Future sendVerificationEmail() async {
-    await firebaseUser.value!
-        .sendEmailVerification()
-        .whenComplete(() => Get.dialog(
-              const EmailVerificationAlertDialog(),
-              barrierDismissible: false,
-            ));
+    await _firebaseUser.value!.sendEmailVerification().whenComplete(
+          () => Get.dialog(
+            const EmailVerificationAlertDialog(),
+            barrierDismissible: false,
+          ),
+        );
   }
 
   Future<void> createUserWithEmailAndPassword(UserModel user) async {
@@ -78,14 +77,14 @@ class AuthenticationController extends GetxController {
       isSigning.value = true;
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: user.email!.trim(), password: user.getPassword!);
-      user.userId = firebaseUser.value!.uid;
+      user.userId = _firebaseUser.value!.uid;
       user.personalImageURL =
           await _userDataController.uploadUserPersonalImage(user);
       await _userDataController.createUser(user);
       await sendVerificationEmail();
       loading.value = false;
       isSigning.value = false;
-      logout();
+      logout(false);
     } on FirebaseAuthException catch (e) {
       loading.value = false;
       isSigning.value = false;
@@ -99,7 +98,7 @@ class AuthenticationController extends GetxController {
       isSigning.value = true;
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: doctor.email!.trim(), password: doctor.getPassword!);
-      doctor.userId = firebaseUser.value!.uid;
+      doctor.userId = _firebaseUser.value!.uid;
       doctor.personalImageURL =
           await _userDataController.uploadDoctorPersonalImage(doctor);
       doctor.medicalIdImageURL =
@@ -108,7 +107,7 @@ class AuthenticationController extends GetxController {
       await sendVerificationEmail();
       loading.value = false;
       isSigning.value = false;
-      logout();
+      logout(false);
     } on FirebaseAuthException catch (e) {
       AuthenticationExceptionHandler.signupExceptionHandler(e.code);
     }
@@ -122,7 +121,7 @@ class AuthenticationController extends GetxController {
           .signInWithEmailAndPassword(email: email, password: password)
           .then(
         (value) async {
-          if (!firebaseUser.value!.emailVerified) {
+          if (!_firebaseUser.value!.emailVerified) {
             loading.value = false;
             isSigning.value = false;
             Get.dialog(const EmailVerificationAlertDialog());
@@ -138,7 +137,7 @@ class AuthenticationController extends GetxController {
             );
             loading.value = false;
             isSigning.value = false;
-            _setInitialScreen(firebaseUser.value);
+            _setInitialScreen(_firebaseUser.value);
             Get.delete<SigninController>();
             MySnackBar.showGetSnackbar('تم تسجيل الدخول بنجاح', Colors.green);
           }
@@ -152,9 +151,11 @@ class AuthenticationController extends GetxController {
     }
   }
 
-  Future<void> logout() async {
-    await _userDataController.removeUserToken(
-        currentUserId, _notificationController.currentToken!);
+  Future<void> logout(bool isLogout) async {
+    if (isLogout) {
+      await _userDataController.removeUserToken(
+          currentUserId, _notificationController.currentToken!);
+    }
     _currentUser = null;
     await _localStorageController.removeCurrentUserData();
     await _firebaseAuth.signOut();
@@ -164,11 +165,45 @@ class AuthenticationController extends GetxController {
     try {
       _firebaseAuth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      Get.to(() => const ErrorPage(
-            imageAsset: 'assets/img/error.svg',
-            message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-          ));
+      Get.to(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
+        ),
+      );
     }
+  }
+
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    var credential = EmailAuthProvider.credential(
+        email: _firebaseUser.value!.email!, password: oldPassword);
+    await _firebaseUser.value!.reauthenticateWithCredential(credential).then(
+      (value) async {
+        await _firebaseUser.value!.updatePassword(newPassword).then(
+          (_) {
+            MySnackBar.showGetSnackbar(
+              'تم تغيير كلمة المرور بنجاح\nقم بتسجيل الدخول من جديد',
+              Colors.green,
+            );
+            logout(true);
+          },
+        );
+      },
+    ).catchError(
+      (error) {
+        if (error.code == 'wrong-password') {
+          MySnackBar.showGetSnackbar(
+            'كلمة المرور غير صحيحة',
+            Colors.red,
+          );
+        } else {
+          MySnackBar.showGetSnackbar(
+            'حدثت مشكلة، حاول مرة أخرى',
+            Colors.red,
+          );
+        }
+      },
+    );
   }
 
   set setCurrentUser(ParentUserModel user) => _currentUser = user;
@@ -182,4 +217,7 @@ class AuthenticationController extends GetxController {
   String? get currentUserPersonalImage => _currentUser!.personalImageURL;
   String get currentDoctorSpecialization =>
       (_currentUser as DoctorModel).specialization;
+  String get currentDoctorDegree => (_currentUser as DoctorModel).degree;
+  bool get isSignedIn =>
+      _firebaseUser.value != null && _firebaseUser.value!.emailVerified;
 }

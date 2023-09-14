@@ -38,4 +38,15 @@
           android:name="com.google.firebase.messaging.default_notification_color"
           android:resource="@color/primaryColor" />
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+       
+    </queries>
 </manifest>

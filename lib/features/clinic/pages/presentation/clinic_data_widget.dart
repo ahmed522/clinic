@@ -65,6 +65,7 @@ class ClinicDataWidget extends StatelessWidget {
                             clinicIndex: clinicIndex,
                             doctorId: doctorId,
                           ),
+                          transition: Transition.rightToLeftWithFade,
                         ),
                       ),
                       const SizedBox(height: 5),

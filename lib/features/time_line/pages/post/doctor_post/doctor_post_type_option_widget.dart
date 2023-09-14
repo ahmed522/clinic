@@ -1,5 +1,6 @@
 import 'package:clinic/features/time_line/controller/create_doctor_post_controller.dart';
 import 'package:clinic/features/time_line/model/doctor_post_type.dart';
+import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,6 +48,7 @@ class DoctorPostTypeOptionWidget extends StatelessWidget {
                   onChanged: (newValue) {
                     controller.updateDoctorPostTypeGroupValue(newValue!);
                   },
+                  activeColor: AppColors.primaryColor,
                 ),
               ],
             ),

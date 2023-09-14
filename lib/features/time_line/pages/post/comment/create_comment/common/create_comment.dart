@@ -1,23 +1,28 @@
 import 'package:clinic/features/time_line/pages/post/comment/comment_container.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/create_comment_widget_content.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/reply/create_reply_widget_content.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:flutter/material.dart';
 
 class CreateCommentWidget extends StatelessWidget {
   const CreateCommentWidget({
     super.key,
-    required this.postId,
     this.isReply = false,
     this.commentId = '',
-    required this.postWriterId,
     this.commentWriterId,
+    required this.postId,
+    required this.postWriterId,
+    required this.postWriterType,
+    this.commentWriterType,
   });
+
   final String postId;
   final String postWriterId;
-  final String? commentWriterId;
-
-  final bool isReply;
+  final UserType postWriterType;
   final String commentId;
+  final String? commentWriterId;
+  final UserType? commentWriterType;
+  final bool isReply;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -32,13 +37,16 @@ class CreateCommentWidget extends StatelessWidget {
         child: isReply
             ? CreateReplyWidgetContent(
                 postId: postId,
+                postWriterId: postWriterId,
+                postWriterType: postWriterType,
                 commentId: commentId,
                 commentWriterId: commentWriterId!,
-                postWriterId: postWriterId,
+                commentWriterType: commentWriterType!,
               )
             : CreateCommentWidgetContent(
                 postId: postId,
                 postWriterId: postWriterId,
+                postWriterType: postWriterType,
               ),
       ),
     );

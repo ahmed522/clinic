@@ -15,13 +15,17 @@ class MainPageController extends GetxController {
   RxInt selectedPage = 3.obs;
   @override
   onReady() async {
-    newNotifications.value =
-        await _userDataController.isNewNotifications(currentUserId);
-    newNotifications.bindStream(_newNotificationsListener);
+    if (_authenticationController.isSignedIn) {
+      newNotifications.value =
+          await _userDataController.isNewNotifications(currentUserId);
+      newNotifications.bindStream(_newNotificationsListener!);
+    }
     super.onReady();
   }
 
-  Stream<bool> get _newNotificationsListener => Stream.periodic(
+  Stream<bool>? get _newNotificationsListener {
+    if (_authenticationController.isSignedIn) {
+      return Stream.periodic(
         const Duration(minutes: 2),
         (_) {
           _userDataController
@@ -30,6 +34,10 @@ class MainPageController extends GetxController {
           return newNotifications.value;
         },
       );
+    } else {
+      return null;
+    }
+  }
 
   UserType get currentUserType => _authenticationController.currentUserType;
   String get currentUserId => _authenticationController.currentUserId;

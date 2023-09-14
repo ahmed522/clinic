@@ -56,26 +56,13 @@ class SingleNotification extends StatelessWidget {
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          CommonFunctions.isToday(notification.time.toDate())
-              ? const Text(
-                  'اليوم',
-                  style: TextStyle(
-                      fontFamily: AppFonts.mainArabicFontFamily, fontSize: 9),
-                )
-              : CommonFunctions.isYesterday(notification.time.toDate())
-                  ? const Text(
-                      'أمس',
-                      style: TextStyle(
-                          fontFamily: AppFonts.mainArabicFontFamily,
-                          fontSize: 9),
-                    )
-                  : Text(
-                      notification.time.toDate().toString().substring(0, 10),
-                      style: const TextStyle(
-                        fontFamily: AppFonts.mainArabicFontFamily,
-                        fontSize: 9,
-                      ),
-                    ),
+          Text(
+            CommonFunctions.getDate(notification.time),
+            style: const TextStyle(
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontSize: 9,
+            ),
+          ),
           MessageTimeWidget(messageTime: notification.time),
           (!notification.seen ||
                   CommonFunctions.calculateTimeDifferenceInMinutes(
@@ -177,6 +164,10 @@ class SingleNotification extends StatelessWidget {
       case NotificationType.followedDoctorMedicalInfoPost:
         title =
             '${(notifierGender == Gender.male) ? ' قام ' : ' قامت '}${(notifierGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}$notifierName بنشر معلومة طبية جديدة';
+        break;
+      case NotificationType.followedDoctorNewDegreePost:
+        title =
+            '${(notifierGender == Gender.male) ? ' حصل ' : ' حصلت '}${(notifierGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}$notifierName على درجة علمية جديدة';
         break;
     }
     return title;

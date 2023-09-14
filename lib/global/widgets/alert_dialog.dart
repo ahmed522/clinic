@@ -1,4 +1,5 @@
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/loading_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clinic/global/colors/app_colors.dart';
@@ -8,6 +9,7 @@ class MyAlertDialog {
   static void showAlertDialog(BuildContext context, String title,
           String? content, List<Widget> actions) =>
       showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -75,6 +77,16 @@ class MyAlertDialog {
     return actions;
   }
 
+  static void showLoadingDialog(BuildContext context) => showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: const LoadingDialog(),
+          );
+        },
+      );
   static IconButton getInfoAlertDialog(BuildContext context, String title,
           String content, Map<String, void Function()?> textsAndOnPressed) =>
       IconButton(

@@ -19,8 +19,10 @@ class LocalStorageController extends GetxController {
     if (userType == UserType.doctor) {
       authenticationController.setCurrentUser =
           await _userDataController.getDoctorById(uid);
-      _storeUserDataFromJson(
-          (authenticationController.currentUser as DoctorModel).toJson());
+      Map<String, dynamic> doctorData =
+          (authenticationController.currentUser as DoctorModel).toJson();
+      doctorData['notify_when_ergent_cases'] = true;
+      _storeUserDataFromJson(doctorData);
     } else if (userType == UserType.user) {
       authenticationController.setCurrentUser =
           await _userDataController.getUserById(uid);
@@ -49,24 +51,41 @@ class LocalStorageController extends GetxController {
     }
   }
 
+  bool? get notifyWhenErgent =>
+      _userData.read<bool>('notify_when_ergent_cases');
+
   removeCurrentUserData() async {
     await _userData.erase();
   }
 
   updatePersonalImage(String? newImageURL) async =>
       await _updateGivenData('personal_image_URL', newImageURL);
+  updateDoctorDegree(String newDegree) async =>
+      await _updateGivenData('degree', newDegree);
+  updateNotificationsSettings(bool value) async =>
+      await _updateGivenData('notify_when_ergent_cases', value);
   _updateGivenData(String key, dynamic value) async =>
       await _userData.write(key, value);
   _storeUserDataFromJson(Map<String, dynamic> data) {
-    data.forEach((key, value) {
-      if (key == 'birth_date') {
-        value = <String, int>{
-          'year': value.toDate().year,
-          'month': value.toDate().month,
-          'day': value.toDate().day,
-        };
-      }
-      _userData.write(key, value);
-    });
+    data.forEach(
+      (key, value) {
+        if (key == 'birth_date') {
+          value = <String, int>{
+            'year': value.toDate().year,
+            'month': value.toDate().month,
+            'day': value.toDate().day,
+          };
+        }
+        _userData.write(key, value);
+      },
+    );
+  }
+
+  storeDataFromJson(Map<String, dynamic> data) {
+    data.forEach(
+      (key, value) {
+        _userData.write(key, value);
+      },
+    );
   }
 }

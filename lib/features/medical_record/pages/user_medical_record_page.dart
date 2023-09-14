@@ -310,12 +310,15 @@ class UserMedicalRecordPage extends StatelessWidget {
             isMessage
                 ? const SizedBox()
                 : ElevatedButton(
-                    onPressed: () => Get.to(() => AddMedicalRecord(
-                          isMedicalRecordPage: true,
-                          medicalRecordModel:
-                              (controller as MedicalRecordPageController)
-                                  .medicalRecord,
-                        )),
+                    onPressed: () => Get.to(
+                      () => AddMedicalRecord(
+                        isMedicalRecordPage: true,
+                        medicalRecordModel:
+                            (controller as MedicalRecordPageController)
+                                .medicalRecord,
+                      ),
+                      transition: Transition.rightToLeftWithFade,
+                    ),
                     style: ElevatedButton.styleFrom(
                       elevation: 7.0,
                       padding: const EdgeInsets.all(15.0),

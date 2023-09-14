@@ -54,6 +54,8 @@ dependencies:
   firebase_messaging: ^14.6.6
   http: ^0.13.5
   flutter_notification_channel: ^2.0.0
+  url_launcher: ^6.1.11
+  linkwell: ^2.0.6
 
 dev_dependencies:
   flutter_test:
@@ -87,12 +89,14 @@ flutter:
     - assets/img/emergency.png
     - assets/img/female-doctor.png
     - assets/img/male-doctor.png
-    - assets/img/login.png
+    - assets/img/login.svg
     - assets/img/error.svg
     - assets/img/noposts.svg
     - assets/img/welcome.svg
     - assets/img/following-doctors.png
     - assets/img/questions.png
+    - assets/img/comment.png
+    - assets/img/like.png
     - assets/img/chats.png
     - assets/img/medical-record.png
     - assets/img/settings.png
@@ -105,7 +109,6 @@ flutter:
     - assets/img/nasal-spray.png
     - assets/img/mouth-rinse.png
     - assets/img/clinic.png
-    - assets/img/degree.png
     - assets/img/announcement.png
     - assets/img/discount.png
     - assets/img/info.png
@@ -121,7 +124,29 @@ flutter:
     - assets/img/chat-background.jpg
     - assets/img/internet-error.svg
     - assets/img/medical-record-disabled.png
+    - assets/img/certification.png
     - assets/img/search.svg
+    - assets/img/specs/general_practitioner.png
+    - assets/img/specs/emergency-doctor.png
+    - assets/img/specs/cardiologist.png
+    - assets/img/specs/cardiovascular.png
+    - assets/img/specs/neurologist.png
+    - assets/img/specs/dermatology.png
+    - assets/img/specs/ent.png
+    - assets/img/specs/hematology.png
+    - assets/img/specs/oncology.png
+    - assets/img/specs/radiography.png
+    - assets/img/specs/bone.png
+    - assets/img/specs/tooth.png
+    - assets/img/specs/oculist.png
+    - assets/img/specs/audiologist.png
+    - assets/img/specs/pediatrics.png
+    - assets/img/specs/pacifier.png
+    - assets/img/specs/fallopian.png
+    - assets/img/specs/psychology.png
+    - assets/img/specs/stomach.png
+    - assets/img/specs/surgery.png
+    - assets/img/specs/anesthesia.png
     
 
 

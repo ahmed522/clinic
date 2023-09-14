@@ -35,6 +35,7 @@ class MedicalRecordIsNotSet extends StatelessWidget {
               imageAsset: 'assets/img/medical-record.png',
               onPressed: () => Get.to(
                 () => const AddMedicalRecord(),
+                transition: Transition.rightToLeftWithFade,
               ),
             ),
             const SizedBox(

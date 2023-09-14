@@ -80,7 +80,6 @@ class CommentReactsController extends GetxController {
     moreReactsloading.value = false;
   }
 
-  CollectionReference get _commentReactsCollection => _userDataController
-      .getCommentDocumentById(postId, commentId)
-      .collection('comment_reacts');
+  CollectionReference get _commentReactsCollection =>
+      _userDataController.getSingleCommentReactsById(commentId);
 }

@@ -76,6 +76,7 @@ class ClinicsPage extends StatelessWidget {
                                 .doctorProfilePageController
                                 .isCurrentDoctorProfile,
                           ),
+                          transition: Transition.rightToLeftWithFade,
                         ),
                       ),
                     ),
@@ -90,6 +91,7 @@ class ClinicsPage extends StatelessWidget {
                           clinicIndex: controller.clinics.length,
                           doctorId: doctorId,
                         ),
+                        transition: Transition.rightToLeftWithFade,
                       ),
                     )
                   : const SizedBox(),

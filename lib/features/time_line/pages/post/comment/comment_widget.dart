@@ -20,6 +20,7 @@ class CommentWidget extends StatelessWidget {
   final bool isCommentPage;
   final bool isReply;
   final String? postWriterId;
+  final UserType? postWriterType;
 
   const CommentWidget({
     super.key,
@@ -27,6 +28,7 @@ class CommentWidget extends StatelessWidget {
     this.isCommentPage = false,
     this.isReply = false,
     this.postWriterId,
+    this.postWriterType,
   });
   @override
   Widget build(BuildContext context) {
@@ -98,12 +100,19 @@ class CommentWidget extends StatelessWidget {
       return;
     }
     if (isReply) {
-      Get.to(() => ReplyPage(reply: comment as ReplyModel));
+      Get.to(
+        () => ReplyPage(reply: comment as ReplyModel),
+        transition: Transition.rightToLeftWithFade,
+      );
     } else {
-      Get.to(() => CommentPage(
-            comment: comment,
-            postWriterId: postWriterId!,
-          ));
+      Get.to(
+        () => CommentPage(
+          comment: comment,
+          postWriterId: postWriterId!,
+          postWriterType: postWriterType!,
+        ),
+        transition: Transition.rightToLeftWithFade,
+      );
     }
   }
 }

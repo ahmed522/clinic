@@ -2,8 +2,10 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/notifications/controller/notifications_controller.dart';
+import 'package:clinic/features/settings/model/post_activity_model.dart';
 import 'package:clinic/features/time_line/controller/time_line_controller.dart';
 import 'package:clinic/features/time_line/model/doctor_post_model.dart';
+import 'package:clinic/features/time_line/model/parent_post_model.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -25,78 +27,96 @@ class PostController extends GetxController {
   final _timeLineController = TimeLineController.find;
 
   uploadUserPost(UserPostModel post) async {
-    String postDocumentId = '${post.user.userId}-${const Uuid().v4()}';
-    post.postId = postDocumentId;
-
-    await _getPostDocumentRefById(postDocumentId)
-        .set(post.toJson())
-        .catchError(
-          (error) => Get.to(
-            () => const ErrorPage(
-              imageAsset: 'assets/img/error.svg',
-              message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-            ),
-          ),
-        )
-        .whenComplete(() async {
+    try {
+      String postDocumentId = '${post.user.userId}-${const Uuid().v4()}';
+      post.postId = postDocumentId;
+      await _getPostDocumentRefById(postDocumentId).set(post.toJson());
       NotificationsController.find
           .notifyDoctorsWithSameSearchingSpecialization(post);
       MySnackBar.showGetSnackbar('تم نشر سؤالك بنجاح', Colors.green);
-    }).catchError(
-      (error) => Get.to(
+    } catch (e) {
+      Get.to(
         () => const ErrorPage(
           imageAsset: 'assets/img/error.svg',
           message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
         ),
-      ),
-    );
+      );
+    }
   }
 
   uploadDoctorPost(DoctorPostModel post) async {
-    String postDocumentId = '${post.doctorId}-${const Uuid().v4()}';
-    post.postId = postDocumentId;
-    await _getPostDocumentRefById(postDocumentId)
-        .set(post.toJson())
-        .whenComplete(() async {
+    try {
+      String postDocumentId = '${post.doctorId}-${const Uuid().v4()}';
+      post.postId = postDocumentId;
+      await _getPostDocumentRefById(postDocumentId).set(post.toJson());
       NotificationsController.find.notifyFollowingDoctorPost(post);
       MySnackBar.showGetSnackbar('تم نشر منشورك بنجاح', Colors.green);
-    }).catchError(
-      (error) => CommonFunctions.errorHappened(),
-    );
+    } catch (e) {
+      Get.to(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
+        ),
+      );
+    }
   }
 
-  reactPost(String uid, String postDocumentId) async {
+  reactPost(ParentPostModel post) async {
     FollowerModel reacter = FollowerModel(
       userType: currentUserType,
       userId: currentUserId,
       userName: currentUserName,
-      doctorGender:
-          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      gender: currentUserGender,
       doctorSpecialization: (currentUserType == UserType.doctor)
           ? currentDoctorSpecialization
           : null,
     );
     Map<String, dynamic> data = reacter.toJson();
     data['react_time'] = Timestamp.now();
-    _getPostReactsCollectionById(postDocumentId).doc(currentUserId).set(data);
-    await _updatePostReacts(uid, postDocumentId, true);
-    if (currentUserId != uid) {
+    _getPostReactsCollectionById(post.postId!).doc(currentUserId).set(data);
+    await _updatePostReacts(post.postId!, true);
+    String postWriterId = (post.writerType == UserType.doctor)
+        ? (post as DoctorPostModel).writer!.userId!
+        : (post as UserPostModel).user.userId!;
+    String postWriterName = (post.writerType == UserType.doctor)
+        ? CommonFunctions.getFullName(
+            (post as DoctorPostModel).writer!.firstName!,
+            post.writer!.lastName!)
+        : CommonFunctions.getFullName(
+            (post as UserPostModel).user.firstName!, post.user.lastName!);
+    Gender postWriterGender = (post.writerType == UserType.doctor)
+        ? (post as DoctorPostModel).writer!.gender
+        : (post as UserPostModel).user.gender;
+    PostActivityModel postActivity = PostActivityModel(
+      postId: post.postId!,
+      postWriterId: postWriterId,
+      postWriterName: postWriterName,
+      postWriterType: post.writerType!,
+      postWriterGender: postWriterGender,
+      activityTime: data['react_time'],
+    );
+
+    await _userDataController.uploadUserLikedPostActivity(
+        currentUserId, postActivity);
+    if (currentUserId != postWriterId) {
       NotificationsController.find.notifyReact(
-        writerId: uid,
-        postId: postDocumentId,
+        writerId: postWriterId,
+        postId: post.postId!,
         reactedComponent: 'منشورك',
       );
     }
   }
 
-  unReactPost(String uid, String postDocumentId) async {
-    await _getPostReactsCollectionById(postDocumentId)
-        .doc(currentUserId)
+  unReactPost(String postId) async {
+    await _getPostReactsCollectionById(postId).doc(currentUserId).delete();
+    await _updatePostReacts(postId, false);
+    await _userDataController
+        .getUserLikedPosts(currentUserId)
+        .doc(postId)
         .delete();
-    await _updatePostReacts(uid, postDocumentId, false);
   }
 
-  _updatePostReacts(String uid, String postDocumentId, bool plus) async {
+  _updatePostReacts(String postDocumentId, bool plus) async {
     int factor = -1;
     if (plus) {
       factor = 1;
@@ -133,8 +153,7 @@ class PostController extends GetxController {
                     try {
                       _timeLineController.loadingPosts.value = true;
                       Get.back(closeOverlays: true);
-                      await _deletePostById(postId, isDoctorPost)
-                          .whenComplete(() async {
+                      await _deletePostById(postId).whenComplete(() async {
                         await _loadPosts();
                         MySnackBar.showGetSnackbar(
                             isDoctorPost
@@ -174,8 +193,8 @@ class PostController extends GetxController {
     );
   }
 
-  Future _deletePostById(String postDocumentId, bool isDoctorPost) =>
-      _userDataController.deletePostById(postDocumentId, isDoctorPost);
+  Future _deletePostById(String postDocumentId) =>
+      _userDataController.deletePostById(postDocumentId);
   DocumentReference _getPostDocumentRefById(String postDocumentId) =>
       _userDataController.getAllUsersPostsCollection.doc(postDocumentId);
   CollectionReference _getPostReactsCollectionById(String postDocumentId) =>

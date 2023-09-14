@@ -31,8 +31,7 @@ class ReactReplyWidget extends StatelessWidget {
                       if (reply.reacted) {
                         reply.loading = true;
                         controller.update();
-                        await controller.unReactReply(
-                            reply.commentId, reply.replyId);
+                        await controller.unReactReply(reply.replyId);
                         --reply.reacts;
                         reply.reacted = false;
                         reply.loading = false;
@@ -40,12 +39,7 @@ class ReactReplyWidget extends StatelessWidget {
                       } else {
                         reply.loading = true;
                         controller.update();
-                        await controller.reactReply(
-                          reply.commentId,
-                          reply.replyId,
-                          reply.writer.userId!,
-                          reply.postId,
-                        );
+                        await controller.reactReply(reply);
                         ++reply.reacts;
                         reply.reacted = true;
                         reply.loading = false;

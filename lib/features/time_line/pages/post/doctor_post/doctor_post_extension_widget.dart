@@ -1,5 +1,6 @@
 import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/doctor_post_type.dart';
+import 'package:clinic/features/time_line/pages/post/doctor_post/present_new_degree_post_extension_widget.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/present_discount_post_extension_widget.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/present_medical_info_post_extension_widget.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/present_new_clinic_post_extension_widget.dart';
@@ -16,6 +17,10 @@ class DoctorPostExtensionWidget extends StatelessWidget {
       return PresentNewClinicPostExtensionWidget(post: post);
     } else if (post.postType == DoctorPostType.medicalInfo) {
       return const PresentMedicalInfoPostExtensionWidget();
+    } else if (post.postType == DoctorPostType.newDegree) {
+      return PresentNewDegreePostExtensionWidget(
+        degree: post.degree!,
+      );
     } else {
       return const SizedBox();
     }

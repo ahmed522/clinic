@@ -10,7 +10,7 @@ import 'package:clinic/features/doctor_profile/pages/doctor_followers_page.dart'
 import 'package:clinic/features/doctor_profile/pages/doctor_followings_page.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_posts_page.dart';
 import 'package:clinic/features/doctor_profile/pages/follow_button.dart';
-import 'package:clinic/features/settings/Pages/settings_page.dart';
+import 'package:clinic/features/settings/Pages/common/settings_page.dart';
 import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
@@ -81,6 +81,8 @@ class DoctorProfilePage extends StatelessWidget {
                                   onPressed: () {
                                     Get.to(
                                       () => const UserChatsPage(),
+                                      transition:
+                                          Transition.rightToLeftWithFade,
                                     );
                                   },
                                 )
@@ -92,6 +94,7 @@ class DoctorProfilePage extends StatelessWidget {
                               () => DoctorPostsPage(
                                 doctorId: doctorId,
                               ),
+                              transition: Transition.rightToLeftWithFade,
                             ),
                           ),
                           ProfileOptionButton(
@@ -99,6 +102,7 @@ class DoctorProfilePage extends StatelessWidget {
                             imageAsset: 'assets/img/following.png',
                             onPressed: () => Get.to(
                               () => DoctorFollowingsPage(doctorId: doctorId),
+                              transition: Transition.rightToLeftWithFade,
                             ),
                           ),
                           ProfileOptionButton(
@@ -106,20 +110,25 @@ class DoctorProfilePage extends StatelessWidget {
                             imageAsset: 'assets/img/followers.png',
                             onPressed: () => Get.to(
                               () => DoctorFollowersPage(doctorId: doctorId),
+                              transition: Transition.rightToLeftWithFade,
                             ),
                           ),
                           ProfileOptionButton(
                             text: 'العيادات',
                             imageAsset: 'assets/img/clinic.png',
-                            onPressed: () =>
-                                Get.to(() => ClinicsPage(doctorId: doctorId)),
+                            onPressed: () => Get.to(
+                              () => ClinicsPage(doctorId: doctorId),
+                              transition: Transition.rightToLeftWithFade,
+                            ),
                           ),
                           isCurrentUser
                               ? ProfileOptionButton(
                                   text: 'الإعدادات',
                                   imageAsset: 'assets/img/settings.png',
-                                  onPressed: () =>
-                                      Get.to(() => const SettingsPage()),
+                                  onPressed: () => Get.to(
+                                    () => const SettingsPage(),
+                                    transition: Transition.rightToLeftWithFade,
+                                  ),
                                 )
                               : const SizedBox(),
                           const SizedBox(height: 100),

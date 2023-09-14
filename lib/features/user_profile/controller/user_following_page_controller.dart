@@ -56,6 +56,9 @@ class UserFollowingPageController extends GetxController {
         noMoreFollowings.value = false;
       }
       if (snapshot.size == 0) {
+        if (isRefresh) {
+          followings.clear();
+        }
         loading.value = false;
         moreFollowingsLoading.value = false;
         return;

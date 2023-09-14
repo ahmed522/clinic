@@ -13,7 +13,6 @@ class ReactCommentWidget extends StatelessWidget {
   }) : super(key: key);
 
   final CommentModel comment;
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PostCommentsController>(
@@ -35,7 +34,6 @@ class ReactCommentWidget extends StatelessWidget {
                         comment.loading = true;
                         controller.update();
                         await controller.unReactComment(
-                          comment.postId,
                           comment.commentId,
                         );
                         --comment.reacts;
@@ -45,11 +43,7 @@ class ReactCommentWidget extends StatelessWidget {
                       } else {
                         comment.loading = true;
                         controller.update();
-                        await controller.reactComment(
-                          comment.postId,
-                          comment.commentId,
-                          comment.writer.userId!,
-                        );
+                        await controller.reactComment(comment);
                         ++comment.reacts;
                         comment.reacted = true;
                         comment.loading = false;

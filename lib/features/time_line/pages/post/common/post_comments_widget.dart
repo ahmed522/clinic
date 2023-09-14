@@ -21,7 +21,6 @@ class PostCommentsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PostCommentsController controller = PostCommentsController.find;
-
     return Column(
       children: [
         Padding(
@@ -34,6 +33,7 @@ class PostCommentsWidget extends StatelessWidget {
         (writerType == UserType.doctor)
             ? (controller.currentUserType == UserType.doctor)
                 ? CreateCommentWidget(
+                    postWriterType: post.writerType!,
                     postId: post.postId!,
                     postWriterId: (post as DoctorPostModel).writer!.userId!,
                   )
@@ -42,6 +42,7 @@ class PostCommentsWidget extends StatelessWidget {
                     (controller.isCurrentUserComment(
                         (post as UserPostModel).user.userId!)))
                 ? CreateCommentWidget(
+                    postWriterType: post.writerType!,
                     postId: post.postId!,
                     postWriterId: (post as UserPostModel).user.userId!,
                   )
@@ -77,6 +78,7 @@ class PostCommentsWidget extends StatelessWidget {
                     child: Column(
                       children: [
                         CommentWidget(
+                          postWriterType: post.writerType!,
                           comment: controller.comments[index],
                           postWriterId: (post.writerType == UserType.user)
                               ? (post as UserPostModel).user.userId
@@ -117,6 +119,7 @@ class PostCommentsWidget extends StatelessWidget {
                   );
                 }
                 return CommentWidget(
+                  postWriterType: post.writerType!,
                   comment: controller.comments[index],
                   postWriterId: (post.writerType == UserType.user)
                       ? (post as UserPostModel).user.userId

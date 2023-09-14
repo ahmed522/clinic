@@ -3,6 +3,7 @@ import 'package:clinic/features/time_line/controller/create_comment_controller.d
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/create_comment_text_field.dart';
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/comment/upload_comment_button.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,10 +12,12 @@ class CreateCommentWidgetContent extends StatelessWidget {
     Key? key,
     required this.postId,
     required this.postWriterId,
+    required this.postWriterType,
   }) : super(key: key);
 
   final String postId;
   final String postWriterId;
+  final UserType postWriterType;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class CreateCommentWidgetContent extends StatelessWidget {
         UploadCommentButton(
           postId: postId,
           postWriterId: postWriterId,
+          postWriterType: postWriterType,
         ),
         Padding(
           padding: const EdgeInsets.only(top: 5.0, right: 5.0),
@@ -37,11 +41,11 @@ class CreateCommentWidgetContent extends StatelessWidget {
                   ? CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
                           controller.currentUserPersonalImage!),
-                      radius: 25,
+                      radius: 22,
                     )
                   : const CircleAvatar(
                       backgroundImage: AssetImage('assets/img/user.png'),
-                      radius: 25,
+                      radius: 22,
                       backgroundColor: AppColors.primaryColor,
                     ),
             ],

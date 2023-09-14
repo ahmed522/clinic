@@ -5,7 +5,11 @@ import 'package:clinic/features/time_line/pages/post/doctor_post/single_clinic_p
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
+import 'package:clinic/global/widgets/error_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class PresentSelectedClinicsWidget extends StatelessWidget {
   const PresentSelectedClinicsWidget({
@@ -81,9 +85,10 @@ class PresentSelectedClinicsWidget extends StatelessWidget {
 
   _previewClinic(
       BuildContext context, String doctorId, String clinicId, int index) async {
+    MyAlertDialog.showLoadingDialog(context);
     ClinicModel? clinic = await UserDataController.find
         .getDoctorSingleClinicById(doctorId, clinicId);
-
+    Get.back();
     if (clinic != null) {
       showDialog(
         context: context,
@@ -91,6 +96,57 @@ class PresentSelectedClinicsWidget extends StatelessWidget {
           clinic: clinic,
           index: index,
           doctorId: post.doctorId!,
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          scrollable: true,
+          title: Text(
+            'عيادة رقم ${index + 1}',
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            style: TextStyle(
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontWeight: FontWeight.w700,
+              fontSize: 17,
+              color: (CommonFunctions.isLightMode(context))
+                  ? AppColors.darkThemeBackgroundColor
+                  : Colors.white,
+            ),
+          ),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Column(
+              children: [
+                SvgPicture.asset(
+                  'assets/img/error.svg',
+                  width: 100,
+                  height: 100,
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'المحتوى غير متوفر بعد الأن',
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.start,
+          actionsPadding: const EdgeInsets.only(left: 30, bottom: 30),
+          actions: MyAlertDialog.getAlertDialogActions(
+            {
+              'العودة': () => Get.back(),
+            },
+          ),
         ),
       );
     }

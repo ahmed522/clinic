@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -38,20 +37,16 @@ class DoctorSpecializationInfoWidget extends StatelessWidget {
                         Colors.white,
                         BlendMode.srcATop,
                       ),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            AppConstants.specializationsIcons[specialization]!,
+                      child: Image.asset(
+                        AppConstants.specializationsIcons[specialization]!,
                         width: (size.width > 330) ? 20 : 15,
                         height: (size.width > 330) ? 20 : 15,
-                        placeholder: (context, url) => const SizedBox(),
                       ),
                     )
-                  : CachedNetworkImage(
-                      imageUrl:
-                          AppConstants.specializationsIcons[specialization]!,
+                  : Image.asset(
+                      AppConstants.specializationsIcons[specialization]!,
                       width: (size.width > 330) ? 20 : 15,
                       height: (size.width > 330) ? 20 : 15,
-                      placeholder: (context, url) => const SizedBox(),
                     )
               : const SizedBox(),
           SizedBox(width: (size.width > 330 || isFollowerCard) ? 3 : 0),

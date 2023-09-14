@@ -31,7 +31,7 @@ class SingleClinicPreviewDialog extends StatelessWidget {
         style: TextStyle(
           fontFamily: AppFonts.mainArabicFontFamily,
           fontWeight: FontWeight.w700,
-          fontSize: 20,
+          fontSize: 17,
           color: (CommonFunctions.isLightMode(context))
               ? AppColors.darkThemeBackgroundColor
               : Colors.white,

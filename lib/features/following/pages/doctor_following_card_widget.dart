@@ -35,6 +35,7 @@ class DoctorFollowingCardWidget extends StatelessWidget {
                     AuthenticationController.find.currentUserId,
                 doctorId: follower.userId,
               ),
+              transition: Transition.rightToLeftWithFade,
             ),
             child: Card(
               color: CommonFunctions.isLightMode(context)
@@ -70,7 +71,7 @@ class DoctorFollowingCardWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
-                          follower.doctorGender == Gender.male
+                          follower.gender == Gender.male
                               ? 'assets/img/male-doctor.png'
                               : 'assets/img/female-doctor.png',
                           width: 32,

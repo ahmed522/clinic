@@ -34,6 +34,34 @@ class DoctorModel extends ParentUserModel {
     return data;
   }
 
+  DoctorModel copy() {
+    DoctorModel copiedDoctor = DoctorModel();
+
+    // Copy fields from the parent class
+    copiedDoctor.firstName = firstName;
+    copiedDoctor.lastName = lastName;
+    copiedDoctor.email = email;
+    copiedDoctor.birthDate = birthDate;
+    copiedDoctor.gender = gender;
+    copiedDoctor.personalImage = personalImage;
+    copiedDoctor.personalImageURL = personalImageURL;
+    copiedDoctor.userId = userId;
+    copiedDoctor.userType = userType;
+
+    // Copy fields specific to the DoctorModel class
+    copiedDoctor.degree = degree;
+    copiedDoctor.specialization = specialization;
+    copiedDoctor.medicalIdImage = medicalIdImage;
+    copiedDoctor.medicalIdImageURL = medicalIdImageURL;
+    copiedDoctor.clinics =
+        List.from(clinics); // Create a shallow copy of the clinics list
+    copiedDoctor.numberOfFollowers = numberOfFollowers;
+    copiedDoctor.numberOfFollowing = numberOfFollowing;
+    copiedDoctor.numberOfPosts = numberOfPosts;
+
+    return copiedDoctor;
+  }
+
   factory DoctorModel.fromSnapShot(
       DocumentSnapshot<Map<String, dynamic>> doctorSnapshot,
       {List<ClinicModel>? clinics}) {

@@ -80,7 +80,6 @@ class ReplyReactsController extends GetxController {
     moreReactsloading.value = false;
   }
 
-  CollectionReference get _replyReactsCollection => _userDataController
-      .getReplyDocumentById(commentId, replyId)
-      .collection('reply_reacts');
+  CollectionReference get _replyReactsCollection =>
+      _userDataController.getSingleReplyReactsById(replyId);
 }

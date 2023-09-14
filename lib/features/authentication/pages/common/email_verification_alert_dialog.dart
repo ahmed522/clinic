@@ -48,16 +48,16 @@ class EmailVerificationAlertDialog extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
             onPressed: () {
-              AuthenticationController.find.logout();
-
+              AuthenticationController.find.logout(false);
               Get.back();
             },
             child: const Text(
               'حسناً',
               style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontSize: 20),
+                color: Colors.white,
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontSize: 20,
+              ),
             ),
           ),
           ElevatedButton(
@@ -70,7 +70,7 @@ class EmailVerificationAlertDialog extends StatelessWidget {
             ),
             onPressed: () {
               AuthenticationController.find.sendVerificationEmail();
-              AuthenticationController.find.logout();
+              AuthenticationController.find.logout(false);
               Get.back();
             },
             child: const Text(

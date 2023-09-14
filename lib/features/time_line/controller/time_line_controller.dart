@@ -51,6 +51,9 @@ class TimeLineController extends GetxController {
         noMorePosts.value = false;
       }
       if (snapshot.size == 0) {
+        if (isRefresh) {
+          content.clear();
+        }
         loadingPosts.value = false;
         morePostsLoading.value = false;
         return;

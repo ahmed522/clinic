@@ -13,6 +13,7 @@ class ChatterModel {
   String? picUrl;
   bool isTyping = false;
   bool blocks = false;
+  bool muteNotifications = false;
   Timestamp? blocksTime;
   bool isBlocked = false;
   bool deleteChat = false;
@@ -28,6 +29,7 @@ class ChatterModel {
     data['is_blocked'] = isBlocked;
     data['delete_chat'] = deleteChat;
     data['deleted_before'] = deletedBefore;
+    data['mute_notifications'] = muteNotifications;
     return data;
   }
 
@@ -42,5 +44,6 @@ class ChatterModel {
     deletedBefore = data['deleted_before'];
     blocksTime = data['blocks_time'];
     lastDeletionTime = data['last_deletion_time'];
+    muteNotifications = data['mute_notifications'];
   }
 }

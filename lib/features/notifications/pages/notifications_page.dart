@@ -4,6 +4,7 @@ import 'package:clinic/features/notifications/pages/single_notification.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
+import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/appbar_widget.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
@@ -37,36 +38,7 @@ class NotificationsPage extends StatelessWidget {
 
   _onNotificationPressed(BuildContext context, NotificationModel notification) {
     final controller = NotificationPageController.find;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          scrollable: true,
-          title: Text(
-            'بالرجاء الإنتظار',
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            style: TextStyle(
-              fontFamily: AppFonts.mainArabicFontFamily,
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-              color: (CommonFunctions.isLightMode(context))
-                  ? AppColors.darkThemeBackgroundColor
-                  : Colors.white,
-            ),
-          ),
-          content: const Center(
-            child: AppCircularProgressIndicator(
-              height: 50,
-              width: 50,
-            ),
-          ),
-        );
-      },
-    );
+    MyAlertDialog.showLoadingDialog(context);
     controller.getNotificationOnPressed(notification)();
   }
 

@@ -10,38 +10,51 @@ class PresentMedicalInfoPostExtensionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        Image.asset(
+          'assets/img/medical-info.png',
+          width: 80,
+          height: 80,
+        ),
+        const SizedBox(
+          height: 15,
+        ),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/img/medical-info.png',
-              width: 80,
-              height: 80,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'معلومة',
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryColor.withOpacity(0.6),
+                    spreadRadius: 0.7,
+                    blurRadius: 1,
+                    offset: const Offset(0, 0.7),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Text(
+                  'معلومة طبية',
                   style: TextStyle(
-                    color: AppColors.primaryColor,
+                    color: Colors.white,
                     fontFamily: AppFonts.mainArabicFontFamily,
-                    fontSize: 18,
+                    fontSize: 17,
+                    shadows: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        spreadRadius: 0.5,
+                        blurRadius: 0.7,
+                        offset: Offset(0, 0.5),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  'طبية',
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontFamily: AppFonts.mainArabicFontFamily,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),

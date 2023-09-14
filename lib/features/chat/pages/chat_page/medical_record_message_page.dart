@@ -14,6 +14,13 @@ class MedicalRecordMessagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_forward),
+          ),
+        ],
         title: const Align(
           alignment: Alignment.centerRight,
           child: Text(

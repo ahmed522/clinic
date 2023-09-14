@@ -12,6 +12,8 @@ class SignupController extends GetxController {
   static SignupController get find => Get.find();
   bool loading = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final AuthenticationController _authenticationController =
+      AuthenticationController.find;
   bool ageIsValid = false;
   setPersonalImage(File image) {
     update();
@@ -31,13 +33,11 @@ class SignupController extends GetxController {
     update();
   }
 
-  signupDoctor(DoctorModel doctorModel) {
-    AuthenticationController.find.createDoctorWithEmailAndPassword(doctorModel);
-  }
+  Future signupDoctor(DoctorModel doctorModel) =>
+      _authenticationController.createDoctorWithEmailAndPassword(doctorModel);
 
   signupUser(UserModel userModel) async {
-    await AuthenticationController.find
-        .createUserWithEmailAndPassword(userModel);
+    await _authenticationController.createUserWithEmailAndPassword(userModel);
     updateLoading(false);
   }
 

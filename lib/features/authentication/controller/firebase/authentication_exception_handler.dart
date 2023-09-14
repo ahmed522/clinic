@@ -7,26 +7,32 @@ class AuthenticationExceptionHandler {
   static void signupExceptionHandler(String errorCode) {
     switch (errorCode) {
       case 'network-request-failed':
-        Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.svg',
-              message:
-                  'حدثت مشكلة، حاول التأكد من الإتصال بالإنترنت وإعادة المحاولة ',
-            ));
+        Get.to(
+          () => const ErrorPage(
+            imageAsset: 'assets/img/error.svg',
+            message:
+                'حدثت مشكلة، حاول التأكد من الإتصال بالإنترنت وإعادة المحاولة ',
+          ),
+        );
         break;
 
       case 'email-already-in-use':
-        Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/login.png',
-              message:
-                  'هذا البريد الإلكتروني موجود بالفعل، يمكنك العودة للصفحة الرئيسية وتسجيل الدخول بإستخدامه',
-            ));
+        Get.to(
+          () => const ErrorPage(
+            imageAsset: 'assets/img/login.svg',
+            message:
+                'هذا البريد الإلكتروني موجود بالفعل، يمكنك العودة للصفحة الرئيسية وتسجيل الدخول بإستخدامه',
+          ),
+        );
         break;
       default:
-        Get.to(() => const ErrorPage(
-              imageAsset: 'assets/img/error.svg',
-              message:
-                  'حدثت مشكلة، حاول التأكد من البريد الإلكتروني وإعادة المحاولة ',
-            ));
+        Get.to(
+          () => const ErrorPage(
+            imageAsset: 'assets/img/error.svg',
+            message:
+                'حدثت مشكلة، حاول التأكد من البريد الإلكتروني وإعادة المحاولة ',
+          ),
+        );
     }
   }
 
@@ -41,23 +47,25 @@ class AuthenticationExceptionHandler {
         break;
       case 'wrong-password':
         if (!Get.isSnackbarOpen) {
-          Get.showSnackbar(const GetSnackBar(
-            messageText: Center(
-              child: Text(
-                'كلمة المرور غير صحيحة',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontSize: 17,
+          Get.showSnackbar(
+            const GetSnackBar(
+              messageText: Center(
+                child: Text(
+                  'كلمة المرور غير صحيحة',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                    fontSize: 17,
+                  ),
                 ),
               ),
+              backgroundColor: Colors.red,
+              snackPosition: SnackPosition.TOP,
+              snackStyle: SnackStyle.GROUNDED,
+              duration: Duration(milliseconds: 1000),
+              animationDuration: Duration(milliseconds: 500),
             ),
-            backgroundColor: Colors.red,
-            snackPosition: SnackPosition.TOP,
-            snackStyle: SnackStyle.GROUNDED,
-            duration: Duration(milliseconds: 1000),
-            animationDuration: Duration(milliseconds: 500),
-          ));
+          );
         }
         break;
       case 'user-not-found':

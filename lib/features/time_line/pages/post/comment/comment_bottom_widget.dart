@@ -30,7 +30,9 @@ class CommentBottomWidget extends StatelessWidget {
             : const SizedBox(),
         isReply
             ? ReactReplyWidget(reply: comment as ReplyModel)
-            : ReactCommentWidget(comment: comment),
+            : ReactCommentWidget(
+                comment: comment,
+              ),
       ],
     );
   }

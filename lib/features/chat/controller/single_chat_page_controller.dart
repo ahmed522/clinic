@@ -131,15 +131,37 @@ class SingleChatPageController extends GetxController {
         }
       },
     );
-    newMessages.bindStream(newMessagesListener);
-    numberOfNewMessages.bindStream(numberOfNewMessagesListener);
+    newMessages.bindStream(
+      chatMessagesStream.map<bool>(
+        (event) {
+          if (event.docs.isNotEmpty &&
+              event.docs.first['sender_id'] != currentUserId &&
+              event.docs.first['message_state'] != 'seen' &&
+              event.docs.first['message_state'] != 'deleted') {
+            return true;
+          } else {
+            return newMessages.value;
+          }
+        },
+      ),
+    );
+    numberOfNewMessages.bindStream(chatMessagesStream.map<int>(
+      (event) {
+        int number = event.docs.where(
+          (element) {
+            return element.get('sender_id') != currentUserId &&
+                element.get('message_state') != 'seen' &&
+                element.get('message_state') != 'deleted';
+          },
+        ).length;
+        if (number > numberOfNewMessages.value) {
+          return number;
+        } else {
+          return numberOfNewMessages.value;
+        }
+      },
+    ));
     super.onReady();
-  }
-
-  @override
-  void onClose() {
-    scrollController.dispose();
-    super.onClose();
   }
 
   Stream<QuerySnapshot> get chatMessagesStream {
@@ -158,56 +180,13 @@ class SingleChatPageController extends GetxController {
     }
   }
 
-  Stream<bool> get newMessagesListener => chatMessagesStream.map<bool>(
-        (event) {
-          if (event.docs.first['sender_id'] != currentUserId &&
-              event.docs.first['message_state'] != 'seen' &&
-              event.docs.first['message_state'] != 'deleted') {
-            return true;
-          } else {
-            return newMessages.value;
-          }
-        },
-      );
-  Stream<int> get numberOfNewMessagesListener => chatMessagesStream.map<int>(
-        (event) {
-          int number = event.docs.where(
-            (element) {
-              if (element.get('sender_id') != currentUserId &&
-                  element.get('message_state') != 'seen' &&
-                  element.get('message_state') != 'deleted') {}
-              return element.get('sender_id') != currentUserId &&
-                  element.get('message_state') != 'seen' &&
-                  element.get('message_state') != 'deleted';
-            },
-          ).length;
-          if (number > numberOfNewMessages.value) {
-            return number;
-          } else {
-            return numberOfNewMessages.value;
-          }
-        },
-      );
   Stream<ChatModel> get chatStream => _userDataController
           .getChatDocumentById(chatId!)
           .snapshots()
           .map<ChatModel>((snapshot) {
         return ChatModel.fromSnapshot(snapshot);
       });
-  Stream<bool> chatCreated(String chatter1Id, String chatter2Id) =>
-      _userDataController.chatsCollection
-          .where(FieldPath.documentId, whereIn: [
-            '$chatter1Id - $chatter2Id',
-            '$chatter2Id - $chatter1Id',
-          ])
-          .limit(1)
-          .snapshots()
-          .map<bool>((snapshot) {
-            if (snapshot.docs.isNotEmpty) {
-              chatId = snapshot.docs.first.id;
-            }
-            return snapshot.docs.isNotEmpty;
-          });
+
   updateMessageState(String messageId, MessageState state) =>
       _userDataController.updateMessageStateById(chatId!, messageId, state);
   updateChatLastMessageState(MessageState state) =>
@@ -228,6 +207,22 @@ class SingleChatPageController extends GetxController {
       {
         '$currentUserId.blocks': false,
         '$chatterId.is_blocked': false,
+      },
+    );
+  }
+
+  muteChat() async {
+    await _userDataController.getChatDocumentById(chatId!).update(
+      {
+        '$currentUserId.mute_notifications': true,
+      },
+    );
+  }
+
+  unMuteChat() async {
+    await _userDataController.getChatDocumentById(chatId!).update(
+      {
+        '$currentUserId.mute_notifications': false,
       },
     );
   }
@@ -274,7 +269,19 @@ class SingleChatPageController extends GetxController {
         ),
       ).obs;
       chatId = chat!.value.chatId;
-      chatCreatedListener.bindStream(chatCreated(currentUserId, chatterId));
+      chatCreatedListener.bindStream(_userDataController.chatsCollection
+          .where(FieldPath.documentId, whereIn: [
+            '$currentUserId - $chatterId',
+            '$chatterId - $currentUserId',
+          ])
+          .limit(1)
+          .snapshots()
+          .map<bool>((snapshot) {
+            if (snapshot.docs.isNotEmpty) {
+              chatId = snapshot.docs.first.id;
+            }
+            return snapshot.docs.isNotEmpty;
+          }));
       ever(chatCreatedListener, _onChatCreated);
     } else {
       chatCreatedListener.value = true;
@@ -430,6 +437,7 @@ class SingleChatPageController extends GetxController {
     await _userDataController.uploadMessage(message, chatId!);
     DocumentReference medicalRecordDocument = _userDataController
         .getMedicalRecordMessageDocument(chatId!, message.messageId);
+
     await medicalRecordDocument.set({
       'age': currntUserAge.toJson(),
       'gender': currentUserGender.name,
@@ -445,6 +453,13 @@ class SingleChatPageController extends GetxController {
     }
     if (includeMedicalRecordMoreInfo) {
       await medicalRecordDocument.update({'info': medicalRecord!.moreInfo});
+    }
+    if (!chat!.value.chatter2.muteNotifications) {
+      _notificationController.sendNewMessageNotification(
+        chatterId,
+        chatId!,
+        message.content,
+      );
     }
     if (chat!.value.chatter2.deleteChat || chat!.value.chatter1.deleteChat) {
       Map<String, dynamic> updatedData = {};
@@ -548,11 +563,14 @@ class SingleChatPageController extends GetxController {
         updateIsTypingValue(false);
       }
       await _userDataController.uploadMessage(message, chatId!);
-      _notificationController.sendNewMessageNotification(
-        chatterId,
-        chatId!,
-        message.content,
-      );
+      if (!chat!.value.chatter2.muteNotifications) {
+        _notificationController.sendNewMessageNotification(
+          chatterId,
+          chatId!,
+          message.content,
+        );
+      }
+
       if (chat!.value.chatter2.deleteChat || chat!.value.chatter1.deleteChat) {
         Map<String, dynamic> updatedData = {};
         updatedData.addIf(

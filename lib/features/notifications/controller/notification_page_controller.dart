@@ -85,11 +85,14 @@ class NotificationPageController extends GetxController {
         noMoreNotifications.value = false;
       }
       if (snapshot.size == 0) {
+        if (isRefresh) {
+          notifications.clear();
+        }
         loading.value = false;
         moreNotificaionsLoading.value = false;
         return;
       }
-      _showPostsOnTimeLine(snapshot, isRefresh);
+      _showNotifications(snapshot, isRefresh);
     } catch (e) {
       loading.value = false;
       moreNotificaionsLoading.value = false;
@@ -102,7 +105,7 @@ class NotificationPageController extends GetxController {
     }
   }
 
-  _showPostsOnTimeLine(QuerySnapshot snapshot, bool isRefresh) async {
+  _showNotifications(QuerySnapshot snapshot, bool isRefresh) async {
     if (isRefresh) {
       notifications.clear();
     } else {
@@ -189,6 +192,7 @@ class NotificationPageController extends GetxController {
       case NotificationType.followedDoctorNewClinicPost:
       case NotificationType.followedDoctorDiscountPost:
       case NotificationType.followedDoctorMedicalInfoPost:
+      case NotificationType.followedDoctorNewDegreePost:
         return () => NotificationsOnPressedFunctions
             .followedDoctorPostNotificationOnPressed(notification);
     }

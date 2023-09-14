@@ -39,6 +39,7 @@ class ClinicLocationTextField extends StatelessWidget {
           ),
         ),
         onChanged: (value) => onChanged(value),
+        maxLines: null,
       ),
     );
   }

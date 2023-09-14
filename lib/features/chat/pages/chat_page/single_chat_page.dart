@@ -58,6 +58,7 @@ class SingleChatPage extends StatelessWidget {
                 isCreated: controller.chatCreatedListener.value,
                 blocks: controller.chat!.value.chatter1.blocks,
                 deleteChat: controller.chat!.value.chatter1.deleteChat,
+                muted: controller.chat!.value.chatter1.muteNotifications,
               ),
             ),
             body: Container(

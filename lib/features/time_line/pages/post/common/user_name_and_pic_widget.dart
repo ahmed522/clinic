@@ -8,18 +8,15 @@ class UserNameAndPicWidget extends StatelessWidget {
   final Timestamp? timestamp;
   final String userName;
   final String? userPic;
-  const UserNameAndPicWidget(
-      {super.key,
-      required this.userName,
-      required this.userPic,
-      this.timestamp});
+  const UserNameAndPicWidget({
+    super.key,
+    required this.userName,
+    required this.userPic,
+    this.timestamp,
+  });
 
   @override
   Widget build(BuildContext context) {
-    String postDataAndTime = '';
-    if (timestamp != null) {
-      postDataAndTime = timestamp!.toDate().toString().substring(0, 16);
-    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -37,13 +34,15 @@ class UserNameAndPicWidget extends StatelessWidget {
             const SizedBox(height: 5),
             (timestamp != null)
                 ? Text(
-                    postDataAndTime,
+                    '${CommonFunctions.getTime(timestamp!)}   ${CommonFunctions.getDate(timestamp!)}',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
                     style: TextStyle(
                       color: (CommonFunctions.isLightMode(context))
                           ? Colors.black87
                           : Colors.white,
                       fontWeight: FontWeight.w300,
-                      fontSize: 11,
+                      fontSize: 10,
                     ),
                   )
                 : const SizedBox()

@@ -17,10 +17,12 @@ class SingleChatPageAppBarWidget extends StatelessWidget {
     required this.isCreated,
     required this.blocks,
     required this.deleteChat,
+    required this.muted,
   }) : super(key: key);
   final String chatterId;
   final bool isCreated;
   final bool blocks;
+  final bool muted;
   final bool deleteChat;
   @override
   Widget build(BuildContext context) {
@@ -37,13 +39,17 @@ class SingleChatPageAppBarWidget extends StatelessWidget {
                 switch (value) {
                   case 0:
                     if (controller.chatterType == UserType.user) {
-                      Get.to(() => UserProfilePage(userId: chatterId));
+                      Get.to(
+                        () => UserProfilePage(userId: chatterId),
+                        transition: Transition.rightToLeftWithFade,
+                      );
                     } else {
                       Get.to(
                         () => DoctorProfilePage(
                           doctorId: chatterId,
                           isCurrentUser: false,
                         ),
+                        transition: Transition.rightToLeftWithFade,
                       );
                     }
                     break;
@@ -78,6 +84,26 @@ class SingleChatPageAppBarWidget extends StatelessWidget {
                             'العودة': () => Get.back(),
                             'إيقاف': () {
                               controller.blockChatter();
+                              Get.back();
+                            }
+                          },
+                        ),
+                      );
+                    }
+                    break;
+                  case 3:
+                    if (muted) {
+                      controller.unMuteChat();
+                    } else {
+                      MyAlertDialog.showAlertDialog(
+                        context,
+                        'كتم الإشعارات',
+                        'لن تتمكن من إستقبال أي إشعارات لهذه المحادثة',
+                        MyAlertDialog.getAlertDialogActions(
+                          {
+                            'العودة': () => Get.back(),
+                            'كتم': () {
+                              controller.muteChat();
                               Get.back();
                             }
                           },
@@ -146,6 +172,22 @@ class SingleChatPageAppBarWidget extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: Text(
                       blocks ? 'تفعيل المراسلة' : 'إيقاف المراسلة',
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled: isCreated,
+                  value: 3,
+                  textStyle: TextStyle(
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                    color: CommonFunctions.isLightMode(context)
+                        ? Colors.black
+                        : Colors.white,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      muted ? 'إلغاء الكتم' : 'كتم الإشعارات',
                     ),
                   ),
                 ),

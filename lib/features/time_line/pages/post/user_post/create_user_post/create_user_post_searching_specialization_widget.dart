@@ -29,35 +29,43 @@ class CreateUserPostSearchingSpecializationWidget extends StatelessWidget {
             right: 5,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: (CommonFunctions.isLightMode(context))
-                  ? AppColors.primaryColor
-                  : Colors.white,
-              width: 1,
-            ),
+            color: (CommonFunctions.isLightMode(context))
+                ? Colors.white
+                : AppColors.darkThemeBottomNavBarColor,
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                spreadRadius: 0.2,
+                blurRadius: 0.7,
+                offset: Offset(0, 0.2),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(15),
           ),
           child: DropdownButtonHideUnderline(
-            child: GetBuilder<CreateUserPostController>(builder: (controller) {
-              return DropdownButton(
-                items: AppConstants.doctorSpecializations
-                    .map(
-                      (specialization) => DropdownMenuItem(
-                        value: specialization,
-                        child: Text(
-                          specialization,
-                          style: const TextStyle(
-                            fontFamily: AppFonts.mainArabicFontFamily,
+            child: GetBuilder<CreateUserPostController>(
+              builder: (controller) {
+                return DropdownButton(
+                  borderRadius: BorderRadius.circular(15),
+                  items: AppConstants.doctorSpecializations
+                      .map(
+                        (specialization) => DropdownMenuItem(
+                          value: specialization,
+                          child: Text(
+                            specialization,
+                            style: const TextStyle(
+                              fontFamily: AppFonts.mainArabicFontFamily,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (item) =>
-                    controller.updateSearchingSpecialization(item!),
-                value: controller.postModel.searchingSpecialization,
-              );
-            }),
+                      )
+                      .toList(),
+                  onChanged: (item) =>
+                      controller.updateSearchingSpecialization(item!),
+                  value: controller.postModel.searchingSpecialization,
+                );
+              },
+            ),
           ),
         ),
       ],

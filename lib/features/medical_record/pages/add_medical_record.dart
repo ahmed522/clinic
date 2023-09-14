@@ -28,6 +28,13 @@ class AddMedicalRecord extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_forward),
+          ),
+        ],
         title: Align(
           alignment: Alignment.centerRight,
           child: Text(

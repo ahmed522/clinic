@@ -49,6 +49,7 @@ class PostTopWidget extends StatelessWidget {
                   () => UserProfilePage(
                     userId: userId,
                   ),
+                  transition: Transition.rightToLeftWithFade,
                 );
               } else {
                 Get.to(
@@ -56,6 +57,7 @@ class PostTopWidget extends StatelessWidget {
                     isCurrentUser: isCurrentUserPost,
                     doctorId: userId,
                   ),
+                  transition: Transition.rightToLeftWithFade,
                 );
               }
             },

@@ -4,6 +4,7 @@ import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/routes/routes.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/app_error_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,6 +34,12 @@ class MainWidget extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.getLightTheme(),
       darkTheme: AppTheme.getDarkTheme(),
+      builder: (BuildContext context, Widget? widget) {
+        ErrorWidget.builder = (_) {
+          return const AppErrorWidget();
+        };
+        return widget!;
+      },
       themeMode: ThemeMode.system,
       routes: routes,
       home: Container(

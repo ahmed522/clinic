@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/notifications/controller/notifications_controller.dart';
+import 'package:clinic/features/settings/model/comment_activity_model.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -72,39 +73,55 @@ class PostCommentsController extends GetxController {
     }
   }
 
-  reactComment(String postDocumentId, String commentDocumentId,
-      String commentWriterId) async {
+  reactComment(CommentModel comment) async {
     FollowerModel reacter = FollowerModel(
       userType: currentUserType,
       userId: currentUserId,
       userName: currentUserName,
-      doctorGender:
-          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      gender: currentUserGender,
       doctorSpecialization: (currentUserType == UserType.doctor)
           ? currentDoctorSpecialization
           : null,
     );
     Map<String, dynamic> data = reacter.toJson();
     data['react_time'] = Timestamp.now();
-    await _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
+    await _getCommentReactsCollectionById(comment.commentId)
         .doc(currentUserId)
         .set(data);
-    await _updateCommentReacts(postDocumentId, commentDocumentId, true);
-    if (currentUserId != commentWriterId) {
+    await _updateCommentReacts(postId, comment.commentId, true);
+    CommentActivityModel commentActivity = CommentActivityModel(
+      postId: postId,
+      commentId: comment.commentId,
+      commentWriterId: comment.writer.userId!,
+      commentWriterName: CommonFunctions.getFullName(
+        comment.writer.firstName!,
+        comment.writer.lastName!,
+      ),
+      commentWriterType: comment.writer.userType,
+      commentWriterGender: comment.writer.gender,
+      activityTime: data['react_time'],
+    );
+    await _userDataController.uploadUserLikedCommentActivity(
+        currentUserId, commentActivity);
+    if (currentUserId != comment.writer.userId) {
       NotificationsController.find.notifyReact(
-        writerId: commentWriterId,
-        postId: postDocumentId,
-        commentId: commentDocumentId,
+        writerId: comment.writer.userId!,
+        postId: postId,
+        commentId: comment.commentId,
         reactedComponent: 'تعليقك',
       );
     }
   }
 
-  unReactComment(String postDocumentId, String commentDocumentId) async {
-    _getCommentReactsCollectionById(postDocumentId, commentDocumentId)
+  unReactComment(String commentDocumentId) async {
+    _getCommentReactsCollectionById(commentDocumentId)
         .doc(currentUserId)
         .delete();
-    await _updateCommentReacts(postDocumentId, commentDocumentId, false);
+    await _updateCommentReacts(postId, commentDocumentId, false);
+    await _userDataController
+        .getUserLikedComments(currentUserId)
+        .doc(commentDocumentId)
+        .delete();
   }
 
   CollectionReference _getPostCommentsCollectionById(String postId) =>
@@ -139,9 +156,9 @@ class PostCommentsController extends GetxController {
         writer: writer,
       );
       comment.reacted = await _userDataController.isUserReactedComment(
-          _authenticationController.currentUser.userId!,
-          comment.postId,
-          comment.commentId);
+        _authenticationController.currentUser.userId!,
+        comment.commentId,
+      );
       comments.add(comment);
       loading.value = false;
     }
@@ -205,11 +222,11 @@ class PostCommentsController extends GetxController {
   }
 
   _deleteCommentById(String postDocumentId, String commentId) async =>
-      _userDataController.deleteCommentById(postDocumentId, commentId);
+      _userDataController.deleteCommentById(
+          currentUserId, postDocumentId, commentId);
   CollectionReference _getCommentReactsCollectionById(
-          String postDocumentId, String commentDocumentId) =>
-      _getCommentDocumentRefById(postDocumentId, commentDocumentId)
-          .collection('comment_reacts');
+          String commentDocumentId) =>
+      _userDataController.getSingleCommentReactsById(commentDocumentId);
 
   _updateCommentReacts(
       String postDocumentId, String commentDocumentId, bool plus) async {

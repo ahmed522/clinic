@@ -12,6 +12,7 @@ import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:linkwell/linkwell.dart';
 
 class MessageContentWidget extends StatelessWidget {
   const MessageContentWidget({
@@ -75,19 +76,27 @@ class MessageContentWidget extends StatelessWidget {
                       messageId: message.messageId,
                       sendedMessage: message.sendedMessage,
                     )
-                  : Text(
+                  : LinkWell(
                       message.content,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.right,
                       style: TextStyle(
+                        fontFamily: AppFonts.mainArabicFontFamily,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
                         color: message.sendedMessage
                             ? Colors.white
                             : CommonFunctions.isLightMode(context)
                                 ? Colors.black
                                 : Colors.white,
+                      ),
+                      linkStyle: TextStyle(
                         fontFamily: AppFonts.mainArabicFontFamily,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
+                        color: message.sendedMessage
+                            ? Colors.blue.shade200
+                            : Colors.blue,
                       ),
                     ),
             ),
@@ -212,6 +221,7 @@ class MessageContentWidget extends StatelessWidget {
   _onDeleteMessageButtonPressed(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return GetBuilder<SingleChatPageController>(
           tag: message.recieverId,
@@ -251,8 +261,11 @@ class MessageContentWidget extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(15.0),
                           child: Center(
-                              child: AppCircularProgressIndicator(
-                                  width: 50, height: 50)),
+                            child: AppCircularProgressIndicator(
+                              width: 50,
+                              height: 50,
+                            ),
+                          ),
                         ),
                       ],
                     )

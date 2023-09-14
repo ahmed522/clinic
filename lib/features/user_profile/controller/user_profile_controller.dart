@@ -23,7 +23,8 @@ class UserProfileController extends GetxController {
   RxBool loading = true.obs;
   late String? currentUserPersonalImage;
   late String currentUserName;
-  get currentUserId => _authenticationController.currentUserId;
+  String get currentUserId => _authenticationController.currentUserId;
+  UserType get currentUserType => _authenticationController.currentUserType;
   @override
   void onReady() async {
     loading.value = true;
@@ -75,13 +76,15 @@ class UserProfileController extends GetxController {
 
     await _userDataController
         .deleteUserPersonalImage(currentUserId, currentUserPersonalImage!)
-        .then((value) {
-      currentUserPersonalImage =
-          _authenticationController.currentUserPersonalImage;
-      MySnackBar.showGetSnackbar('تم حذف الصورة الشخصية بنجاح', Colors.green);
-      loading.value = false;
-      update();
-    });
+        .then(
+      (value) {
+        currentUserPersonalImage =
+            _authenticationController.currentUserPersonalImage;
+        MySnackBar.showGetSnackbar('تم حذف الصورة الشخصية بنجاح', Colors.green);
+        loading.value = false;
+        update();
+      },
+    );
   }
 
   confirmImageUpdateDialog(UserModel user, BuildContext context) async =>

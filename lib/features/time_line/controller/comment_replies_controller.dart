@@ -2,6 +2,7 @@ import 'package:clinic/features/authentication/controller/firebase/authenticatio
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/notifications/controller/notifications_controller.dart';
+import 'package:clinic/features/settings/model/reply_activity_model.dart';
 import 'package:clinic/features/time_line/model/reply_model.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
@@ -63,48 +64,62 @@ class CommentRepliesController extends GetxController {
       _showCommentReplies(snapshot, isRefresh);
     } catch (e) {
       loading.value = false;
-      Get.off(() => const ErrorPage(
-            imageAsset: 'assets/img/error.svg',
-            message:
-                'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
-          ));
+      Get.off(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: 'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
+        ),
+      );
     }
   }
 
-  reactReply(String commentDocumentId, String replyDocumentId,
-      String replyWriterId, String postId) async {
+  reactReply(ReplyModel reply) async {
     FollowerModel reacter = FollowerModel(
       userType: currentUserType,
       userId: currentUserId,
       userName: currentUserName,
-      doctorGender:
-          (currentUserType == UserType.doctor) ? currentUserGender : null,
+      gender: currentUserGender,
       doctorSpecialization: (currentUserType == UserType.doctor)
           ? currentDoctorSpecialization
           : null,
     );
     Map<String, dynamic> data = reacter.toJson();
     data['react_time'] = Timestamp.now();
-    await _getReplyReactsCollectionById(commentDocumentId, replyDocumentId)
+    await _getReplyReactsCollectionById(reply.replyId)
         .doc(currentUserId)
         .set(data);
-    await _updateReplyReacts(commentDocumentId, replyDocumentId, true);
-    if (currentUserId != replyWriterId) {
+    await _updateReplyReacts(reply.commentId, reply.replyId, true);
+    ReplyActivityModel replyActivity = ReplyActivityModel(
+      postId: reply.postId,
+      commentId: commentId,
+      replyId: reply.replyId,
+      replyWriterId: reply.writer.userId!,
+      replyWriterName: CommonFunctions.getFullName(
+          reply.writer.firstName!, reply.writer.lastName!),
+      replyWriterType: reply.writer.userType,
+      replyWriterGender: reply.writer.gender,
+      activityTime: data['react_time'],
+    );
+    await _userDataController.uploadUserLikedReplyActivity(
+        currentUserId, replyActivity);
+    if (currentUserId != reply.writer.userId) {
       NotificationsController.find.notifyReact(
-        writerId: replyWriterId,
-        postId: postId,
-        commentId: commentDocumentId,
-        replyId: replyDocumentId,
+        writerId: reply.writer.userId!,
+        postId: reply.postId,
+        commentId: reply.commentId,
+        replyId: reply.replyId,
         reactedComponent: 'ردك',
       );
     }
   }
 
-  unReactReply(String commentDocumentId, String replyDocumentId) async {
-    _getReplyReactsCollectionById(commentDocumentId, replyDocumentId)
-        .doc(currentUserId)
+  unReactReply(String replyDocumentId) async {
+    _getReplyReactsCollectionById(replyDocumentId).doc(currentUserId).delete();
+    await _updateReplyReacts(commentId, replyDocumentId, false);
+    await _userDataController
+        .getUserLikedReplies(currentUserId)
+        .doc(replyDocumentId)
         .delete();
-    await _updateReplyReacts(commentDocumentId, replyDocumentId, false);
   }
 
   CollectionReference _getCommentRepliesCollectionById(String commentId) =>
@@ -140,7 +155,6 @@ class CommentRepliesController extends GetxController {
       );
       reply.reacted = await _userDataController.isUserReactedReply(
         currentUserId,
-        reply.commentId,
         reply.replyId,
       );
       replies.add(reply);
@@ -150,11 +164,9 @@ class CommentRepliesController extends GetxController {
   }
 
   CollectionReference _getReplyReactsCollectionById(
-    String commentDocumentId,
     String replyDocumentId,
   ) =>
-      _getReplyDocumentRefById(commentDocumentId, replyDocumentId)
-          .collection('reply_reacts');
+      _userDataController.getSingleReplyReactsById(replyDocumentId);
 
   _updateReplyReacts(
       String commentDocumentId, String replyDocumentId, bool plus) async {
@@ -237,7 +249,7 @@ class CommentRepliesController extends GetxController {
   }
 
   Future<void> _deleteReplyById(String commentId, String replyId) async {
-    _userDataController.deleteReplyById(commentId, replyId);
+    _userDataController.deleteReplyById(currentUserId, commentId, replyId);
   }
 
   DocumentReference _getReplyDocumentRefById(

@@ -56,7 +56,7 @@ class DoctorProfilePageController extends GetxController {
         userType: currentUserType,
         userId: currentUserId,
         userName: currentUserName,
-        doctorGender: currentUserGender,
+        gender: currentUserGender,
         doctorSpecialization: (currentUserType == UserType.doctor)
             ? currentDoctorSpecialization
             : null,
@@ -66,7 +66,7 @@ class DoctorProfilePageController extends GetxController {
         userId: doctorId!,
         userName: CommonFunctions.getFullName(
             currentDoctor.firstName!, currentDoctor.lastName!),
-        doctorGender: currentDoctor.gender,
+        gender: currentDoctor.gender,
         doctorSpecialization: currentDoctor.specialization,
       );
       await _userDataController.followDoctor(follower, following);

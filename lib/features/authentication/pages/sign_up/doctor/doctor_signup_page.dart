@@ -157,7 +157,9 @@ class DoctorSignupPage extends StatelessWidget {
       } else {
         controller.updateLoading(true);
         (controller).updateStates(StepState.complete, StepState.complete);
-        controller.signupDoctor(controller.doctorModel);
+        controller.signupDoctor(controller.doctorModel).whenComplete(
+              () => controller.updateLoading(false),
+            );
       }
       (controller).setDoctorValidation(false);
     } else {

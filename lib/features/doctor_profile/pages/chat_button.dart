@@ -18,10 +18,13 @@ class ChatButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Get.to(() => SingleChatPage(
-              chatterId: userId,
-              chatterType: userType,
-            ));
+        Get.to(
+          () => SingleChatPage(
+            chatterId: userId,
+            chatterType: userType,
+          ),
+          transition: Transition.rightToLeftWithFade,
+        );
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: CommonFunctions.isLightMode(context)

@@ -35,6 +35,7 @@ class MedicalRecordMessageContent extends StatelessWidget {
                 () => MedicalRecordMessagePage(
                   chatterId: chatterId,
                 ),
+                transition: Transition.rightToLeftWithFade,
               );
             },
             backgroundColor:

@@ -33,10 +33,13 @@ class UserPostWidget extends StatelessWidget {
     return GestureDetector(
       onTap: isPostPage
           ? null
-          : () => Get.to(() => PostPage(
-                post: post,
-                writerType: UserType.user,
-              )),
+          : () => Get.to(
+                () => PostPage(
+                  post: post,
+                  writerType: UserType.user,
+                ),
+                transition: Transition.rightToLeftWithFade,
+              ),
       child: Padding(
         padding: isPostPage
             ? const EdgeInsets.only(

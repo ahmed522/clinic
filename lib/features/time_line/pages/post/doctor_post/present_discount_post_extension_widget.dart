@@ -31,10 +31,11 @@ class PresentDiscountPostExtensionWidget extends StatelessWidget {
             Text(
               post.discount.toString(),
               style: const TextStyle(
-                  color: AppColors.discountColor,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700),
+                color: AppColors.discountColor,
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),

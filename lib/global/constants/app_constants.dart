@@ -1,3 +1,4 @@
+import 'package:clinic/global/constants/gender.dart';
 import 'package:flutter/material.dart';
 
 import 'am_or_pm.dart';
@@ -15,6 +16,12 @@ class AppConstants {
   static const Size phoneSize = Size(phoneWidth, phoneheight);
   static const String emailValidationRegExp =
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+  static const String nameValidationRegExp =
+      r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]';
+  static const String urlRegex =
+      r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?';
+  static const String phoneNumberRegex =
+      r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$';
   static const String vezeetaValidationRegExp = r"^[0-9]*$";
   static const String zero = '0';
 
@@ -23,6 +30,7 @@ class AppConstants {
       'AAAAs-thRzo:APA91bE7MaNacc3obm7fk66gATMw_szUooBSXpL4j_119nSHW-aLpUJHvI_zbfUxV64Mijut4tuas7xHa-pcq-G2pUoOZz9DzAK28blIF4ujnx0iTWucklGGVs9zIC1F5AiXTaLXP8tr';
   static const String userStandardPic =
       'https://firebasestorage.googleapis.com/v0/b/tabib-56f14.appspot.com/o/assets%2Fuser.png?alt=media&token=c74cec98-a38b-4602-87c1-3603d5832386';
+  static const String tabibGroupMail = 'tabibgroup23@gmail.com';
   static const List<String> doctorDegrees = [
     'طبيب امتياز',
     'طبيب مقيم',
@@ -57,36 +65,38 @@ class AppConstants {
   ];
   static const String doctorSpecializationsIconsURLStart =
       'https://firebasestorage.googleapis.com/v0/b/tabib-56f14.appspot.com/o/specs_icons%2F';
-  static const List<String> doctorSpecializationsIconsURLs = [
-    '${doctorSpecializationsIconsURLStart}general_practitioner.png?alt=media&token=03ea87ab-bc5a-4fd0-a31d-eb9ddadaa785',
-    '${doctorSpecializationsIconsURLStart}emergency_doctor.png?alt=media&token=a14826c3-a72b-4956-a150-780cf3842c36',
-    '${doctorSpecializationsIconsURLStart}cardiologist.png?alt=media&token=4a0e237e-be4a-4b7c-8fbd-00570797b260',
-    '${doctorSpecializationsIconsURLStart}cardiovascular.png?alt=media&token=1bc8b0cb-a3a5-498d-ac93-d44fef204f85',
-    '${doctorSpecializationsIconsURLStart}neurologist.png?alt=media&token=49b3143b-9f2e-436c-8252-6a7b80436aef',
-    '${doctorSpecializationsIconsURLStart}dermatology.png?alt=media&token=af029ad4-ce76-4a9b-a569-cf390a4f5a7d',
-    '${doctorSpecializationsIconsURLStart}ent.png?alt=media&token=c4f77952-609e-48f2-9357-a15f12e35d5c',
-    '${doctorSpecializationsIconsURLStart}hematology.png?alt=media&token=0390263b-8bbe-459d-8a4d-88a3a92955f7',
-    '${doctorSpecializationsIconsURLStart}oncology.png?alt=media&token=b4208e36-aa45-4c2d-8012-adf1cde5f0f2',
-    '${doctorSpecializationsIconsURLStart}radiography.png?alt=media&token=0e6ff032-3f29-4708-87e4-57109dc4197c',
-    '${doctorSpecializationsIconsURLStart}bone.png?alt=media&token=de12044e-1291-41a1-b2ad-b5f532a47362',
-    '${doctorSpecializationsIconsURLStart}tooth.png?alt=media&token=433fdc3c-783d-43b2-864e-74b4b00cdb8b',
-    '${doctorSpecializationsIconsURLStart}oculist.png?alt=media&token=be14def3-57df-4d9d-9f26-d1bc8456aa52',
-    '${doctorSpecializationsIconsURLStart}audiologist.png?alt=media&token=44b30dfd-4e80-4a26-aa39-e4a41bae2edb',
-    '${doctorSpecializationsIconsURLStart}pediatrics.png?alt=media&token=9a2cca23-cad1-4c7a-a85d-8c2bdc5a290f',
-    '${doctorSpecializationsIconsURLStart}pacifier.png?alt=media&token=cfe8b940-6f95-40d9-95de-caf0d260f3bf',
-    '${doctorSpecializationsIconsURLStart}fallopian.png?alt=media&token=82941c80-316b-4fdc-b3be-332bb2155921',
-    '${doctorSpecializationsIconsURLStart}psychology.png?alt=media&token=600a5922-eed0-4812-88de-eaa459fbd5e8',
-    '${doctorSpecializationsIconsURLStart}stomach.png?alt=media&token=bf3695dd-d55a-4469-99c2-b8a34c4ff07c',
-    '${doctorSpecializationsIconsURLStart}surgery.png?alt=media&token=5b0b12bb-1ebd-4033-95dc-4ea194a87054',
-    '${doctorSpecializationsIconsURLStart}anesthesia.png?alt=media&token=ebe2da1d-714f-4c1d-b22e-24d1cfd4b9f9',
+  static const List<String> doctorSpecializationsIcons = [
+    'assets/img/specs/general_practitioner.png',
+    'assets/img/specs/emergency-doctor.png',
+    'assets/img/specs/cardiologist.png',
+    'assets/img/specs/cardiovascular.png',
+    'assets/img/specs/neurologist.png',
+    'assets/img/specs/dermatology.png',
+    'assets/img/specs/ent.png',
+    'assets/img/specs/hematology.png',
+    'assets/img/specs/oncology.png',
+    'assets/img/specs/radiography.png',
+    'assets/img/specs/bone.png',
+    'assets/img/specs/tooth.png',
+    'assets/img/specs/oculist.png',
+    'assets/img/specs/audiologist.png',
+    'assets/img/specs/pediatrics.png',
+    'assets/img/specs/pacifier.png',
+    'assets/img/specs/fallopian.png',
+    'assets/img/specs/psychology.png',
+    'assets/img/specs/stomach.png',
+    'assets/img/specs/surgery.png',
+    'assets/img/specs/anesthesia.png',
   ];
 
   static Map<String, String> specializationsIcons =
       Map<String, String>.fromIterables(
-          doctorSpecializations, doctorSpecializationsIconsURLs);
+          doctorSpecializations, doctorSpecializationsIcons);
   static const String signinWithGoogle = 'أو قم بتسجيل الدخول من خلال';
   static const String verifyEmail =
       'لقد تم إرسال رسالة التحقق إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد التحقق';
+  static String newDegreePostContent(String doctorName, Gender doctorGender) =>
+      '${(doctorGender == Gender.male) ? ' حصل ' : ' حصلت '}${(doctorGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}$doctorName على درجة علمية جديدة';
   static const String passwordReset =
       'سوف يتم إرسال رسالة إعادة التعيين إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد إعادة تعيين كلمة المرور';
 

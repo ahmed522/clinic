@@ -28,15 +28,16 @@ class CreateCommentTextField extends StatelessWidget {
           ),
           helperText: 'أضف تعليقك',
           helperStyle: TextStyle(
-              color: (CommonFunctions.isLightMode(context))
-                  ? AppColors.darkThemeBackgroundColor
-                  : Colors.white,
-              fontFamily: AppFonts.mainArabicFontFamily,
-              fontWeight: FontWeight.w500,
-              fontSize: 10),
+            color: (CommonFunctions.isLightMode(context))
+                ? AppColors.darkThemeBackgroundColor
+                : Colors.white,
+            fontFamily: AppFonts.mainArabicFontFamily,
+            fontWeight: FontWeight.w500,
+            fontSize: 10,
+          ),
         ),
         maxLength: 400,
-        maxLines: 2,
+        maxLines: null,
         textAlign: TextAlign.right,
         textDirection: TextDirection.rtl,
       ),

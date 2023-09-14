@@ -12,10 +12,12 @@ class DoctorPostBottomWidget extends StatelessWidget {
     Key? key,
     required this.post,
     required this.isPostPage,
+    this.isPreview = false,
   }) : super(key: key);
 
   final DoctorPostModel post;
   final bool isPostPage;
+  final bool isPreview;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -30,52 +32,56 @@ class DoctorPostBottomWidget extends StatelessWidget {
             DoctorSpecializationInfoWidget(
               specialization: post.writer!.specialization,
             ),
-            GetBuilder<PostController>(builder: (controller) {
-              return Row(
-                children: [
-                  PresentNumberWidget(number: post.reacts, fontSize: 10),
-                  (post.loading)
-                      ? const Padding(
-                          padding: EdgeInsets.only(right: 20.0, left: 10),
-                          child: AppCircularProgressIndicator(
-                              width: 10, height: 10),
-                        )
-                      : IconButton(
-                          iconSize: (size.width > 330) ? 20 : 13,
-                          padding: EdgeInsets.zero,
-                          onPressed: () async {
-                            if (post.reacted) {
-                              post.loading = true;
-                              controller.update();
-                              await controller.unReactPost(
-                                  post.doctorId!, post.postId!);
-                              post.reacted = false;
-                              --post.reacts;
-                              post.loading = false;
-                              controller.update();
-                            } else {
-                              post.loading = true;
-                              controller.update();
-                              await controller.reactPost(
-                                  post.doctorId!, post.postId!);
-                              post.reacted = true;
-                              ++post.reacts;
-                              post.loading = false;
-                              controller.update();
-                            }
-                          },
-                          icon: Icon(
-                            Icons.favorite_rounded,
-                            color: post.reacted
-                                ? Colors.red
-                                : (CommonFunctions.isLightMode(context))
-                                    ? Colors.black87
-                                    : Colors.white70,
+            GetBuilder<PostController>(
+              builder: (controller) {
+                return Row(
+                  children: [
+                    PresentNumberWidget(number: post.reacts, fontSize: 10),
+                    (post.loading)
+                        ? const Padding(
+                            padding: EdgeInsets.only(right: 20.0, left: 10),
+                            child: AppCircularProgressIndicator(
+                                width: 10, height: 10),
+                          )
+                        : IconButton(
+                            iconSize: (size.width > 330) ? 20 : 13,
+                            padding: EdgeInsets.zero,
+                            onPressed: () async {
+                              if (post.reacted) {
+                                if (!isPreview) {
+                                  post.loading = true;
+                                  controller.update();
+                                  await controller.unReactPost(post.postId!);
+                                }
+                                post.reacted = false;
+                                --post.reacts;
+                                post.loading = false;
+                                controller.update();
+                              } else {
+                                if (!isPreview) {
+                                  post.loading = true;
+                                  controller.update();
+                                  await controller.reactPost(post);
+                                }
+                                post.reacted = true;
+                                ++post.reacts;
+                                post.loading = false;
+                                controller.update();
+                              }
+                            },
+                            icon: Icon(
+                              Icons.favorite_rounded,
+                              color: post.reacted
+                                  ? Colors.red
+                                  : (CommonFunctions.isLightMode(context))
+                                      ? Colors.black87
+                                      : Colors.white70,
+                            ),
                           ),
-                        ),
-                ],
-              );
-            }),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

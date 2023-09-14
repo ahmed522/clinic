@@ -66,8 +66,7 @@ class UserPostBottomWidget extends StatelessWidget {
                             if (post.reacted) {
                               post.loading = true;
                               controller.update();
-                              await controller.unReactPost(
-                                  post.user.userId!, post.postId!);
+                              await controller.unReactPost(post.postId!);
                               post.reacted = false;
                               --post.reacts;
                               post.loading = false;
@@ -75,8 +74,7 @@ class UserPostBottomWidget extends StatelessWidget {
                             } else {
                               post.loading = true;
                               controller.update();
-                              await controller.reactPost(
-                                  post.user.userId!, post.postId!);
+                              await controller.reactPost(post);
                               post.reacted = true;
                               ++post.reacts;
                               post.loading = false;

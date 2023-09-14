@@ -12,6 +12,9 @@ import 'package:clinic/features/medical_record/model/medicine_model.dart';
 import 'package:clinic/features/medical_record/model/surgery_model.dart';
 import 'package:clinic/features/notifications/model/notification_model.dart';
 import 'package:clinic/features/notifications/model/notification_type.dart';
+import 'package:clinic/features/settings/model/comment_activity_model.dart';
+import 'package:clinic/features/settings/model/post_activity_model.dart';
+import 'package:clinic/features/settings/model/reply_activity_model.dart';
 import 'package:clinic/features/time_line/model/comment_model.dart';
 import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/parent_post_model.dart';
@@ -167,9 +170,13 @@ class UserDataController extends GetxController {
         .where(FieldPath.documentId, isEqualTo: clinicId)
         .limit(1)
         .get()
-        .then((collectionSnapShot) {
-      clinic = ClinicModel.fromSnapShot(collectionSnapShot.docs.first);
-    });
+        .then(
+      (collectionSnapShot) {
+        if (collectionSnapShot.size > 0) {
+          clinic = ClinicModel.fromSnapShot(collectionSnapShot.docs.first);
+        }
+      },
+    );
     return clinic;
   }
 
@@ -236,37 +243,13 @@ class UserDataController extends GetxController {
       final doctorClinicsCollectionReference =
           _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
       await doctorClinicsCollectionReference.doc(clinicId).delete();
-      await _deleteClinicFromPostsById(doctorId, clinicId);
     } on Exception {
       CommonFunctions.errorHappened();
     }
   }
 
-  Future<void> _deleteClinicFromPostsById(
-      String doctorId, String clinicId) async {
-    try {
-      await getAllUsersPostsCollection
-          .where('uid', isEqualTo: doctorId)
-          .get()
-          .then((snapshot) async {
-        for (var postSnapshot in snapshot.docs) {
-          if (postSnapshot['post_type'] == 'discount' ||
-              postSnapshot['post_type'] == 'newClinic') {
-            if (postSnapshot['selected_clinics'] != null &&
-                postSnapshot['selected_clinics'].contains(clinicId)) {
-              List<String> newSelectedClinics = _getNewSelectedClinics(
-                  postSnapshot['selected_clinics'], clinicId);
-              await getAllUsersPostsCollection
-                  .doc(postSnapshot.id)
-                  .update({'selected_clinics': newSelectedClinics});
-            }
-          }
-        }
-      });
-    } on Exception {
-      CommonFunctions.errorHappened();
-    }
-  }
+  Future changeDoctorDegree(String doctorId, String newDegree) async =>
+      _db.collection('doctors').doc(doctorId).update({"degree": newDegree});
 
   /// ----------------------------------------------------------------------
   ///                           Doctor Profile                             -
@@ -536,7 +519,8 @@ class UserDataController extends GetxController {
     return postSnapshot.get('uid');
   }
 
-  Future<DoctorPostModel?> getDoctorPostById(String postId,
+  Future<DoctorPostModel?> getDoctorPostById(
+      String currentUserId, String postId,
       [DoctorModel? postWriter]) async {
     DocumentSnapshot postSnapshot =
         await getAllUsersPostsCollection.doc(postId).get();
@@ -545,13 +529,15 @@ class UserDataController extends GetxController {
     }
     DoctorModel writer =
         postWriter ?? await getDoctorById(postSnapshot.get('uid'));
-    return DoctorPostModel.fromSnapShot(
+    DoctorPostModel post = DoctorPostModel.fromSnapShot(
       postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
       writer: writer,
     );
+    post.reacted = await isUserReactedPost(currentUserId, postId);
+    return post;
   }
 
-  Future<UserPostModel?> getUserPostById(String postId,
+  Future<UserPostModel?> getUserPostById(String currentUserId, String postId,
       [UserModel? postWriter]) async {
     DocumentSnapshot postSnapshot =
         await getAllUsersPostsCollection.doc(postId).get();
@@ -559,31 +545,37 @@ class UserDataController extends GetxController {
       return null;
     }
     UserModel writer = postWriter ?? await getUserById(postSnapshot.get('uid'));
-    return UserPostModel.fromSnapShot(
+    UserPostModel post = UserPostModel.fromSnapShot(
       postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
       writer: writer,
     );
+    post.reacted = await isUserReactedPost(currentUserId, postId);
+    return post;
   }
 
-  Future<ParentPostModel?> getPostById(String postId) async {
+  Future<ParentPostModel?> getPostById(
+      String currentUserId, String postId) async {
     DocumentSnapshot postSnapshot =
         await getAllUsersPostsCollection.doc(postId).get();
     if (!postSnapshot.exists) {
       return null;
     }
+    ParentPostModel post;
     if (postSnapshot['user_type'] == 'user') {
       UserModel writer = await getUserById(postSnapshot.get('uid'));
-      return UserPostModel.fromSnapShot(
+      post = UserPostModel.fromSnapShot(
         postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
         writer: writer,
       );
     } else {
       DoctorModel writer = await getDoctorById(postSnapshot.get('uid'));
-      return DoctorPostModel.fromSnapShot(
+      post = DoctorPostModel.fromSnapShot(
         postSnapShot: postSnapshot as DocumentSnapshot<Map<String, dynamic>>,
         writer: writer,
       );
     }
+    post.reacted = await isUserReactedPost(currentUserId, postId);
+    return post;
   }
 
   DocumentReference getPostReactsDocumentById(String postDocumentId) =>
@@ -594,41 +586,42 @@ class UserDataController extends GetxController {
   CollectionReference get getAllUsersPostsCollection =>
       _db.collection('all_users_posts');
   // ===================== post deletion =====================
-  Future deletePostById(String postId, bool isDoctorPost) async {
+  Future deletePostById(String postId) async {
     await _deletePostFromAllUsersPostsCollectionById(postId);
-    if (!isDoctorPost) {
-      await _deletePostCommentsFromCommentsCollectionById(postId);
-      await _deletePostRepliesFromRepliesCollectionById(postId);
-    }
+    await _deletePostCommentsFromCommentsCollectionById(postId);
+    await _deletePostRepliesFromRepliesCollectionById(postId);
     await _deletePostReactsFromReactsCollectionById(postId);
   }
 
-  _deletePostFromAllUsersPostsCollectionById(String postId) async =>
-      await getAllUsersPostsCollection.doc(postId).delete();
-  _deletePostCommentsFromCommentsCollectionById(String postId) async =>
-      await getPostCommentsCollectionById(postId).get().then((snapshot) {
-        for (var commentDoc in snapshot.docs) {
-          _deletePostComments(commentDoc);
-        }
-      });
+  _deletePostFromAllUsersPostsCollectionById(String postId) =>
+      getAllUsersPostsCollection.doc(postId).delete();
+  _deletePostCommentsFromCommentsCollectionById(String postId) =>
+      getPostCommentsCollectionById(postId).get().then(
+        (snapshot) async {
+          for (var commentDoc in snapshot.docs) {
+            _deletePostComments(commentDoc);
+          }
+          await getPostCommentsDocumentById(postId).delete();
+        },
+      );
 
-  _deletePostRepliesFromRepliesCollectionById(String postId) async => await _db
-          .collection('replies')
-          .where('post_id', isEqualTo: postId)
-          .get()
-          .then(
+  _deletePostRepliesFromRepliesCollectionById(String postId) =>
+      _db.collection('replies').where('post_id', isEqualTo: postId).get().then(
         (snapshot) {
           for (QueryDocumentSnapshot doc in snapshot.docs) {
             _deleteCommentReplies(doc.id);
           }
         },
       );
-  _deletePostReactsFromReactsCollectionById(String postId) async =>
-      await getPostReactsCollectionById(postId).get().then((snapshot) {
-        for (var doc in snapshot.docs) {
-          doc.reference.delete();
-        }
-      });
+  _deletePostReactsFromReactsCollectionById(String postId) =>
+      getPostReactsCollectionById(postId).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            doc.reference.delete();
+          }
+          await getPostReactsDocumentById(postId).delete();
+        },
+      );
   // =====================
 
   //============== comments =================
@@ -643,22 +636,29 @@ class UserDataController extends GetxController {
           String postId, String commentDocumentId) =>
       getPostCommentsCollectionById(postId).doc(commentDocumentId);
 
+  CollectionReference get allCommentsReacts =>
+      _db.collection('all_comments_reacts');
+
+  DocumentReference getCommentReactsDocumentById(String commentId) =>
+      allCommentsReacts.doc(commentId);
+  CollectionReference getSingleCommentReactsById(String commentId) =>
+      getCommentReactsDocumentById(commentId).collection('comment_reacts');
+
   Future<bool> isUserReactedComment(
-      String uid, String postDocumentId, String commentDocumentId) async {
+      String uid, String commentDocumentId) async {
     bool reacted = false;
-    await getCommentDocumentById(postDocumentId, commentDocumentId)
-        .collection('comment_reacts')
-        .doc(uid)
-        .get()
-        .then((snapshot) {
-      if (snapshot.exists) {
-        reacted = true;
-      }
-    });
+    await getSingleCommentReactsById(commentDocumentId).doc(uid).get().then(
+      (snapshot) {
+        if (snapshot.exists) {
+          reacted = true;
+        }
+      },
+    );
     return reacted;
   }
 
-  Future<CommentModel?> getCommentById(String postId, String commentId,
+  Future<CommentModel?> getCommentById(
+      String currentUserId, String postId, String commentId,
       [ParentUserModel? commentWriter]) async {
     DocumentSnapshot commentSnapshot =
         await getCommentDocumentById(postId, commentId).get();
@@ -673,38 +673,45 @@ class UserDataController extends GetxController {
           ? await getDoctorById(commentSnapshot.get('uid'))
           : await getUserById(commentSnapshot.get('uid'));
     }
-    return CommentModel.fromSnapshot(
+    CommentModel comment = CommentModel.fromSnapshot(
       commentSnapshot:
           commentSnapshot as DocumentSnapshot<Map<String, dynamic>>,
       writer: writer,
     );
+    comment.reacted = await isUserReactedComment(currentUserId, commentId);
+    return comment;
   }
 
   // ===================== comment deletion =====================
-  Future deleteCommentById(String postId, String commentId) async {
+  Future deleteCommentById(
+      String currentUserId, String postId, String commentId) async {
     DocumentReference commentDoc =
         getPostCommentsCollectionById(postId).doc(commentId);
     await _deleteCommentFromCommentsCollectionById(commentDoc);
     await _deleteCommentReplies(commentId);
+    await getUserComments(currentUserId).doc(commentId).delete();
   }
 
   _deleteCommentFromCommentsCollectionById(DocumentReference commentDoc) async {
-    _deleteCommentReacts(commentDoc);
+    _deleteCommentReacts(commentDoc.id);
     commentDoc.delete();
   }
 
-  _deleteCommentReacts(DocumentReference commentDoc) {
-    commentDoc.collection('comment_reacts').get().then((commentReactsSnapshot) {
-      if (commentReactsSnapshot.size > 0) {
-        for (var reactDoc in commentReactsSnapshot.docs) {
-          reactDoc.reference.delete();
+  _deleteCommentReacts(String commentId) {
+    getSingleCommentReactsById(commentId).get().then(
+      (commentReactsSnapshot) {
+        if (commentReactsSnapshot.size > 0) {
+          for (var reactDoc in commentReactsSnapshot.docs) {
+            reactDoc.reference.delete();
+          }
         }
-      }
-    });
+        getCommentReactsDocumentById(commentId).delete();
+      },
+    );
   }
 
   _deletePostComments(QueryDocumentSnapshot<Object?> commentDoc) {
-    _deleteCommentReacts(commentDoc.reference);
+    _deleteCommentReacts(commentDoc.id);
     commentDoc.reference.delete();
   }
   //===================
@@ -721,22 +728,27 @@ class UserDataController extends GetxController {
           String commentId, String replyDocumentId) =>
       getCommentRepliesCollectionById(commentId).doc(replyDocumentId);
 
-  Future<bool> isUserReactedReply(
-      String uid, String commentId, String replyDocumentId) async {
+  CollectionReference get allRepliesReacts =>
+      _db.collection('all_replies_reacts');
+  DocumentReference getReplyReactsDocumentById(String replyId) =>
+      allRepliesReacts.doc(replyId);
+  CollectionReference getSingleReplyReactsById(String replyId) =>
+      getReplyReactsDocumentById(replyId).collection('reply_reacts');
+
+  Future<bool> isUserReactedReply(String uid, String replyDocumentId) async {
     bool reacted = false;
-    await getReplyDocumentById(commentId, replyDocumentId)
-        .collection('reply_reacts')
-        .doc(uid)
-        .get()
-        .then((snapshot) {
-      if (snapshot.exists) {
-        reacted = true;
-      }
-    });
+    await getSingleReplyReactsById(replyDocumentId).doc(uid).get().then(
+      (snapshot) {
+        if (snapshot.exists) {
+          reacted = true;
+        }
+      },
+    );
     return reacted;
   }
 
-  Future<ReplyModel?> getReplyById(String commentId, String replyId,
+  Future<ReplyModel?> getReplyById(
+      String currentUserId, String commentId, String replyId,
       [ParentUserModel? replyWriter]) async {
     DocumentSnapshot replySnapshot =
         await getReplyDocumentById(commentId, replyId).get();
@@ -751,33 +763,40 @@ class UserDataController extends GetxController {
           ? await getDoctorById(replySnapshot.get('uid'))
           : await getUserById(replySnapshot.get('uid'));
     }
-    return ReplyModel.fromSnapshot(
+    ReplyModel reply = ReplyModel.fromSnapshot(
       commentSnapshot: replySnapshot as DocumentSnapshot<Map<String, dynamic>>,
       writer: writer,
     );
+    reply.reacted = await isUserReactedReply(currentUserId, replyId);
+    return reply;
   }
 
   //================== reply deletion ==================
-  Future deleteReplyById(String commentId, String replyId) async {
+  Future deleteReplyById(
+      String currentUserId, String commentId, String replyId) async {
     DocumentReference replyDoc = getReplyDocumentById(commentId, replyId);
-    await _deleteReplyReacts(replyDoc);
+    await _deleteReplyReacts(replyDoc.id);
     await replyDoc.delete();
 
-    getCommentRepliesCollectionById(commentId).get().then((snapshot) {
-      if (snapshot.size == 0) {
-        getCommentRepliesDocumentById(commentId).delete();
-      }
-    });
+    getCommentRepliesCollectionById(commentId).get().then(
+      (snapshot) {
+        if (snapshot.size == 0) {
+          getCommentRepliesDocumentById(commentId).delete();
+        }
+      },
+    );
+    await getUserReplies(currentUserId).doc(replyId).delete();
   }
 
-  _deleteReplyReacts(DocumentReference replyDoc) async {
-    await replyDoc.collection('reply_reacts').get().then(
+  _deleteReplyReacts(String replyId) async {
+    await getSingleReplyReactsById(replyId).get().then(
       (replyReactsSnapshot) {
         if (replyReactsSnapshot.size > 0) {
           for (var reactDoc in replyReactsSnapshot.docs) {
             reactDoc.reference.delete();
           }
         }
+        getReplyReactsDocumentById(replyId).delete();
       },
     );
   }
@@ -789,7 +808,7 @@ class UserDataController extends GetxController {
         .then(
       (snapshot) {
         for (var replyDoc in snapshot.docs) {
-          _deleteReplyReacts(replyDoc.reference);
+          _deleteReplyReacts(replyDoc.id);
           replyDoc.reference.delete();
         }
       },
@@ -1132,10 +1151,12 @@ class UserDataController extends GetxController {
   /// ----------------------------------------------------------------------
   Future addNewUserToken(String uid, UserType userType, String token,
       [String? specialization]) async {
-    await getUserTokensDocumentById(uid).set({
-      'user_type': userType.name,
-      'specialization': specialization,
-    });
+    await getUserTokensDocumentById(uid).set(
+      {
+        'user_type': userType.name,
+        'specialization': specialization,
+      },
+    );
     await getUserTokensCollectionById(uid).doc(token).set(
       {
         'active': true,
@@ -1262,4 +1283,92 @@ class UserDataController extends GetxController {
       usersNotificationsCollection.doc(uid);
   CollectionReference get usersNotificationsCollection =>
       _db.collection('users_notifications');
+//==================================================
+
+  /// ----------------------------------------------------------------------
+  ///                               Settings                               -
+  /// ----------------------------------------------------------------------
+
+  uploadUserCommentPostActivity(
+          String uid, String commentId, PostActivityModel postActivity) =>
+      getUserComments(uid).doc(commentId).set(postActivity.toJson());
+  uploadUserLikedPostActivity(String uid, PostActivityModel postActivity) =>
+      getUserLikedPosts(uid)
+          .doc(postActivity.postId)
+          .set(postActivity.toJson());
+  uploadUserReplyCommentActivity(
+          String uid, String replyId, CommentActivityModel commentActivity) =>
+      getUserReplies(uid).doc(replyId).set(commentActivity.toJson());
+  uploadUserLikedCommentActivity(
+          String uid, CommentActivityModel commentActivity) =>
+      getUserLikedComments(uid)
+          .doc(commentActivity.commentId)
+          .set(commentActivity.toJson());
+  uploadUserLikedReplyActivity(String uid, ReplyActivityModel replyActivity) =>
+      getUserLikedReplies(uid)
+          .doc(replyActivity.replyId)
+          .set(replyActivity.toJson());
+
+  deleteLikedPostById(String uid, String id) =>
+      getUserLikedPosts(uid).doc(id).delete();
+  deleteLikedCommentById(String uid, String id) =>
+      getUserLikedComments(uid).doc(id).delete();
+  deleteLikedReplyById(String uid, String id) =>
+      getUserLikedReplies(uid).doc(id).delete();
+  deleteCommentActivityById(String uid, String id) =>
+      getUserComments(uid).doc(id).delete();
+  deleteReplyActivityById(String uid, String id) =>
+      getUserReplies(uid).doc(id).delete();
+
+  deleteAllLikedPostsById(String uid) => getUserLikedPosts(uid).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        },
+      );
+  deleteAllLikedCommentsById(String uid) =>
+      getUserLikedComments(uid).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        },
+      );
+  deleteAllLikedRepliesById(String uid) => getUserLikedReplies(uid).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        },
+      );
+  deleteAllCommentsActivitiesById(String uid) =>
+      getUserComments(uid).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        },
+      );
+  deleteAllRepliesActivitiesById(String uid) => getUserReplies(uid).get().then(
+        (snapshot) async {
+          for (var doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        },
+      );
+
+  CollectionReference get activitiesCollection => _db.collection("activities");
+  DocumentReference getUserActivitiesDocumentById(String uid) =>
+      activitiesCollection.doc(uid);
+  CollectionReference getUserLikedPosts(String uid) =>
+      getUserActivitiesDocumentById(uid).collection('likedPosts');
+  CollectionReference getUserComments(String uid) =>
+      getUserActivitiesDocumentById(uid).collection('comments');
+  CollectionReference getUserLikedComments(String uid) =>
+      getUserActivitiesDocumentById(uid).collection('likedComments');
+  CollectionReference getUserReplies(String uid) =>
+      getUserActivitiesDocumentById(uid).collection('replies');
+  CollectionReference getUserLikedReplies(String uid) =>
+      getUserActivitiesDocumentById(uid).collection('likedReplies');
 }

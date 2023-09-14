@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
+import 'package:clinic/features/authentication/controller/local_storage_controller.dart';
 import 'package:clinic/features/chat/controller/single_chat_page_controller.dart';
 import 'package:clinic/features/chat/pages/chat_page/single_chat_page.dart';
 import 'package:clinic/features/main_page/controller/main_page_controller.dart';
@@ -41,6 +42,8 @@ class NotificationsController extends GetxController {
   final UserDataController _userDataController = UserDataController.find;
   final _cloudMessaging = FirebaseMessaging.instance;
   late final String? _token;
+  bool get notifyWhenErgentCases =>
+      LocalStorageController.find.notifyWhenErgent!;
   Future<void> initNotifications() async {
     await _cloudMessaging.requestPermission();
     _token = await _cloudMessaging.getToken();
@@ -74,7 +77,8 @@ class NotificationsController extends GetxController {
           if (Get.isRegistered<MainPageController>()) {
             MainPageController.find.newNotifications.value = true;
           }
-          if (messageData['is_ergent'].toString() == 'true') {
+          if (notifyWhenErgentCases &&
+              messageData['is_ergent'].toString() == 'true') {
             _foregroundNotifyErgentCase(messageData);
           }
         } else {
@@ -467,6 +471,9 @@ class NotificationsController extends GetxController {
       case DoctorPostType.discount:
         notificationType = NotificationType.followedDoctorDiscountPost;
         break;
+      case DoctorPostType.newDegree:
+        notificationType = NotificationType.followedDoctorNewDegreePost;
+        break;
       case DoctorPostType.other:
         notificationType = NotificationType.followedDoctorPost;
         break;
@@ -733,25 +740,29 @@ class NotificationsController extends GetxController {
 ------------------------------------------------------------------------------*/
 
   _onOpenNewMessageNotification(Map<String, dynamic> messageData) {
-    Get.to(
-      () => SingleChatPage(
-        chatterId: messageData['chatter_id'],
-        chatterType: messageData['chatter_type'] == 'user'
-            ? UserType.user
-            : UserType.doctor,
-        chatId: messageData['chat_id'],
+    Future.delayed(const Duration(milliseconds: 500)).then(
+      (_) => Get.to(
+        () => SingleChatPage(
+          chatterId: messageData['chatter_id'],
+          chatterType: messageData['chatter_type'] == 'user'
+              ? UserType.user
+              : UserType.doctor,
+          chatId: messageData['chat_id'],
+        ),
+        transition: Transition.rightToLeftWithFade,
       ),
     );
   }
 
   _onOpenPatientQuestionNotification(Map<String, dynamic> messageData) async {
-    UserPostModel? post =
-        await _userDataController.getUserPostById(messageData['post_id']);
+    UserPostModel? post = await _userDataController.getUserPostById(
+        currentUserId, messageData['post_id']);
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       Get.to(
         () => PostPage(post: post, writerType: UserType.user),
+        transition: Transition.rightToLeftWithFade,
       );
     }
   }
@@ -760,33 +771,36 @@ class NotificationsController extends GetxController {
     ParentPostModel? post;
     if (currentUserType == UserType.doctor) {
       post = await _userDataController.getDoctorPostById(
-          messageData['post_id'], currentUser as DoctorModel);
+          currentUserId, messageData['post_id'], currentUser as DoctorModel);
     } else {
       post = await _userDataController.getUserPostById(
-          messageData['post_id'], currentUser as UserModel);
+          currentUserId, messageData['post_id'], currentUser as UserModel);
     }
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       Get.to(
         () => PostPage(post: post!, writerType: currentUserType),
+        transition: Transition.rightToLeftWithFade,
       );
     }
   }
 
   _onOpenReactMyCommentNotification(Map<String, dynamic> messageData) async {
-    ParentPostModel? post =
-        await _userDataController.getPostById(messageData['post_id']);
+    ParentPostModel? post = await _userDataController.getPostById(
+        currentUserId, messageData['post_id']);
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       CommentModel? comment = await _userDataController.getCommentById(
+        currentUserId,
         messageData['post_id'],
         messageData['comment_id'],
         currentUser,
       );
       Get.to(
         () => PostPage(post: post, writerType: post.writerType!),
+        transition: Transition.rightToLeftWithFade,
       );
       await Future.delayed(const Duration(milliseconds: 700));
       if (comment == null) {
@@ -794,34 +808,39 @@ class NotificationsController extends GetxController {
       } else {
         Get.to(
           () => CommentPage(
+            postWriterType: post.writerType!,
             comment: comment,
             postWriterId: (post.writerType == UserType.user)
                 ? (post as UserPostModel).user.userId!
                 : (post as DoctorPostModel).writer!.userId!,
           ),
+          transition: Transition.rightToLeftWithFade,
         );
       }
     }
   }
 
   _onOpenReactMyReplyNotification(Map<String, dynamic> messageData) async {
-    ParentPostModel? post =
-        await _userDataController.getPostById(messageData['post_id']);
+    ParentPostModel? post = await _userDataController.getPostById(
+        currentUserId, messageData['post_id']);
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       CommentModel? comment = await _userDataController.getCommentById(
+        currentUserId,
         messageData['post_id'],
         messageData['comment_id'],
       );
       if (comment == null) {
         Get.to(
           () => PostPage(post: post, writerType: post.writerType!),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
         CommonFunctions.deletedElement();
       } else {
         ReplyModel? reply = await _userDataController.getReplyById(
+          currentUserId,
           messageData['comment_id'],
           messageData['reply_id'],
           currentUser,
@@ -829,22 +848,28 @@ class NotificationsController extends GetxController {
 
         Get.to(
           () => PostPage(post: post, writerType: post.writerType!),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
 
         Get.to(
           () => CommentPage(
+            postWriterType: post.writerType!,
             comment: comment,
             postWriterId: (post.writerType == UserType.user)
                 ? (post as UserPostModel).user.userId!
                 : (post as DoctorPostModel).writer!.userId!,
           ),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
         if (reply == null) {
           CommonFunctions.deletedElement();
         } else {
-          Get.to(() => ReplyPage(reply: reply));
+          Get.to(
+            () => ReplyPage(reply: reply),
+            transition: Transition.rightToLeftWithFade,
+          );
         }
       }
     }
@@ -854,20 +879,22 @@ class NotificationsController extends GetxController {
     ParentPostModel? post;
     if (currentUserType == UserType.doctor) {
       post = await _userDataController.getDoctorPostById(
-          messageData['post_id'], currentUser as DoctorModel);
+          currentUserId, messageData['post_id'], currentUser as DoctorModel);
     } else {
       post = await _userDataController.getUserPostById(
-          messageData['post_id'], currentUser as UserModel);
+          currentUserId, messageData['post_id'], currentUser as UserModel);
     }
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       CommentModel? comment = await _userDataController.getCommentById(
+        currentUserId,
         messageData['post_id'],
         messageData['comment_id'],
       );
       Get.to(
         () => PostPage(post: post!, writerType: post.writerType!),
+        transition: Transition.rightToLeftWithFade,
       );
       await Future.delayed(const Duration(milliseconds: 700));
       if (comment == null) {
@@ -875,23 +902,26 @@ class NotificationsController extends GetxController {
       } else {
         Get.to(
           () => CommentPage(
+            postWriterType: post!.writerType!,
             comment: comment,
-            postWriterId: (post!.writerType == UserType.user)
+            postWriterId: (post.writerType == UserType.user)
                 ? (post as UserPostModel).user.userId!
                 : (post as DoctorPostModel).writer!.userId!,
           ),
+          transition: Transition.rightToLeftWithFade,
         );
       }
     }
   }
 
   _onOpenReplyMyCommentNotification(Map<String, dynamic> messageData) async {
-    ParentPostModel? post =
-        await _userDataController.getPostById(messageData['post_id']);
+    ParentPostModel? post = await _userDataController.getPostById(
+        currentUserId, messageData['post_id']);
     if (post == null) {
       CommonFunctions.deletedElement();
     } else {
       CommentModel? comment = await _userDataController.getCommentById(
+        currentUserId,
         messageData['post_id'],
         messageData['comment_id'],
         currentUser,
@@ -899,31 +929,39 @@ class NotificationsController extends GetxController {
       if (comment == null) {
         Get.to(
           () => PostPage(post: post, writerType: post.writerType!),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
         CommonFunctions.deletedElement();
       } else {
         ReplyModel? reply = await _userDataController.getReplyById(
+          currentUserId,
           messageData['comment_id'],
           messageData['reply_id'],
         );
         Get.to(
           () => PostPage(post: post, writerType: post.writerType!),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
         Get.to(
           () => CommentPage(
+            postWriterType: post.writerType!,
             comment: comment,
             postWriterId: (post.writerType == UserType.user)
                 ? (post as UserPostModel).user.userId!
                 : (post as DoctorPostModel).writer!.userId!,
           ),
+          transition: Transition.rightToLeftWithFade,
         );
         await Future.delayed(const Duration(milliseconds: 700));
         if (reply == null) {
           CommonFunctions.deletedElement();
         } else {
-          Get.to(() => ReplyPage(reply: reply));
+          Get.to(
+            () => ReplyPage(reply: reply),
+            transition: Transition.rightToLeftWithFade,
+          );
         }
       }
     }

@@ -26,7 +26,10 @@ class MySnackBar {
     );
   }
 
-  static void showGetSnackbar(String message, Color color) => Get.showSnackbar(
+  static void showGetSnackbar(String message, Color color,
+          {bool isTop = true,
+          Duration duration = const Duration(milliseconds: 2000)}) =>
+      Get.showSnackbar(
         GetSnackBar(
           messageText: Center(
             child: Text(
@@ -39,10 +42,10 @@ class MySnackBar {
             ),
           ),
           backgroundColor: color,
-          snackPosition: SnackPosition.TOP,
+          snackPosition: isTop ? SnackPosition.TOP : SnackPosition.BOTTOM,
           snackStyle: SnackStyle.GROUNDED,
-          duration: const Duration(milliseconds: 2000),
-          animationDuration: const Duration(milliseconds: 500),
+          duration: duration,
+          animationDuration: const Duration(milliseconds: 350),
         ),
       );
 }
