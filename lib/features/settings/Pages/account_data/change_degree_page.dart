@@ -6,6 +6,7 @@ import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -16,26 +17,9 @@ class ChangeDegreePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ChangeDegreePageController());
-    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            'تغيير الدرجة العلمية',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: (size.width < 330) ? 17 : 20,
-            ),
-          ),
-        ),
+      appBar: const DefaultAppBar(
+        title: 'تغيير الدرجة العلمية',
       ),
       body: OfflinePageBuilder(
         child: SingleChildScrollView(

@@ -257,11 +257,20 @@ class AcadimicInfoWidget extends StatelessWidget {
                   (controller as DoctorSignupController)
                       .doctorModel
                       .clinics
-                      .add(ClinicModel(
+                      .add(
+                        ClinicModel(
                           index: (controller as DoctorSignupController)
                               .doctorModel
                               .clinics
-                              .length));
+                              .length,
+                        ),
+                      );
+                  (controller as DoctorSignupController)
+                      .clinicsPhoneNumbersTextControllers
+                      .add(<TextEditingController>[]);
+                  (controller as DoctorSignupController)
+                      .clinicsLocationsValidation
+                      .add(false.obs);
                   int index =
                       (controller as DoctorSignupController).clinics.length;
                   (controller as DoctorSignupController).addClinic(
@@ -281,11 +290,16 @@ class AcadimicInfoWidget extends StatelessWidget {
                   if ((controller as DoctorSignupController)
                       .clinics
                       .isNotEmpty) {
-                    return RemoveClinicButton(onRemoveClinic: () {
-                      controller.doctorModel.clinics.removeLast();
-                      controller.removeClinic();
-                      controller.updateClinicLocationLoading(false);
-                    });
+                    return RemoveClinicButton(
+                      onRemoveClinic: () {
+                        controller.doctorModel.clinics.removeLast();
+                        controller.clinicsLocationsValidation.removeLast();
+                        controller.clinicsPhoneNumbersTextControllers
+                            .removeLast();
+                        controller.removeClinic();
+                        controller.updateClinicLocationLoading(false);
+                      },
+                    );
                   } else {
                     return const SizedBox();
                   }

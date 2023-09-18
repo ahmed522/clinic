@@ -19,11 +19,7 @@ class ClinicVezeetaWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ClinicModel clinic;
     if (isDoctorPost) {
-      if (clinicModel != null) {
-        clinic = clinicModel!;
-      } else {
-        clinic = clinicModel!;
-      }
+      clinic = clinicModel!;
     } else {
       final controller = DoctorClinicsController.find;
       clinic = controller.clinics[clinicIndex];
@@ -37,7 +33,7 @@ class ClinicVezeetaWidget extends StatelessWidget {
         Text(
           '${clinic.examineVezeeta.toString()} EGP',
           style: TextStyle(
-            fontSize: 25,
+            fontSize: 20,
             color: CommonFunctions.isLightMode(context)
                 ? Colors.black
                 : Colors.white,
@@ -54,7 +50,7 @@ class ClinicVezeetaWidget extends StatelessWidget {
         Text(
           '${clinic.reexamineVezeeta.toString()} EGP',
           style: TextStyle(
-            fontSize: 25,
+            fontSize: 20,
             color: CommonFunctions.isLightMode(context)
                 ? Colors.black
                 : Colors.white,

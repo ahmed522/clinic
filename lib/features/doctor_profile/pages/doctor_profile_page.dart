@@ -11,7 +11,7 @@ import 'package:clinic/features/doctor_profile/pages/doctor_followings_page.dart
 import 'package:clinic/features/doctor_profile/pages/doctor_posts_page.dart';
 import 'package:clinic/features/doctor_profile/pages/follow_button.dart';
 import 'package:clinic/features/settings/Pages/common/settings_page.dart';
-import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
+import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -228,9 +228,12 @@ class DoctorProfilePage extends StatelessWidget {
                     height: size.height / 1.8,
                     width: size.width,
                     imageUrl: controller.currentDoctor.personalImageURL!,
-                    placeholder: ((context, url) =>
-                        const AppCircularProgressIndicator(
-                            width: 100.0, height: 100.0)),
+                    placeholder: ((context, url) => const SizedBox.expand(
+                          child: AppCircularProgressIndicator(
+                            width: 100.0,
+                            height: 100.0,
+                          ),
+                        )),
                     errorWidget: ((context, url, error) =>
                         CommonFunctions.internetError),
                   ),

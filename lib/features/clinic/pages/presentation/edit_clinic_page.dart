@@ -6,7 +6,7 @@ import 'package:clinic/features/clinic/pages/presentation/edit_clinic_button.dar
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,19 +23,17 @@ class EditClinicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    ClinicModel tempClinic = DoctorClinicsController.find.clinics[clinicIndex];
+    ClinicModel tempClinic = ClinicModel.copy(
+        DoctorClinicsController.find.clinics[clinicIndex], clinicIndex);
     Get.put(SingleClinicController(
         tempClinic: tempClinic, clinicIndex: clinicIndex));
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        تعديل العيادة'),
-      ),
+      appBar: const DefaultAppBar(title: 'تعديل العيادة'),
       body: OfflinePageBuilder(
         child: GetBuilder<SingleClinicController>(builder: (controller) {
           if (controller.loading) {
             return SizedBox(
-              height: 2 * size.height / 3,
+              height: size.height,
               child: const Center(
                 child: AppCircularProgressIndicator(height: 100, width: 100),
               ),
@@ -43,7 +41,7 @@ class EditClinicPage extends StatelessWidget {
           }
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
                   CreateClinicPage(

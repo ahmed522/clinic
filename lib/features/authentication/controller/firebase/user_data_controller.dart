@@ -64,7 +64,10 @@ class UserDataController extends GetxController {
       String clincDocId;
       for (var clinic in doctor.clinics) {
         clincDocId = '${doctor.userId}-${const Uuid().v4()}';
-        addClinicById(doctor.userId!, clincDocId, clinic);
+        clinic.doctorId = doctor.userId!;
+        clinic.clinicId = clincDocId;
+        clinic.specialization = doctor.specialization;
+        addClinicById(clinic);
       }
       MySnackBar.showGetSnackbar(
         'تم التسجيل بنجاح',
@@ -161,12 +164,18 @@ class UserDataController extends GetxController {
     return specialization;
   }
 
-  Future<ClinicModel?> getDoctorSingleClinicById(
-      String doctorId, String clinicId) async {
+  Future changeDoctorDegree(String doctorId, String newDegree) async =>
+      _db.collection('doctors').doc(doctorId).update({"degree": newDegree});
+
+  /// ----------------------------------------------------------------------
+  ///                                clinics                               -
+  /// ----------------------------------------------------------------------
+
+  Future<ClinicModel?> getDoctorSingleClinicById(String clinicId) async {
     ClinicModel? clinic;
-    final doctorClincsCollectionRef =
-        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
-    await doctorClincsCollectionRef
+
+    await _db
+        .collection('clinics')
         .where(FieldPath.documentId, isEqualTo: clinicId)
         .limit(1)
         .get()
@@ -181,10 +190,10 @@ class UserDataController extends GetxController {
   }
 
   Future<List<String>> getDoctorClinicsIdsById(String doctorId) async {
-    final doctorClincsCollectionRef =
-        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
     List<String> clinics = [];
-    await doctorClincsCollectionRef
+    await _db
+        .collection('clinics')
+        .where('doctor_id', isEqualTo: doctorId)
         .orderBy('created_time')
         .get()
         .then((collectionSnapShot) {
@@ -196,10 +205,10 @@ class UserDataController extends GetxController {
   }
 
   Future<List<ClinicModel>> getDoctorClinicsById(String doctorId) async {
-    final doctorClincsCollectionRef =
-        _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
     List<ClinicModel> clinics = [];
-    await doctorClincsCollectionRef
+    await _db
+        .collection('clinics')
+        .where('doctor_id', isEqualTo: doctorId)
         .orderBy('created_time')
         .get()
         .then((collectionSnapShot) {
@@ -210,46 +219,36 @@ class UserDataController extends GetxController {
     return clinics;
   }
 
-  Future<void> addClinicById(
-      String doctorId, String clinicId, ClinicModel newClinic) async {
+  Future<void> addClinicById(ClinicModel newClinic) async {
     Map<String, dynamic> newData = {};
-    newClinic.clinicId = clinicId;
     newData = newClinic.toJson();
     newData['created_time'] = Timestamp.now();
     try {
       final doctorClinicsCollectionReference =
-          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
-      await doctorClinicsCollectionReference.doc(clinicId).set(newData);
+          _db.collection('clinics').doc(newClinic.clinicId);
+      await doctorClinicsCollectionReference.set(newData);
     } on Exception {
       CommonFunctions.errorHappened();
     }
   }
 
-  Future<void> updateClinicById(
-      String doctorId, String clinicId, ClinicModel newClinic) async {
+  Future<void> updateClinicById(ClinicModel newClinic) async {
     Map<String, dynamic> newData = {};
     newData = newClinic.toJson();
     try {
-      final doctorClinicsCollectionReference =
-          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
-      await doctorClinicsCollectionReference.doc(clinicId).update(newData);
+      await _db.collection('clinics').doc(newClinic.clinicId).update(newData);
     } on Exception {
       CommonFunctions.errorHappened();
     }
   }
 
-  Future<void> deleteClinicById(String doctorId, String clinicId) async {
+  Future<void> deleteClinicById(String clinicId) async {
     try {
-      final doctorClinicsCollectionReference =
-          _db.collection('clinics').doc(doctorId).collection('doctor_clinics');
-      await doctorClinicsCollectionReference.doc(clinicId).delete();
+      await _db.collection('clinics').doc(clinicId).delete();
     } on Exception {
       CommonFunctions.errorHappened();
     }
   }
-
-  Future changeDoctorDegree(String doctorId, String newDegree) async =>
-      _db.collection('doctors').doc(doctorId).update({"degree": newDegree});
 
   /// ----------------------------------------------------------------------
   ///                           Doctor Profile                             -
@@ -327,15 +326,6 @@ class UserDataController extends GetxController {
       .doc(userId)
       .collection('doctor_followers');
 
-  List<String> _getNewSelectedClinics(
-      List<dynamic> selectedClinics, String deletedClinicId) {
-    List<String> newSelectedClinics = [];
-    for (var clinicId in selectedClinics) {
-      newSelectedClinics.add(clinicId);
-    }
-    newSelectedClinics.remove(deletedClinicId);
-    return newSelectedClinics;
-  }
   //===============================================
 
   //================= user data =================

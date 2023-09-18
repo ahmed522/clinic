@@ -6,6 +6,7 @@ import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,26 +16,9 @@ class ChangePasswordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ChangePasswordPageController());
-    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            'تغيير كلمة المرور',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: (size.width < 330) ? 17 : 20,
-            ),
-          ),
-        ),
+      appBar: const DefaultAppBar(
+        title: 'تغيير كلمة المرور',
       ),
       body: OfflinePageBuilder(
         child: SingleChildScrollView(

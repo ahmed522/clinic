@@ -157,6 +157,11 @@ class DoctorSignupPage extends StatelessWidget {
       } else {
         controller.updateLoading(true);
         (controller).updateStates(StepState.complete, StepState.complete);
+        for (int clinicIndex = 0;
+            clinicIndex < controller.doctorModel.clinics.length;
+            clinicIndex++) {
+          controller.addClinicPhoneNumbers(clinicIndex);
+        }
         controller.signupDoctor(controller.doctorModel).whenComplete(
               () => controller.updateLoading(false),
             );

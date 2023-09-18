@@ -24,101 +24,100 @@ class DoctorFollowingCardWidget extends StatelessWidget {
   final bool isEditable;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: () => Get.to(
-              () => DoctorProfilePage(
-                isCurrentUser: follower.userId ==
-                    AuthenticationController.find.currentUserId,
-                doctorId: follower.userId,
-              ),
-              transition: Transition.rightToLeftWithFade,
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => Get.to(
+            () => DoctorProfilePage(
+              isCurrentUser: follower.userId ==
+                  AuthenticationController.find.currentUserId,
+              doctorId: follower.userId,
             ),
-            child: Card(
-              color: CommonFunctions.isLightMode(context)
-                  ? Colors.white
-                  : AppColors.darkThemeBottomNavBarColor,
-              elevation: 7,
-              shape: isEditable
-                  ? CroppedCardBorder(
-                      borderRadius: const Radius.circular(20.0),
-                      holeSize: 40.0,
-                      offset: const Offset(20, -20),
-                      side: BorderSide(
-                        color: (CommonFunctions.isLightMode(context))
-                            ? AppColors.primaryColor
-                            : Colors.white,
-                        width: .01,
-                      ),
-                    )
-                  : RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      side: BorderSide(
-                        color: (CommonFunctions.isLightMode(context))
-                            ? AppColors.primaryColor
-                            : Colors.white,
-                        width: .01,
-                      ),
+            transition: Transition.rightToLeftWithFade,
+          ),
+          child: Card(
+            margin: const EdgeInsets.only(bottom: 5.0, right: 10.0, left: 10.0),
+            color: CommonFunctions.isLightMode(context)
+                ? Colors.white
+                : AppColors.darkThemeBottomNavBarColor,
+            elevation: 2.5,
+            shape: isEditable
+                ? CroppedCardBorder(
+                    borderRadius: const Radius.circular(20.0),
+                    holeSize: 40.0,
+                    offset: const Offset(20, -20),
+                    side: BorderSide(
+                      color: (CommonFunctions.isLightMode(context))
+                          ? AppColors.primaryColor
+                          : Colors.white,
+                      width: .0001,
                     ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset(
-                          follower.gender == Gender.male
-                              ? 'assets/img/male-doctor.png'
-                              : 'assets/img/female-doctor.png',
-                          width: 32,
-                          height: 32,
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              follower.userName,
-                              style: TextStyle(
-                                color: (CommonFunctions.isLightMode(context))
-                                    ? Colors.black87
-                                    : Colors.white,
-                                fontSize: 15,
-                              ),
+                  )
+                : RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    side: BorderSide(
+                      color: (CommonFunctions.isLightMode(context))
+                          ? AppColors.primaryColor
+                          : Colors.white,
+                      width: .0001,
+                    ),
+                  ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(
+                        follower.gender == Gender.male
+                            ? 'assets/img/male-doctor.png'
+                            : 'assets/img/female-doctor.png',
+                        width: 30,
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            follower.userName,
+                            style: TextStyle(
+                              color: (CommonFunctions.isLightMode(context))
+                                  ? Colors.black87
+                                  : Colors.white,
+                              fontSize: 15,
                             ),
-                            const SizedBox(width: 10),
-                            CircleAvatar(
-                              backgroundImage: CachedNetworkImageProvider(
-                                  follower.userPersonalImage!),
-                              radius: 25,
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    DoctorSpecializationInfoWidget(
-                        specialization: follower.doctorSpecialization!),
-                    SizedBox(height: isEditable ? 20 : 5),
-                  ],
-                ),
+                          ),
+                          const SizedBox(width: 10),
+                          CircleAvatar(
+                            backgroundImage: CachedNetworkImageProvider(
+                                follower.userPersonalImage!),
+                            radius: 25,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  DoctorSpecializationInfoWidget(
+                      specialization: follower.doctorSpecialization!),
+                  SizedBox(height: isEditable ? 10 : 3),
+                ],
               ),
             ),
           ),
-          isEditable
-              ? Positioned(
-                  bottom: 6,
-                  child: CircleButton(
-                    backgroundColor: Colors.red,
-                    onPressed: () => onUnfollowButtonPressed(),
-                    child: const Icon(Icons.remove),
-                  ))
-              : const SizedBox(),
-        ],
-      ),
+        ),
+        isEditable
+            ? Positioned(
+                bottom: 6,
+                left: 3,
+                child: CircleButton(
+                  backgroundColor: Colors.red,
+                  onPressed: () => onUnfollowButtonPressed(),
+                  child: const Icon(Icons.remove),
+                ))
+            : const SizedBox(),
+      ],
     );
   }
 }

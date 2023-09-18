@@ -1,10 +1,8 @@
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/medical_record/model/medicine.dart';
-import 'package:clinic/global/constants/am_or_pm.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/age.dart';
-import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,6 +30,22 @@ class CommonFunctions {
 
   static bool isLightMode(BuildContext context) =>
       (Theme.of(context).brightness == Brightness.light);
+
+  static Timestamp timestampFromTimeOfDay(TimeOfDay timeOfDay) {
+    DateTime dateTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+    return Timestamp.fromDate(dateTime);
+  }
+
+  static TimeOfDay timeOfDayFromTimestamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate();
+    return TimeOfDay.fromDateTime(dateTime);
+  }
 
   static Age calculateAge(Timestamp birthdate) {
     DateTime now = DateTime.now();
@@ -131,6 +145,18 @@ class CommonFunctions {
     return ((date1.year == date2.year) &&
         (date1.month == date2.month) &&
         (date1.day == date2.day));
+  }
+
+  static bool containsPhoneNumber(String input) {
+    const pattern = r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b';
+    final regex = RegExp(pattern);
+    return regex.hasMatch(input);
+  }
+
+  static int countMatches(String inputString, String pattern) {
+    RegExp regExp = RegExp(pattern);
+    Iterable<RegExpMatch> matches = regExp.allMatches(inputString);
+    return matches.length;
   }
 
   static List<TextSpan> extractText(BuildContext context, String rawString,
@@ -251,43 +277,12 @@ class CommonFunctions {
       AuthenticationController.find.currentUserId;
   static String get currentUserName =>
       AuthenticationController.find.currentUserName;
+  static String get currentDoctorSpecialization =>
+      AuthenticationController.find.currentDoctorSpecialization;
   static String? get currentUserPersonalImage =>
       AuthenticationController.find.currentUserPersonalImage;
   static UserType get currentUserType =>
       AuthenticationController.find.currentUserType;
-}
-
-TimeOfDay setClinicOpenTime(
-    String openHour, String openMin, AMOrPM openAmOrPm) {
-  TimeOfDay openTime;
-  if (openHour == '12') {
-    openHour = AppConstants.zero;
-  }
-  if (openAmOrPm == AMOrPM.am) {
-    openTime = TimeOfDay(hour: int.parse(openHour), minute: int.parse(openMin));
-  } else {
-    openTime =
-        TimeOfDay(hour: int.parse(openHour) + 12, minute: int.parse(openMin));
-  }
-
-  return openTime;
-}
-
-TimeOfDay setClinicCloseTime(
-    String closeHour, String closeMin, AMOrPM closeAmOrpm) {
-  TimeOfDay closeTime;
-  if (closeHour == '12') {
-    closeHour = AppConstants.zero;
-  }
-  if (closeAmOrpm == AMOrPM.am) {
-    closeTime =
-        TimeOfDay(hour: int.parse(closeHour), minute: int.parse(closeMin));
-  } else {
-    closeTime =
-        TimeOfDay(hour: int.parse(closeHour) + 12, minute: int.parse(closeMin));
-  }
-
-  return closeTime;
 }
 
 String getMedicineTypeName(Medicine medicineType) {

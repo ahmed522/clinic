@@ -1,7 +1,7 @@
 import 'package:clinic/features/time_line/pages/post/user_post/user_post_widget.dart';
 import 'package:clinic/features/user_profile/controller/user_questions_controller.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,12 +12,8 @@ class UserQuestionsPage extends StatelessWidget {
   final String userId;
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        الأسئلة'),
-      ),
+      appBar: const DefaultAppBar(title: 'الأسئلة'),
       body: OfflinePageBuilder(child: buildUserPostsList(context)),
     );
   }
@@ -34,7 +30,7 @@ class UserQuestionsPage extends StatelessWidget {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: SizedBox(
-                height: 5 * size.height / 6,
+                height: size.height,
                 child: const Center(
                   child: AppCircularProgressIndicator(
                     height: 80,
@@ -78,6 +74,7 @@ class UserQuestionsPage extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => controller.loadUserPosts(10, true),
           child: ListView.builder(
+            padding: const EdgeInsets.only(top: 10),
             itemCount: controller.content.length,
             itemBuilder: (context, index) {
               if (index == controller.content.length - 1) {

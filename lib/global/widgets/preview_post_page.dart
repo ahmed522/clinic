@@ -5,6 +5,7 @@ import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -21,47 +22,29 @@ class PreviewPostPage extends StatelessWidget {
     String appBarTitleText =
         'منشور ${(post.writer!.gender == Gender.male) ? 'الطبيب' : 'الطبيبة'}'
         ' ${CommonFunctions.getFullName(post.writer!.firstName!, post.writer!.lastName!)} ';
-    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
+      appBar: DefaultAppBar(
+        title: appBarTitleText,
         leading: IconButton(
           onPressed: () => _onEditPostContentPressed(context, post.content!),
           icon: const Icon(
             Icons.edit_rounded,
           ),
         ),
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            appBarTitleText,
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontFamily: AppFonts.mainArabicFontFamily,
-              fontWeight: FontWeight.w700,
-              fontSize: (size.width < 330) ? 15 : 20,
-            ),
-          ),
-        ),
       ),
       body: OfflinePageBuilder(
         child: ListView(
           children: [
-            GetBuilder<ChangeDegreePageController>(builder: (controller) {
-              return DoctorPostWidget(
-                post: post..content = controller.postContent,
-                isClickable: false,
-                isProfilePage: true,
-                isPreview: true,
-              );
-            }),
+            GetBuilder<ChangeDegreePageController>(
+              builder: (controller) {
+                return DoctorPostWidget(
+                  post: post..content = controller.postContent,
+                  isClickable: false,
+                  isProfilePage: true,
+                  isPreview: true,
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -73,6 +56,7 @@ class PreviewPostPage extends StatelessWidget {
     controller.editPostTextController.text = content;
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(

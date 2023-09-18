@@ -11,24 +11,26 @@ class ProfileOptionButton extends StatelessWidget {
     required this.imageAsset,
     required this.onPressed,
     this.notify = false,
+    this.topPadding = 25,
   }) : super(key: key);
   final String text;
   final String imageAsset;
   final void Function()? onPressed;
   final bool notify;
+  final double topPadding;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
+      padding: EdgeInsets.only(top: topPadding, left: 25.0, right: 25.0),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: (CommonFunctions.isLightMode(context))
               ? Colors.white
               : AppColors.darkThemeBottomNavBarColor,
-          elevation: 8,
+          elevation: 4,
           side: const BorderSide(style: BorderStyle.none),
           padding: const EdgeInsets.all(25.0),
         ),

@@ -1,5 +1,5 @@
 import 'package:clinic/features/medical_record/pages/add_medical_record.dart';
-import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
+import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';

@@ -44,89 +44,91 @@ class NotificationsPage extends StatelessWidget {
 
   buildNotificationsPage(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return GetX<NotificationPageController>(builder: (controller) {
-      if (controller.loading.isTrue) {
-        return SizedBox(
-          height: 5 * size.height / 6,
-          child: const Center(
-            child: AppCircularProgressIndicator(
-              width: 100,
-              height: 100,
+    return GetX<NotificationPageController>(
+      builder: (controller) {
+        if (controller.loading.isTrue) {
+          return SizedBox(
+            height: 5 * size.height / 6,
+            child: const Center(
+              child: AppCircularProgressIndicator(
+                width: 100,
+                height: 100,
+              ),
             ),
-          ),
-        );
-      }
-      if (controller.notifications.isEmpty) {
-        return const EmptyPage(text: 'ليست هناك إشعارات جديدة ');
-      }
-      return ListView.builder(
-        itemCount: controller.notifications.length,
-        itemBuilder: (context, index) {
-          NotificationModel notification = controller.notifications[index];
-          if (!notification.seen) {
-            controller.updateSeenedNotification(notification.id);
-          }
-          if (index == controller.notifications.length - 1) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Column(
-                children: [
-                  SingleNotification(
-                    notification: notification,
-                    onPressed: () =>
-                        _onNotificationPressed(context, notification),
-                  ),
-                  const SizedBox(height: 10),
-                  GetX<NotificationPageController>(
-                    builder: (controller) {
-                      if (controller.noMoreNotifications.isTrue) {
-                        return const SizedBox();
-                      }
-                      if (controller.moreNotificaionsLoading.isTrue) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: AppCircularProgressIndicator(
-                            width: 50,
-                            height: 50,
+          );
+        }
+        if (controller.notifications.isEmpty) {
+          return const EmptyPage(text: 'ليست هناك إشعارات جديدة ');
+        }
+        return ListView.builder(
+          itemCount: controller.notifications.length,
+          itemBuilder: (context, index) {
+            NotificationModel notification = controller.notifications[index];
+            if (!notification.seen) {
+              controller.updateSeenedNotification(notification.id);
+            }
+            if (index == controller.notifications.length - 1) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: Column(
+                  children: [
+                    SingleNotification(
+                      notification: notification,
+                      onPressed: () =>
+                          _onNotificationPressed(context, notification),
+                    ),
+                    const SizedBox(height: 10),
+                    GetX<NotificationPageController>(
+                      builder: (controller) {
+                        if (controller.noMoreNotifications.isTrue) {
+                          return const SizedBox();
+                        }
+                        if (controller.moreNotificaionsLoading.isTrue) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 20.0),
+                            child: AppCircularProgressIndicator(
+                              width: 50,
+                              height: 50,
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 20.0, left: 15),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: ElevatedButton(
+                              onPressed: () =>
+                                  controller.loadNotifications(25, false),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                              ),
+                              child: const Text(
+                                'المزيد',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: AppFonts.mainArabicFontFamily,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
                           ),
                         );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 20.0, left: 15),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: ElevatedButton(
-                            onPressed: () =>
-                                controller.loadNotifications(25, false),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                            ),
-                            child: const Text(
-                              'المزيد',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: AppFonts.mainArabicFontFamily,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
+            return SingleNotification(
+              notification: notification,
+              onPressed: () => _onNotificationPressed(context, notification),
             );
-          }
-          return SingleNotification(
-            notification: notification,
-            onPressed: () => _onNotificationPressed(context, notification),
-          );
-        },
-      );
-    });
+          },
+        );
+      },
+    );
   }
 }

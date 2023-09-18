@@ -2,7 +2,7 @@ import 'package:clinic/features/chat/controller/user_chats_page_controller.dart'
 import 'package:clinic/features/chat/model/chat_model.dart';
 import 'package:clinic/features/chat/pages/chat_page/single_chat_list_tile.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,10 +16,7 @@ class UserChatsPage extends StatelessWidget {
     final controller = Get.put(UserChatsPageController());
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        الدردشات'),
-      ),
+      appBar: const DefaultAppBar(title: 'الدردشات'),
       body: OfflinePageBuilder(
         child: StreamBuilder(
           stream: controller.chatsStream,
@@ -30,7 +27,7 @@ class UserChatsPage extends StatelessWidget {
                     (snapshot.hasData && snapshot.data!.docs.isEmpty)) {
                   if (controller.loading.isTrue) {
                     return SizedBox(
-                      height: 5 * size.height / 6,
+                      height: size.height,
                       child: const Center(
                         child: AppCircularProgressIndicator(
                           width: 100,
@@ -49,6 +46,7 @@ class UserChatsPage extends StatelessWidget {
                   return const EmptyPage(text: 'ليست هناك أي محادثات');
                 }
                 return ListView.builder(
+                  padding: const EdgeInsets.only(top: 8.0),
                   itemCount: activeChats.length,
                   itemBuilder: (context, index) {
                     ChatModel chat = ChatModel.fromSnapshot(activeChats[index]);

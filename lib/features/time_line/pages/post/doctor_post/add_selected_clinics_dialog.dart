@@ -132,8 +132,8 @@ class AddSelectedClinicDialog extends StatelessWidget {
 
   _previewClinic(BuildContext context, String clinicId, int index) async {
     final controller = CreateDoctorPostController.find;
-    ClinicModel? clinic = await UserDataController.find
-        .getDoctorSingleClinicById(controller.currentDoctorId, clinicId);
+    ClinicModel? clinic =
+        await UserDataController.find.getDoctorSingleClinicById(clinicId);
     if (clinic != null) {
       showDialog(
         context: context,

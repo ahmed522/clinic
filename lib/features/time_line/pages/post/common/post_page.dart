@@ -5,10 +5,9 @@ import 'package:clinic/features/time_line/pages/post/common/post_page_child.dart
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/functions/common_functions.dart';
-import 'package:clinic/global/fonts/app_fonts.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class PostPage extends StatelessWidget {
   const PostPage({
@@ -21,7 +20,6 @@ class PostPage extends StatelessWidget {
   static const route = '/postPage';
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     Gender writerGender = (writerType == UserType.user)
         ? (post as UserPostModel).user.gender
         : (post as DoctorPostModel).writer!.gender;
@@ -31,27 +29,8 @@ class PostPage extends StatelessWidget {
         : 'منشور ${(writerGender == Gender.male) ? 'الطبيب' : 'الطبيبة'}'
             ' ${CommonFunctions.getFullName((post as DoctorPostModel).writer!.firstName!, (post as DoctorPostModel).writer!.lastName!)} ';
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            appBarTitleText,
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontFamily: AppFonts.mainArabicFontFamily,
-              fontWeight: FontWeight.w700,
-              fontSize: (size.width < 330) ? 15 : 20,
-            ),
-          ),
-        ),
+      appBar: DefaultAppBar(
+        title: appBarTitleText,
       ),
       body: OfflinePageBuilder(
         child: PostPageChild(

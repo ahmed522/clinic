@@ -1,8 +1,6 @@
 import 'package:clinic/global/constants/gender.dart';
 import 'package:flutter/material.dart';
 
-import 'am_or_pm.dart';
-
 class AppConstants {
   static const int passwordLength = 8;
   static int doctorMinimumBirthDateYear = DateTime.now().year - 23;
@@ -23,7 +21,8 @@ class AppConstants {
   static const String phoneNumberRegex =
       r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$';
   static const String vezeetaValidationRegExp = r"^[0-9]*$";
-  static const String zero = '0';
+  static final RegExp emojiRegex = RegExp(
+      r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
 
   static const String baseFCMUrl = 'https://fcm.googleapis.com/fcm/send';
   static const String fcmAutherizationKey =
@@ -138,8 +137,9 @@ class AppConstants {
     true,
     false,
   ];
-  static const TimeOfDay initialOpenTime = TimeOfDay(hour: 15, minute: 0);
-  static const TimeOfDay initialCloseTime = TimeOfDay(hour: 23, minute: 0);
+  static const TimeOfDay initialClinicOpenTime = TimeOfDay(hour: 15, minute: 0);
+  static const TimeOfDay initialClinicCloseTime =
+      TimeOfDay(hour: 23, minute: 0);
   static const Map<String, bool> initialWorkDays = {
     'جمعة': false,
     'خميس': true,
@@ -149,11 +149,6 @@ class AppConstants {
     'أحد': true,
     'سبت': false,
   };
-  static const String initialOpenTimeFinalMin = '00';
-  static const String initialOpenTimeFinalHour = '3';
-  static const String initialCloseTimeFinalMin = '00';
-  static const String initialCloseTimeFinalHour = '11';
-  static const AMOrPM initialAmOrPm = AMOrPM.pm;
   static const String initialClinicGovernorate = 'القاهرة';
   static const String initialClinicRegion = 'حلوان';
   static const int initialExamineVezeeta = 0;

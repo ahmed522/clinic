@@ -39,10 +39,11 @@ class AddClinicButton extends StatelessWidget {
               ? const Text(
                   'إضافة عيادة',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: AppFonts.mainArabicFontFamily,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12),
+                    color: Colors.white,
+                    fontFamily: AppFonts.mainArabicFontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 )
               : const SizedBox(),
         ],

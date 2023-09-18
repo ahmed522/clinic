@@ -6,6 +6,7 @@ import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
@@ -17,29 +18,11 @@ class ActivityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     final controller =
         Get.put(ActivityPageController(activity), tag: activity.name);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            _getPageTitle,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: (size.width < 330) ? 15 : 20,
-            ),
-          ),
-        ),
+      appBar: DefaultAppBar(
+        title: _getPageTitle,
       ),
       body: OfflinePageBuilder(
         child: RefreshIndicator(

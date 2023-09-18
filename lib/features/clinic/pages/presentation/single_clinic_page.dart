@@ -2,7 +2,7 @@ import 'package:clinic/features/clinic/controller/doctor_clinics_controller.dart
 import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_data_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,16 +21,15 @@ class SingleClinicPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: AppBarWidget(text: '        عيادة رقم ${clinicIndex + 1}'),
+      appBar: DefaultAppBar(
+        title: 'عيادة رقم ${clinicIndex + 1}',
       ),
       body: OfflinePageBuilder(
         child: GetX<DoctorClinicsController>(
           builder: (controller) {
             if (controller.loading.isTrue) {
               return SizedBox(
-                height: size.height * 2 / 3,
+                height: size.height,
                 child: const Center(
                   child: AppCircularProgressIndicator(
                     width: 100,

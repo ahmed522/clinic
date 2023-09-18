@@ -163,7 +163,7 @@ class MainPage extends StatelessWidget {
     final controller = MainPageController.find;
     controller.pageController.animateToPage(
       page,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
   }

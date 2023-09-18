@@ -1,7 +1,7 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_posts_controller.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/doctor_post_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,13 +12,8 @@ class DoctorPostsPage extends StatelessWidget {
   final String doctorId;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        المنشورات'),
-      ),
+      appBar: const DefaultAppBar(title: 'المنشورات'),
       body: OfflinePageBuilder(
         child: buildUserPostsList(context),
       ),
@@ -36,7 +31,7 @@ class DoctorPostsPage extends StatelessWidget {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: SizedBox(
-                height: 5 * size.height / 6,
+                height: size.height,
                 child: const Center(
                   child: AppCircularProgressIndicator(
                     height: 100,
@@ -79,6 +74,7 @@ class DoctorPostsPage extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => controller.loadDoctorPosts(20, true),
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 10),
             itemCount: controller.content.length,
             itemBuilder: (context, index) {
               if (index == controller.content.length - 1) {

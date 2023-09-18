@@ -33,10 +33,12 @@ class SetClinicLocationWidget extends StatelessWidget {
                     tag: DoctorSignUpParent.route,
                     builder: (controller) {
                       if ((controller as DoctorSignupController)
-                          .locationValidation
+                          .clinicsLocationsValidation[index]
                           .isTrue) {
-                        return const Icon(Icons.done_rounded,
-                            color: Colors.green);
+                        return const Icon(
+                          Icons.done_rounded,
+                          color: Colors.green,
+                        );
                       } else {
                         return const Icon(
                           Icons.close_rounded,
@@ -72,8 +74,12 @@ class SetClinicLocationWidget extends StatelessWidget {
                 tag: DoctorSignUpParent.route,
                 builder: (controller) {
                   return ClinicLocationTextField(
-                    onChanged: (value) => (controller as DoctorSignupController)
+                    onChanged: (value) => controller
                         .updateClinicLocationFromTextField(value, index),
+                    initialText: (controller as DoctorSignupController)
+                        .doctorModel
+                        .clinics[index]
+                        .location,
                   );
                 },
               )

@@ -1,10 +1,10 @@
 import 'package:clinic/features/clinic/controller/doctor_clinics_controller.dart';
 import 'package:clinic/features/clinic/pages/presentation/add_clinic_button.dart';
-import 'package:clinic/features/clinic/pages/presentation/add_clinic_page.dart';
+import 'package:clinic/features/clinic/pages/creation/add_clinic_page.dart';
 import 'package:clinic/features/clinic/pages/presentation/single_clinic_page.dart';
-import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
+import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,29 +18,27 @@ class ClinicsPage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final controller = Get.put(DoctorClinicsController(doctorId));
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        العيادات'),
-      ),
+      appBar: const DefaultAppBar(title: 'العيادات'),
       body: OfflinePageBuilder(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SingleChildScrollView(
-                child: GetX<DoctorClinicsController>(builder: (controller) {
-                  if (controller.loading.isTrue) {
-                    return SizedBox(
-                      height: 5 * size.height / 6,
-                      child: const Center(
-                        child: AppCircularProgressIndicator(
-                          width: 100,
-                          height: 100,
+                child: GetX<DoctorClinicsController>(
+                  builder: (controller) {
+                    if (controller.loading.isTrue) {
+                      return SizedBox(
+                        height: size.height,
+                        child: const Center(
+                          child: AppCircularProgressIndicator(
+                            width: 100,
+                            height: 100,
+                          ),
                         ),
-                      ),
-                    );
-                  } else if (controller.clinics.isEmpty) {
-                    return Column(
+                      );
+                    } else if (controller.clinics.isEmpty) {
+                      return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(height: size.height / 5),
@@ -60,36 +58,38 @@ class ClinicsPage extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodyText2,
                             ),
                           ),
-                        ]);
-                  }
-                  return Column(
-                    children: List<ProfileOptionButton>.generate(
-                      controller.clinics.length,
-                      (index) => ProfileOptionButton(
-                        text: 'عيادة رقم ${index + 1}',
-                        imageAsset: 'assets/img/clinic.png',
-                        onPressed: () => Get.to(
-                          () => SingleClinicPage(
-                            clinicIndex: index,
-                            clinic: controller.clinics[index],
-                            isCurrentUser: controller
-                                .doctorProfilePageController
-                                .isCurrentDoctorProfile,
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: List<ProfileOptionButton>.generate(
+                        controller.clinics.length,
+                        (index) => ProfileOptionButton(
+                          topPadding: 15,
+                          text: 'عيادة رقم ${index + 1}',
+                          imageAsset: 'assets/img/clinic.png',
+                          onPressed: () => Get.to(
+                            () => SingleClinicPage(
+                              clinicIndex: index,
+                              clinic: controller.clinics[index],
+                              isCurrentUser: controller
+                                  .doctorProfilePageController
+                                  .isCurrentDoctorProfile,
+                            ),
+                            transition: Transition.rightToLeftWithFade,
                           ),
-                          transition: Transition.rightToLeftWithFade,
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ),
-              const SizedBox(height: 70),
+              const SizedBox(height: 50),
               controller.doctorProfilePageController.isCurrentDoctorProfile
                   ? AddClinicButton(
                       onPressed: () => Get.to(
                         () => AddClinicPage(
                           clinicIndex: controller.clinics.length,
-                          doctorId: doctorId,
                         ),
                         transition: Transition.rightToLeftWithFade,
                       ),

@@ -19,7 +19,6 @@ class DoctorClinicsController extends GetxController {
   @override
   void onReady() async {
     updateLoading(true);
-
     doctorProfilePageController.currentDoctor.clinics =
         await _userDataController
             .getDoctorClinicsById(doctorProfilePageController.doctorId!);
@@ -35,9 +34,7 @@ class DoctorClinicsController extends GetxController {
     Get.back();
     updateLoading(true);
 
-    await _userDataController
-        .deleteClinicById(doctorProfilePageController.doctorId!, clinicId)
-        .whenComplete(
+    await _userDataController.deleteClinicById(clinicId).whenComplete(
           () =>
               MySnackBar.showGetSnackbar('تم حذف العيادة بنجاح', Colors.green),
         );

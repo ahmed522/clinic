@@ -2,7 +2,7 @@ import 'package:clinic/features/medical_record/controller/medical_record_page_co
 import 'package:clinic/features/medical_record/pages/medical_record_is_not_set.dart';
 import 'package:clinic/features/medical_record/pages/user_medical_record_page.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
@@ -14,13 +14,10 @@ class MedicalRecordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MedicalRecordPageController());
     final size = MediaQuery.of(context).size;
+    Get.put(MedicalRecordPageController());
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        السجل المرضي'),
-      ),
+      appBar: const DefaultAppBar(title: 'السجل المرضي'),
       body: OfflinePageBuilder(
         child: GetBuilder<MedicalRecordPageController>(
           builder: (controller) {
@@ -31,10 +28,13 @@ class MedicalRecordPage extends StatelessWidget {
               );
             }
             if (controller.loading) {
-              return const Center(
-                child: AppCircularProgressIndicator(
-                  width: 100,
-                  height: 100,
+              return SizedBox(
+                height: size.height,
+                child: const Center(
+                  child: AppCircularProgressIndicator(
+                    width: 100,
+                    height: 100,
+                  ),
                 ),
               );
             }

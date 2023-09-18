@@ -6,7 +6,6 @@ import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
-import 'package:clinic/global/widgets/error_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -86,8 +85,8 @@ class PresentSelectedClinicsWidget extends StatelessWidget {
   _previewClinic(
       BuildContext context, String doctorId, String clinicId, int index) async {
     MyAlertDialog.showLoadingDialog(context);
-    ClinicModel? clinic = await UserDataController.find
-        .getDoctorSingleClinicById(doctorId, clinicId);
+    ClinicModel? clinic =
+        await UserDataController.find.getDoctorSingleClinicById(clinicId);
     Get.back();
     if (clinic != null) {
       showDialog(

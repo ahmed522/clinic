@@ -1,5 +1,6 @@
 import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_location_widget.dart';
+import 'package:clinic/features/clinic/pages/presentation/clinic_phone_numbers_widget.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_time_widget.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_vezeeta_widget.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_workdays_widget.dart';
@@ -29,54 +30,62 @@ class ClinicDataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
-        child: Column(
-          children: [
-            ClinicLocationWidget(
-              clinicIndex: clinicIndex,
-              isDoctorPost: isDoctorPost,
-              clinicModel: clinic,
-            ),
-            const SizedBox(height: 30),
-            ClinicWorkDaysWidget(
-              clinicIndex: clinicIndex,
-              isDoctorPost: isDoctorPost,
-              clinicModel: clinic,
-            ),
-            const SizedBox(height: 30),
-            ClinicWorkTimeWidget(
-              clinicIndex: clinicIndex,
-              isDoctorPost: isDoctorPost,
-              clinicModel: clinic,
-            ),
-            const SizedBox(height: 30),
-            ClinicVezeetaWidget(
-              clinicIndex: clinicIndex,
-              isDoctorPost: isDoctorPost,
-              clinicModel: clinic,
-            ),
-            const SizedBox(height: 40),
-            isDoctorPost || !isCurrentDoctorProfile
-                ? const SizedBox()
-                : Column(
-                    children: [
-                      EditClinicButton(
-                        onPressed: () => Get.to(
-                          () => EditClinicPage(
-                            clinicIndex: clinicIndex,
-                            doctorId: doctorId,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Column(
+            children: [
+              ClinicLocationWidget(
+                clinicIndex: clinicIndex,
+                isDoctorPost: isDoctorPost,
+                clinicModel: clinic,
+              ),
+              const SizedBox(height: 30),
+              ClinicWorkDaysWidget(
+                clinicIndex: clinicIndex,
+                isDoctorPost: isDoctorPost,
+                clinicModel: clinic,
+              ),
+              const SizedBox(height: 30),
+              ClinicWorkTimeWidget(
+                clinicIndex: clinicIndex,
+                isDoctorPost: isDoctorPost,
+                clinicModel: clinic,
+              ),
+              const SizedBox(height: 30),
+              ClinicVezeetaWidget(
+                clinicIndex: clinicIndex,
+                isDoctorPost: isDoctorPost,
+                clinicModel: clinic,
+              ),
+              ClinicPhoneNumbersWidget(
+                clinicIndex: clinicIndex,
+                isDoctorPost: isDoctorPost,
+                clinicModel: clinic,
+              ),
+              const SizedBox(height: 40),
+              isDoctorPost || !isCurrentDoctorProfile
+                  ? const SizedBox()
+                  : Column(
+                      children: [
+                        EditClinicButton(
+                          onPressed: () => Get.to(
+                            () => EditClinicPage(
+                              clinicIndex: clinicIndex,
+                              doctorId: doctorId,
+                            ),
+                            transition: Transition.rightToLeftWithFade,
                           ),
-                          transition: Transition.rightToLeftWithFade,
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      RemoveClinicButton(
-                        clinicIndex: clinicIndex,
-                        clinicId: clinic!.clinicId!,
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-          ],
+                        const SizedBox(height: 5),
+                        RemoveClinicButton(
+                          clinicIndex: clinicIndex,
+                          clinicId: clinic!.clinicId!,
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_followings_page_controller.dart';
 import 'package:clinic/features/following/pages/doctor_following_card_widget.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,16 +12,12 @@ class DoctorFollowingsPage extends StatelessWidget {
   final String doctorId;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final controller = Get.put(
       DoctorFollowingsPageController(doctorId),
       tag: doctorId,
     );
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        المتابَعون'),
-      ),
+      appBar: const DefaultAppBar(title: 'المتابَعون'),
       body: OfflinePageBuilder(
         child: RefreshIndicator(
           child: _buildDoctorFollowingsList(context),
@@ -40,7 +36,7 @@ class DoctorFollowingsPage extends StatelessWidget {
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
-              height: 5 * size.height / 6,
+              height: size.height,
               child: const Center(
                 child: AppCircularProgressIndicator(
                   width: 100,
@@ -76,6 +72,7 @@ class DoctorFollowingsPage extends StatelessWidget {
           );
         }
         return ListView.builder(
+          padding: const EdgeInsets.only(top: 10),
           itemCount: controller.followings.length,
           itemBuilder: (context, index) {
             if (index == controller.followings.length - 1) {

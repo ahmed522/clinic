@@ -3,7 +3,7 @@ import 'package:clinic/features/chat/pages/chat_page/user_chats_page.dart';
 import 'package:clinic/features/doctor_profile/pages/chat_button.dart';
 import 'package:clinic/features/medical_record/pages/medical_record_page.dart';
 import 'package:clinic/features/user_profile/controller/user_profile_controller.dart';
-import 'package:clinic/features/user_profile/pages/common/profile_option_button.dart';
+import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:clinic/features/user_profile/pages/user_following_page.dart';
 import 'package:clinic/features/user_profile/pages/user_questions_page.dart';
 import 'package:clinic/features/settings/Pages/common/settings_page.dart';
@@ -128,14 +128,16 @@ class UserProfilePage extends StatelessWidget {
                                 width: 100,
                                 height: 100,
                                 decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: (CommonFunctions.isLightMode(
-                                                context))
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color:
+                                        (CommonFunctions.isLightMode(context))
                                             ? Colors.grey.shade100
                                             : AppColors
                                                 .darkThemeBackgroundColor,
-                                        width: 2)),
+                                    width: 2,
+                                  ),
+                                ),
                                 child: GestureDetector(
                                   onTap: controller.isCurrentUserProfilePage
                                       ? () =>
@@ -216,9 +218,12 @@ class UserProfilePage extends StatelessWidget {
                           height: size.height / 1.8,
                           width: size.width,
                           imageUrl: controller.currentUserPersonalImage!,
-                          placeholder: ((context, url) =>
-                              const AppCircularProgressIndicator(
-                                  width: 100.0, height: 100.0)),
+                          placeholder: ((context, url) => const SizedBox.expand(
+                                child: AppCircularProgressIndicator(
+                                  width: 100.0,
+                                  height: 100.0,
+                                ),
+                              )),
                           errorWidget: ((context, url, error) =>
                               CommonFunctions.internetError),
                         ),

@@ -69,11 +69,12 @@ class SetClinicTimeContentWidget extends StatelessWidget {
             Text(
               'إلى',
               style: TextStyle(
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  color: (Theme.of(context).brightness == Brightness.light)
-                      ? AppColors.darkThemeBackgroundColor
-                      : Colors.white,
-                  fontSize: 18),
+                fontFamily: AppFonts.mainArabicFontFamily,
+                color: (Theme.of(context).brightness == Brightness.light)
+                    ? AppColors.darkThemeBackgroundColor
+                    : Colors.white,
+                fontSize: 18,
+              ),
             ),
           ],
         ),

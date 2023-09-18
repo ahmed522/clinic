@@ -4,6 +4,7 @@ import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/data/services/location_services.dart';
 import 'package:clinic/features/main_page/pages/main_page.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +19,7 @@ class SingleClinicController extends GetxController {
   static SingleClinicController get find => Get.find();
 
   final UserDataController _userDataController = UserDataController.find;
+  final List<TextEditingController> clinicsPhoneNumbersTextControllers = [];
 
   final ClinicModel tempClinic;
   final int clinicIndex;
@@ -30,6 +32,7 @@ class SingleClinicController extends GetxController {
   onReady() {
     if (mode == ClinicPageMode.editMode) {
       locationValidation.value = true;
+      // to ensure correct arrangement of week days ============================
       final Map<String, bool> workDays = {};
       workDays.addAll(AppConstants.initialWorkDays);
       workDays.forEach((key, value) {
@@ -37,6 +40,11 @@ class SingleClinicController extends GetxController {
       });
       tempClinic.workDays.clear();
       tempClinic.workDays.addAll(workDays);
+      //=========================================== ============================
+      for (String number in tempClinic.phoneNumbers) {
+        clinicsPhoneNumbersTextControllers
+            .add(TextEditingController(text: number));
+      }
       update();
     }
     super.onReady();
@@ -94,17 +102,48 @@ class SingleClinicController extends GetxController {
     update();
   }
 
+  addNewPhoneNumber([String? text]) {
+    clinicsPhoneNumbersTextControllers.add(TextEditingController(text: text));
+    update();
+  }
+
+  removePhoneNumber(int index) {
+    clinicsPhoneNumbersTextControllers[index].dispose();
+    clinicsPhoneNumbersTextControllers.removeAt(index);
+    if (mode == ClinicPageMode.editMode &&
+        index < tempClinic.phoneNumbers.length) {
+      tempClinic.phoneNumbers.removeAt(index);
+    }
+    update();
+  }
+
+  addClinicPhoneNumbers() {
+    tempClinic.phoneNumbers.clear();
+    for (TextEditingController numberController
+        in clinicsPhoneNumbersTextControllers) {
+      String number = numberController.text;
+      if (number.trim() != '' &&
+          CommonFunctions.countMatches(number, r'[0-9]') > 4) {
+        tempClinic.phoneNumbers.add(number.trim());
+      }
+    }
+  }
+
   updateLoading(bool value) {
     loading = value;
     update();
   }
 
-  addClinic(String doctorId) async {
+  addClinic() async {
     Get.back();
     if (_clinicDataValidator()) {
       updateLoading(true);
-      String clinicId = '$doctorId-${const Uuid().v4()}';
-      await _userDataController.addClinicById(doctorId, clinicId, tempClinic);
+      tempClinic.clinicId =
+          '${CommonFunctions.currentUserId}-${const Uuid().v4()}';
+      addClinicPhoneNumbers();
+      await _userDataController.addClinicById(
+        tempClinic,
+      );
       updateLoading(false);
       Get.until(
         ModalRoute.withName(MainPage.route),
@@ -116,8 +155,8 @@ class SingleClinicController extends GetxController {
     Get.back();
     if (_clinicDataValidator()) {
       updateLoading(true);
-      await _userDataController.updateClinicById(
-          doctorId, tempClinic.clinicId!, tempClinic);
+      addClinicPhoneNumbers();
+      await _userDataController.updateClinicById(tempClinic);
       updateLoading(false);
       Get.until(
         ModalRoute.withName(MainPage.route),

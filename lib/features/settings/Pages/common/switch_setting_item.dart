@@ -21,6 +21,7 @@ class SwitchSettingItem extends StatelessWidget {
       leading: Switch(
         value: switchOn,
         onChanged: (value) => onSwitchChange(value),
+        activeColor: AppColors.primaryColor,
       ),
       title: Align(
         alignment: Alignment.centerRight,

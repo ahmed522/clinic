@@ -4,11 +4,13 @@ import 'package:clinic/features/chat/model/message_state.dart';
 import 'package:clinic/features/chat/pages/message/medical_record_message_content.dart';
 import 'package:clinic/features/chat/pages/message/message_info_widget.dart';
 import 'package:clinic/global/colors/app_colors.dart';
+import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/snackbar.dart';
+import 'package:dart_emoji/dart_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -40,19 +42,29 @@ class MessageContentWidget extends StatelessWidget {
               padding: const EdgeInsets.all(3),
               constraints: BoxConstraints(maxWidth: 3 * size.width / 4),
               decoration: BoxDecoration(
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    color: Colors.black38,
-                    spreadRadius: 0.5,
+                    color: EmojiUtil.hasOnlyEmojis(
+                      message.content,
+                      ignoreWhitespace: true,
+                    )
+                        ? Colors.transparent
+                        : Colors.black38,
+                    spreadRadius: 0.3,
                     blurRadius: 1,
-                    offset: Offset(0, 0.5),
+                    offset: const Offset(0, 0.3),
                   ),
                 ],
-                color: message.sendedMessage
-                    ? AppColors.primaryColor
-                    : CommonFunctions.isLightMode(context)
-                        ? Colors.white
-                        : AppColors.darkThemeBackgroundColor,
+                color: EmojiUtil.hasOnlyEmojis(
+                  message.content,
+                  ignoreWhitespace: true,
+                )
+                    ? Colors.transparent
+                    : message.sendedMessage
+                        ? AppColors.primaryColor
+                        : CommonFunctions.isLightMode(context)
+                            ? Colors.white
+                            : AppColors.darkThemeBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: message.sendedMessage
                       ? const Radius.circular(10.0)
@@ -82,7 +94,16 @@ class MessageContentWidget extends StatelessWidget {
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontFamily: AppFonts.mainArabicFontFamily,
-                        fontSize: 15,
+                        fontSize: EmojiUtil.hasOnlyEmojis(
+                          message.content,
+                          ignoreWhitespace: true,
+                        )
+                            ? message.content.length == 2
+                                ? 60
+                                : 30
+                            : AppConstants.emojiRegex.hasMatch(message.content)
+                                ? 15
+                                : 13,
                         fontWeight: FontWeight.w500,
                         color: message.sendedMessage
                             ? Colors.white
@@ -92,7 +113,7 @@ class MessageContentWidget extends StatelessWidget {
                       ),
                       linkStyle: TextStyle(
                         fontFamily: AppFonts.mainArabicFontFamily,
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: message.sendedMessage
                             ? Colors.blue.shade200

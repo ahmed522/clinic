@@ -6,6 +6,7 @@ import 'package:clinic/features/medical_record/pages/add_medicine_widget.dart';
 import 'package:clinic/features/medical_record/pages/add_surgery_widget.dart';
 import 'package:clinic/features/medical_record/pages/create_or_edit_medical_record_button.dart';
 import 'package:clinic/features/time_line/pages/post/common/user_name_and_pic_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,20 +28,9 @@ class AddMedicalRecord extends StatelessWidget {
       ),
     );
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_forward),
-          ),
-        ],
-        title: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
+      appBar: DefaultAppBar(
+        title:
             isMedicalRecordPage ? 'تعديل السجل المرضي' : 'إنشاء السجل المرضي',
-          ),
-        ),
       ),
       body: OfflinePageBuilder(
         child: SingleChildScrollView(

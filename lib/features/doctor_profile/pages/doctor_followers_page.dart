@@ -1,7 +1,7 @@
 import 'package:clinic/features/doctor_profile/controller/doctor_followers_page_controller.dart';
 import 'package:clinic/features/following/pages/follower_card.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,16 +12,12 @@ class DoctorFollowersPage extends StatelessWidget {
   final String doctorId;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final controller = Get.put(
       DoctorFollowersPageController(doctorId),
       tag: doctorId,
     );
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        المتابِعون'),
-      ),
+      appBar: const DefaultAppBar(title: 'المتابِعون'),
       body: OfflinePageBuilder(
         child: RefreshIndicator(
           child: _buildDoctorFollowersList(context),
@@ -38,13 +34,14 @@ class DoctorFollowersPage extends StatelessWidget {
       builder: (controller) {
         if (controller.loading.isTrue) {
           return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: 5 * size.height / 6,
-                child: const Center(
-                  child: AppCircularProgressIndicator(width: 100, height: 100),
-                ),
-              ));
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: size.height,
+              child: const Center(
+                child: AppCircularProgressIndicator(width: 100, height: 100),
+              ),
+            ),
+          );
         } else if (controller.followers.isEmpty) {
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -72,6 +69,7 @@ class DoctorFollowersPage extends StatelessWidget {
           );
         }
         return ListView.builder(
+          padding: const EdgeInsets.only(top: 10),
           itemCount: controller.followers.length,
           itemBuilder: (context, index) {
             if (index == controller.followers.length - 1) {

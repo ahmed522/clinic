@@ -23,50 +23,48 @@ class UserFollowingCardWidget extends StatelessWidget {
         ),
         transition: Transition.rightToLeftWithFade,
       ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-        child: Card(
-          color: CommonFunctions.isLightMode(context)
-              ? Colors.white
-              : AppColors.darkThemeBottomNavBarColor,
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-            side: BorderSide(
-              color: (CommonFunctions.isLightMode(context))
-                  ? AppColors.primaryColor
-                  : Colors.white,
-              width: .01,
-            ),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 5.0, right: 10.0, left: 10.0),
+        color: CommonFunctions.isLightMode(context)
+            ? Colors.white
+            : AppColors.darkThemeBottomNavBarColor,
+        elevation: 2.5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: BorderSide(
+            color: (CommonFunctions.isLightMode(context))
+                ? AppColors.primaryColor
+                : Colors.white,
+            width: .0001,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  follower.userName,
-                  style: TextStyle(
-                    color: (CommonFunctions.isLightMode(context))
-                        ? Colors.black87
-                        : Colors.white,
-                    fontSize: 15,
-                  ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                follower.userName,
+                style: TextStyle(
+                  color: (CommonFunctions.isLightMode(context))
+                      ? Colors.black87
+                      : Colors.white,
+                  fontSize: 15,
                 ),
-                const SizedBox(width: 10),
-                (follower.userPersonalImage != null)
-                    ? CircleAvatar(
-                        backgroundImage: CachedNetworkImageProvider(
-                            follower.userPersonalImage!),
-                        radius: 25,
-                      )
-                    : const CircleAvatar(
-                        backgroundImage: AssetImage('assets/img/user.png'),
-                        radius: 25,
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 10),
+              (follower.userPersonalImage != null)
+                  ? CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(
+                          follower.userPersonalImage!),
+                      radius: 25,
+                    )
+                  : const CircleAvatar(
+                      backgroundImage: AssetImage('assets/img/user.png'),
+                      radius: 25,
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+            ],
           ),
         ),
       ),

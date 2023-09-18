@@ -6,6 +6,7 @@ import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/services/location_services.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,14 +17,15 @@ class DoctorSignupController extends SignupController {
   DoctorModel doctorModel = DoctorModel();
   int currentStep = 0;
   bool doctorValidation = false;
-  RxBool locationValidation = false.obs;
+  List<RxBool> clinicsLocationsValidation = [];
   bool clinicLocationLoading = false;
   List<StepState> states = [
     StepState.editing,
     StepState.indexed,
   ];
   final List<CreateClinicPage> clinics = [];
-
+  final List<List<TextEditingController>> clinicsPhoneNumbersTextControllers =
+      [];
   validatePersonalImage(bool valid) {
     if (valid) {
       personalImageValidation = '';
@@ -110,10 +112,32 @@ class DoctorSignupController extends SignupController {
   updateClinicLocationFromTextField(String? text, int index) {
     if (text != null && text.trim() != '') {
       doctorModel.clinics[index].location = text.trim();
-      locationValidation.value = true;
+      if (index < clinicsLocationsValidation.length) {
+        clinicsLocationsValidation[index].value = true;
+      } else {
+        clinicsLocationsValidation.add(true.obs);
+      }
     } else {
       doctorModel.clinics[index].location = null;
-      locationValidation.value = false;
+      if (doctorModel.clinics[index].locationLatitude == null ||
+          doctorModel.clinics[index].locationLongitude == null) {
+        if (index < clinicsLocationsValidation.length) {
+          clinicsLocationsValidation[index].value = false;
+        } else {
+          clinicsLocationsValidation.add(false.obs);
+        }
+      }
+    }
+  }
+
+  addClinicPhoneNumbers(int clinicIndex) {
+    for (TextEditingController numberController
+        in clinicsPhoneNumbersTextControllers[clinicIndex]) {
+      String number = numberController.text;
+      if (number.trim() != '' &&
+          CommonFunctions.countMatches(number, r'[0-9]') > 4) {
+        doctorModel.clinics[clinicIndex].phoneNumbers.add(number.trim());
+      }
     }
   }
 
@@ -125,9 +149,17 @@ class DoctorSignupController extends SignupController {
     double? longitude =
         doctorModel.clinics[index].locationLongitude = location['long'];
     if (latitude == null || longitude == null) {
-      locationValidation.value = false;
+      if (index < clinicsLocationsValidation.length) {
+        clinicsLocationsValidation[index].value = false;
+      } else {
+        clinicsLocationsValidation.add(false.obs);
+      }
     } else {
-      locationValidation.value = true;
+      if (index < clinicsLocationsValidation.length) {
+        clinicsLocationsValidation[index].value = true;
+      } else {
+        clinicsLocationsValidation.add(true.obs);
+      }
     }
     clinicLocationLoading = false;
     update();
@@ -135,6 +167,18 @@ class DoctorSignupController extends SignupController {
 
   updateClinicLocationLoading(bool value) {
     clinicLocationLoading = value;
+    update();
+  }
+
+  addNewPhoneNumber(int clinicIndex) {
+    clinicsPhoneNumbersTextControllers[clinicIndex]
+        .add(TextEditingController());
+    update();
+  }
+
+  removePhoneNumber(int clinicIndex, int index) {
+    clinicsPhoneNumbersTextControllers[clinicIndex][index].dispose();
+    clinicsPhoneNumbersTextControllers[clinicIndex].removeAt(index);
     update();
   }
 
