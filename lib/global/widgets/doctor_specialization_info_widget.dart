@@ -18,7 +18,7 @@ class DoctorSpecializationInfoWidget extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Container(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
       decoration: BoxDecoration(
           color: Colors.transparent,
           border: Border.all(

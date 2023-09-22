@@ -6,7 +6,7 @@ import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/alert_dialog.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
-import 'package:clinic/global/widgets/appbar_widget.dart';
+import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +17,12 @@ class NotificationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     final controller = Get.put(NotificationPageController());
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height / 6),
-        child: const AppBarWidget(text: '        الإشعارات'),
+      appBar: const DefaultAppBar(
+        title: 'الإشعارات',
+        centerTitle: true,
+        height: 60,
       ),
       body: OfflinePageBuilder(
         child: RefreshIndicator(
@@ -48,7 +48,7 @@ class NotificationsPage extends StatelessWidget {
       builder: (controller) {
         if (controller.loading.isTrue) {
           return SizedBox(
-            height: 5 * size.height / 6,
+            height: size.height,
             child: const Center(
               child: AppCircularProgressIndicator(
                 width: 100,
@@ -58,9 +58,10 @@ class NotificationsPage extends StatelessWidget {
           );
         }
         if (controller.notifications.isEmpty) {
-          return const EmptyPage(text: 'ليست هناك إشعارات جديدة ');
+          return const EmptyPage(text: 'ليست هناك إشعارات جديدة');
         }
         return ListView.builder(
+          padding: const EdgeInsets.only(top: 10),
           itemCount: controller.notifications.length,
           itemBuilder: (context, index) {
             NotificationModel notification = controller.notifications[index];

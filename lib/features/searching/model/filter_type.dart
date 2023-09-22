@@ -1,0 +1,15 @@
+enum FilterType {
+  doctorSpecialization,
+  doctorSpecializationItem,
+  doctorDegree,
+  doctorDegreeItem,
+  isFollowing,
+  isFollower,
+  clinicGovernorate,
+  clinicGovernorateItem,
+  clinicRegion,
+  clinicRegionItem,
+  clinicVezeeta,
+  isDoctorPost,
+  isUserPost,
+}

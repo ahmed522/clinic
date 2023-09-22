@@ -184,9 +184,7 @@ class DoctorProfilePage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  CommonFunctions.getFullName(
-                                      controller.currentDoctor.firstName!,
-                                      controller.currentDoctor.lastName!),
+                                  controller.currentDoctor.userName!,
                                   style: TextStyle(
                                     color:
                                         (CommonFunctions.isLightMode(context))

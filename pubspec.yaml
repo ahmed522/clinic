@@ -120,6 +120,7 @@ flutter:
     - assets/img/medical-info.png
     - assets/img/empty.svg
     - assets/img/posts.png
+    - assets/img/users.png
     - assets/img/followers.png
     - assets/img/following.png
     - assets/img/no-previous-chat.svg
@@ -128,12 +129,14 @@ flutter:
     - assets/img/medical-record-disabled.png
     - assets/img/certification.png
     - assets/img/search.svg
+    - assets/img/update.svg
     - assets/img/specs/general_practitioner.png
     - assets/img/specs/emergency-doctor.png
     - assets/img/specs/cardiologist.png
     - assets/img/specs/cardiovascular.png
     - assets/img/specs/neurologist.png
     - assets/img/specs/dermatology.png
+    - assets/img/specs/urology.png
     - assets/img/specs/ent.png
     - assets/img/specs/hematology.png
     - assets/img/specs/oncology.png
@@ -149,6 +152,8 @@ flutter:
     - assets/img/specs/stomach.png
     - assets/img/specs/surgery.png
     - assets/img/specs/anesthesia.png
+    - assets/img/specs/pharmacy.png
+    - assets/img/specs/vet.png
     
 
 

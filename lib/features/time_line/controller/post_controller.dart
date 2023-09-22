@@ -79,11 +79,8 @@ class PostController extends GetxController {
         ? (post as DoctorPostModel).writer!.userId!
         : (post as UserPostModel).user.userId!;
     String postWriterName = (post.writerType == UserType.doctor)
-        ? CommonFunctions.getFullName(
-            (post as DoctorPostModel).writer!.firstName!,
-            post.writer!.lastName!)
-        : CommonFunctions.getFullName(
-            (post as UserPostModel).user.firstName!, post.user.lastName!);
+        ? (post as DoctorPostModel).writer!.userName!
+        : (post as UserPostModel).user.userName!;
     Gender postWriterGender = (post.writerType == UserType.doctor)
         ? (post as DoctorPostModel).writer!.gender
         : (post as UserPostModel).user.gender;

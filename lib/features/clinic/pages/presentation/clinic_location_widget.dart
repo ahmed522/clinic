@@ -12,12 +12,12 @@ import 'package:get/get.dart';
 class ClinicLocationWidget extends StatelessWidget {
   const ClinicLocationWidget({
     Key? key,
-    required this.clinicIndex,
+    this.clinicIndex,
     this.isDoctorPost = false,
     this.clinicModel,
   }) : super(key: key);
 
-  final int clinicIndex;
+  final int? clinicIndex;
   final bool isDoctorPost;
   final ClinicModel? clinicModel;
   @override
@@ -29,7 +29,7 @@ class ClinicLocationWidget extends StatelessWidget {
       clinic = clinicModel!;
     } else {
       final controller = DoctorClinicsController.find;
-      clinic = controller.clinics[clinicIndex];
+      clinic = controller.clinics[clinicIndex!];
     }
     return Column(
       children: [

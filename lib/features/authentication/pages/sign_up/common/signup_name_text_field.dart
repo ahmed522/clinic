@@ -29,19 +29,16 @@ class SignupNameTextField extends StatelessWidget {
       getName: (validatedName) {
         if (userType == UserType.doctor) {
           if (text == 'الأول') {
-            (controller as DoctorSignupController).doctorModel.firstName =
+            (controller as DoctorSignupController).tempFirstName =
                 validatedName;
           } else {
-            (controller as DoctorSignupController).doctorModel.lastName =
-                validatedName;
+            (controller as DoctorSignupController).tempLastName = validatedName;
           }
         } else {
           if (text == 'الأول') {
-            (controller as UserSignupController).userModel.firstName =
-                validatedName;
+            (controller as UserSignupController).tempFirstName = validatedName;
           } else {
-            (controller as UserSignupController).userModel.lastName =
-                validatedName;
+            (controller as UserSignupController).tempLastName = validatedName;
           }
         }
       },

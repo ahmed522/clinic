@@ -62,11 +62,12 @@ class TimeLineController extends GetxController {
     } catch (e) {
       loadingPosts.value = false;
       morePostsLoading.value = false;
-      Get.off(() => const ErrorPage(
-            imageAsset: 'assets/img/error.svg',
-            message:
-                'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
-          ));
+      Get.off(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: 'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
+        ),
+      );
     }
   }
 

@@ -8,7 +8,6 @@ import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart
 import 'package:clinic/features/time_line/pages/post/comment/create_comment/common/create_comment.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/error_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
@@ -33,7 +32,7 @@ class CommentPage extends StatelessWidget {
           postId: comment.postId, commentId: comment.commentId));
       Gender writerGender = comment.writer.gender;
       String appBarTitleText =
-          '${comment.writer.userType == UserType.doctor ? 'تعليق ${(writerGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}' : 'تعليق '}${CommonFunctions.getFullName(comment.writer.firstName!, comment.writer.lastName!)}';
+          '${comment.writer.userType == UserType.doctor ? 'تعليق ${(writerGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}' : 'تعليق '}${comment.writer.userName}';
       return Scaffold(
         appBar: DefaultAppBar(
           title: appBarTitleText,

@@ -4,6 +4,7 @@ import 'package:clinic/features/authentication/controller/sign_up/common/signup_
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/data/models/user_model.dart';
+import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,8 @@ import 'package:get/get.dart';
 class UserSignupController extends SignupController {
   static UserSignupController get find => Get.find();
   UserModel userModel = UserModel();
-
+  String? tempFirstName;
+  String? tempLastName;
   @override
   setPersonalImage(File image) {
     userModel.personalImage = image;
@@ -28,6 +30,8 @@ class UserSignupController extends SignupController {
 
   onSignupUserButtonPressed() {
     if (formKey.currentState!.validate() && ageIsValid) {
+      userModel.userName =
+          CommonFunctions.getFullName(tempFirstName!, tempLastName!);
       updateLoading(true);
       signupUser(userModel);
     }

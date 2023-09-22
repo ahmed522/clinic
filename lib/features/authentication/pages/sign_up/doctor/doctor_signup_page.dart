@@ -162,6 +162,8 @@ class DoctorSignupPage extends StatelessWidget {
             clinicIndex++) {
           controller.addClinicPhoneNumbers(clinicIndex);
         }
+        controller.doctorModel.userName = CommonFunctions.getFullName(
+            controller.tempFirstName!, controller.tempLastName!);
         controller.signupDoctor(controller.doctorModel).whenComplete(
               () => controller.updateLoading(false),
             );

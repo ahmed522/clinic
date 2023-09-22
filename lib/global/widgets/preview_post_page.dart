@@ -21,7 +21,7 @@ class PreviewPostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     String appBarTitleText =
         'منشور ${(post.writer!.gender == Gender.male) ? 'الطبيب' : 'الطبيبة'}'
-        ' ${CommonFunctions.getFullName(post.writer!.firstName!, post.writer!.lastName!)} ';
+        ' ${post.writer!.userName} ';
     return Scaffold(
       appBar: DefaultAppBar(
         title: appBarTitleText,

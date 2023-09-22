@@ -31,6 +31,16 @@ class AuthenticationController extends GetxController {
   ParentUserModel? _currentUser;
   RxBool isSigning = false.obs;
   RxBool loading = true.obs;
+  Future<bool> get mustUpdate => FirebaseFirestore.instance
+      .collection('administrations')
+      .doc('admin')
+      .get()
+      .then((value) => value['must_update']);
+  Future<bool> get serverError => FirebaseFirestore.instance
+      .collection('administrations')
+      .doc('admin')
+      .get()
+      .then((value) => value['server_error']);
   @override
   void onReady() async {
     try {
@@ -46,14 +56,37 @@ class AuthenticationController extends GetxController {
   }
 
   _setInitialScreen(User? user) async {
-    if (user != null && user.emailVerified) {
-      if (loading.isFalse || isSigning.isFalse) {
-        await _localStorageController.getCurrentUserData();
-        Get.offAll(() => const MainPage());
-      }
+    if (await mustUpdate) {
+      Get.offAll(
+          () => const ErrorPage(
+                imageAsset: 'assets/img/update.svg',
+                message: 'يجب عليك تحديث تطبيق طبيب لمتابعة الإستخدام',
+              ),
+          transition: Transition.fadeIn,
+          duration: const Duration(milliseconds: 1500));
+    } else if (await serverError) {
+      Get.offAll(
+          () => const ErrorPage(
+                imageAsset: 'assets/img/error.svg',
+                message:
+                    'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
+              ),
+          transition: Transition.fadeIn,
+          duration: const Duration(milliseconds: 1500));
     } else {
-      if (loading.isFalse || isSigning.isFalse) {
-        Get.offAll(() => const StartPage());
+      if (user != null && user.emailVerified) {
+        if (loading.isFalse || isSigning.isFalse) {
+          await _localStorageController.getCurrentUserData();
+          Get.offAll(() => const MainPage(),
+              transition: Transition.fadeIn,
+              duration: const Duration(milliseconds: 1500));
+        }
+      } else {
+        if (loading.isFalse || isSigning.isFalse) {
+          Get.offAll(() => const StartPage(),
+              transition: Transition.fadeIn,
+              duration: const Duration(milliseconds: 1500));
+        }
       }
     }
   }
@@ -210,8 +243,7 @@ class AuthenticationController extends GetxController {
   ParentUserModel get currentUser => _currentUser!;
   String get currentUserId => _currentUser!.userId!;
   UserType get currentUserType => _currentUser!.userType;
-  String get currentUserName => CommonFunctions.getFullName(
-      _currentUser!.firstName!, _currentUser!.lastName!);
+  String get currentUserName => _currentUser!.userName!;
   Gender get currentUserGender => _currentUser!.gender;
   Timestamp get currentUserBirthDate => _currentUser!.birthDate;
   String? get currentUserPersonalImage => _currentUser!.personalImageURL;

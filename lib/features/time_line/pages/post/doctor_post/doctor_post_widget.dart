@@ -69,8 +69,7 @@ class DoctorPostWidget extends StatelessWidget {
                 setSideInfo: true,
                 isCurrentUserPost:
                     controller.isCurrentUserPost(post.doctorId!) && !isPreview,
-                userName: CommonFunctions.getFullName(
-                    post.writer!.firstName!, post.writer!.lastName!),
+                userName: post.writer!.userName!,
                 personalImageURL: post.writer!.personalImageURL,
                 postSideInfoText:
                     (post.writer!.gender == Gender.male) ? 'طبيب' : 'طبيبة',

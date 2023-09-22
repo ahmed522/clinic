@@ -4,6 +4,7 @@ import 'package:clinic/features/authentication/controller/sign_up/common/signup_
 import 'package:clinic/features/clinic/pages/creation/create_clinic_page.dart';
 import 'package:clinic/global/constants/app_constants.dart';
 import 'package:clinic/global/constants/gender.dart';
+import 'package:clinic/global/constants/regions.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
 import 'package:clinic/global/data/services/location_services.dart';
 import 'package:clinic/global/functions/common_functions.dart';
@@ -14,6 +15,8 @@ import 'package:get/get.dart';
 class DoctorSignupController extends SignupController {
   static DoctorSignupController get find => Get.find();
   String personalImageValidation = '';
+  String? tempFirstName;
+  String? tempLastName;
   DoctorModel doctorModel = DoctorModel();
   int currentStep = 0;
   bool doctorValidation = false;
@@ -94,8 +97,12 @@ class DoctorSignupController extends SignupController {
   }
 
   updateClinicGovernorate(String item, int index) {
-    doctorModel.clinics[index].governorate = item;
-    update();
+    if (doctorModel.clinics[index].governorate != item) {
+      doctorModel.clinics[index].governorate = item;
+      doctorModel.clinics[index].region =
+          Regions.governoratesAndRegions[item]!.keys.first;
+      update();
+    }
   }
 
   updateClinicRegion(String item, int index) {

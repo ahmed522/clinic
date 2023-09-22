@@ -72,20 +72,28 @@ class SetClinicRegionWidget extends StatelessWidget {
                         tag: DoctorSignUpParent.route,
                         builder: (controller) {
                           return AppDropdownButton(
-                            items: Regions.regions.keys.toList(),
+                            items: Regions
+                                .governoratesAndRegions[
+                                    (controller as DoctorSignupController)
+                                        .doctorModel
+                                        .clinics[index]
+                                        .governorate]!
+                                .keys
+                                .toList(),
                             onChanged: (item) =>
                                 controller.updateClinicRegion(item!, index),
-                            value: (controller as DoctorSignupController)
-                                .doctorModel
-                                .clinics[index]
-                                .region,
+                            value: controller.doctorModel.clinics[index].region,
                           );
                         },
                       )
                     : GetBuilder<SingleClinicController>(
                         builder: (controller) {
                           return AppDropdownButton(
-                            items: Regions.regions.keys.toList(),
+                            items: Regions
+                                .governoratesAndRegions[
+                                    controller.tempClinic.governorate]!
+                                .keys
+                                .toList(),
                             onChanged: (item) =>
                                 controller.updateClinicRegion(item!, index),
                             value: controller.tempClinic.region,

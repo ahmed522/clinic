@@ -5,8 +5,7 @@ import 'package:clinic/global/constants/user_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ParentUserModel {
-  String? firstName;
-  String? lastName;
+  String? userName;
   String? email;
   String? _password;
   Timestamp birthDate = Timestamp.now();

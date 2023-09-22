@@ -18,14 +18,20 @@ class CommonFunctions {
   static ErrorPage get internetError => const ErrorPage(
       imageAsset: 'assets/img/internet-error.svg',
       message: 'حدثت مشكلة حاول الإتصال بالإنترنت وإعادة المحاولة');
-  static void errorHappened() => Get.to(() => const ErrorPage(
-        imageAsset: 'assets/img/error.svg',
-        message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-      ));
+  static void errorHappened() => Get.to(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
+        ),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 1500),
+      );
   static void deletedElement() => Get.to(
         () => const ErrorPage(
             imageAsset: 'assets/img/error.svg',
             message: 'المحتوى غير متوفر بعد الأن'),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 1500),
       );
 
   static bool isLightMode(BuildContext context) =>
@@ -45,6 +51,59 @@ class CommonFunctions {
   static TimeOfDay timeOfDayFromTimestamp(Timestamp timestamp) {
     DateTime dateTime = timestamp.toDate();
     return TimeOfDay.fromDateTime(dateTime);
+  }
+
+  static bool isTimeWithinRange(DateTime startTime, DateTime endTime) {
+    DateTime startDateTime = DateTime(DateTime.now().year, DateTime.now().month,
+        DateTime.now().day, startTime.hour, startTime.minute);
+    DateTime endDateTime = DateTime(DateTime.now().year, DateTime.now().month,
+        DateTime.now().day, endTime.hour, endTime.minute);
+    if (endDateTime.isBefore(startTime)) {
+      if (DateTime.now().isAfter(startDateTime)) {
+        return true;
+      } else {
+        return DateTime.now().isBefore(endDateTime);
+      }
+    }
+
+    return DateTime.now().isAfter(startDateTime) &&
+        DateTime.now().isBefore(endDateTime);
+  }
+
+  static bool isClinicOpen(
+          DateTime startTime, DateTime endTime, Map<String, bool> workDays) =>
+      (isWorkDay(workDays) && isTimeWithinRange(startTime, endTime));
+  static bool isWorkDay(Map<String, bool> workDays) {
+    bool isTrue = false;
+    workDays.forEach((key, value) {
+      if (value) {
+        if (DateTime.now().weekday == getWeekDay(key)) {
+          isTrue = true;
+        }
+      }
+    });
+    return isTrue;
+  }
+
+  static int getWeekDay(String day) {
+    switch (day) {
+      case 'جمعة':
+        return DateTime.friday;
+      case 'خميس':
+        return DateTime.thursday;
+      case 'أربع':
+        return DateTime.wednesday;
+      case 'ثلاث':
+        return DateTime.tuesday;
+      case 'أثنين':
+        return DateTime.monday;
+      case 'أحد':
+        return DateTime.sunday;
+      case 'سبت':
+        return DateTime.saturday;
+      default:
+        return 404;
+    }
   }
 
   static Age calculateAge(Timestamp birthdate) {

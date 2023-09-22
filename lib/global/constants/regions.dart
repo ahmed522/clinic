@@ -1,6 +1,13 @@
 class Regions {
-  static const List<String> governorates = ['القاهرة'];
-  static const Map<String, List<String>> regions = {
+  static const List<String> governorates = [
+    'القاهرة',
+  ];
+  static const List<Map<String, List<String>>> regions = [
+    cairoRegions,
+  ];
+  static final Map<String, Map<String, List<String>>> governoratesAndRegions =
+      Map.fromIterables(governorates, regions);
+  static const Map<String, List<String>> cairoRegions = {
     'التبين': [
       'حلوان',
       'مايو 15',

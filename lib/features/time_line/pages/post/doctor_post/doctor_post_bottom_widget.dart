@@ -1,6 +1,6 @@
 import 'package:clinic/features/time_line/controller/post_controller.dart';
 import 'package:clinic/features/time_line/model/doctor_post_model.dart';
-import 'package:clinic/features/time_line/pages/post/common/doctor_specialization_info_widget.dart';
+import 'package:clinic/global/widgets/doctor_specialization_info_widget.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/present_number_widget.dart';

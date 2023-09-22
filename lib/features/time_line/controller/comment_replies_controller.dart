@@ -94,8 +94,7 @@ class CommentRepliesController extends GetxController {
       commentId: commentId,
       replyId: reply.replyId,
       replyWriterId: reply.writer.userId!,
-      replyWriterName: CommonFunctions.getFullName(
-          reply.writer.firstName!, reply.writer.lastName!),
+      replyWriterName: reply.writer.userName!,
       replyWriterType: reply.writer.userType,
       replyWriterGender: reply.writer.gender,
       activityTime: data['react_time'],

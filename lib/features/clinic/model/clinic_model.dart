@@ -1,4 +1,5 @@
 import 'package:clinic/global/constants/app_constants.dart';
+import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,9 @@ class ClinicModel {
   double? locationLatitude;
   double? locationLongitude;
   String? clinicId;
+  String? doctorName;
+  String? doctorPic;
+  Gender doctorGender = Gender.male;
   List<String> phoneNumbers = [];
   late int index;
   final formKey = GlobalKey<FormState>();

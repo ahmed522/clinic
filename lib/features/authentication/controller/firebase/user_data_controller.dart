@@ -44,23 +44,35 @@ class UserDataController extends GetxController {
 
   //==================== data creation ====================
   createUser(UserModel user) async {
+    Map<String, dynamic> data = user.toJson();
+    data['join_time'] = Timestamp.now();
     await _db
         .collection('users')
         .doc(user.userId)
-        .set(user.toJson())
-        .whenComplete(
-            () => MySnackBar.showGetSnackbar('تم التسجيل بنجاح', Colors.green))
-        .catchError((error) {
-      Get.to(() => const ErrorPage(
+        .set(data)
+        .then(
+          (value) => MySnackBar.showGetSnackbar(
+            'تم التسجيل بنجاح',
+            Colors.green,
+          ),
+        )
+        .catchError(
+      (error) {
+        Get.to(
+          () => const ErrorPage(
             imageAsset: 'assets/img/error.svg',
             message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-          ));
-    });
+          ),
+        );
+      },
+    );
   }
 
   createDoctor(DoctorModel doctor) async {
     try {
-      await _db.collection('doctors').doc(doctor.userId).set(doctor.toJson());
+      Map<String, dynamic> data = doctor.toJson();
+      data['join_time'] = Timestamp.now();
+      await _db.collection('doctors').doc(doctor.userId).set(data);
       String clincDocId;
       for (var clinic in doctor.clinics) {
         clincDocId = '${doctor.userId}-${const Uuid().v4()}';
@@ -74,10 +86,12 @@ class UserDataController extends GetxController {
         Colors.green,
       );
     } catch (e) {
-      Get.to(() => const ErrorPage(
-            imageAsset: 'assets/img/error.svg',
-            message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
-          ));
+      Get.to(
+        () => const ErrorPage(
+          imageAsset: 'assets/img/error.svg',
+          message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
+        ),
+      );
     }
   }
   //=======================================================
@@ -99,16 +113,14 @@ class UserDataController extends GetxController {
 
   Future<String> getUserNameById(String uid, UserType userType) async {
     String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
-    String? firstName;
-    String? lastName;
+    String? userName;
 
     await _db.collection(collectionName).doc(uid).get().then(
       ((value) {
-        firstName = value.data()!['first_name'];
-        lastName = value.data()!['last_name'];
+        userName = value['user_name'];
       }),
     );
-    return CommonFunctions.getFullName(firstName!, lastName!);
+    return userName!;
   }
 
   Future<String?> getUserPersonalImageURLById(
@@ -1361,4 +1373,84 @@ class UserDataController extends GetxController {
       getUserActivitiesDocumentById(uid).collection('replies');
   CollectionReference getUserLikedReplies(String uid) =>
       getUserActivitiesDocumentById(uid).collection('likedReplies');
+
+//==================================================
+
+  /// --------------------------------------------------------------------------
+  ///                               Searching                                  -
+  /// --------------------------------------------------------------------------
+
+  ///-----------------------------posts quiries---------------------------------
+
+  Query searchForPostsQuery(String searchValue, {UserType? writerType}) {
+    Query query = getAllUsersPostsCollection;
+    if (writerType == UserType.user) {
+      query = query.where('user_type', isEqualTo: 'user');
+    }
+    if (writerType == UserType.doctor) {
+      query = query.where('user_type', isEqualTo: 'doctor');
+    }
+    return query
+        .orderBy('content')
+        .startAt([searchValue]).endAt(["$searchValue\uf8ff"]);
+  }
+
+  ///-----------------------------users quiries---------------------------------
+
+  Query searchForUsersQuery(String searchValue) {
+    return _db
+        .collection('users')
+        .orderBy('user_name')
+        .startAt([searchValue]).endAt(["$searchValue\uf8ff"]);
+  }
+
+  Query searchForFollowersUsersQuery(String searchValue, String currentUserId) {
+    return getDoctorFollowersCollectionById(currentUserId)
+        .where('follower_type', isEqualTo: 'user')
+        .orderBy('follower_name')
+        .startAt([searchValue]).endAt(["$searchValue\uf8ff"]);
+  }
+
+  ///-----------------------------doctors quiries---------------------------------
+
+  Query searchForDoctorsQuery(
+    String searchValue, {
+    required List<String> specializations,
+    required List<String> degrees,
+  }) {
+    Query query = _db.collection('doctors');
+    if (degrees.isNotEmpty && specializations.isEmpty) {
+      query = query.where('degree', whereIn: degrees);
+    } else if (specializations.isNotEmpty) {
+      query = query.where('specialization', whereIn: specializations);
+    }
+    return query
+        .orderBy('user_name')
+        .startAt([searchValue]).endAt(["$searchValue\uf8ff"]);
+  }
+
+  ///-----------------------------clinics quiries---------------------------------
+
+  Query searchForClinicsQuery({
+    required String? governorate,
+    required List<String> regions,
+    required List<String> specializations,
+    int? maximumVezeeta,
+  }) {
+    Query query = _db.collection('clinics');
+    if (governorate != null) {
+      query = query.where('governorate', isEqualTo: governorate);
+    }
+    if (regions.isNotEmpty && specializations.isEmpty) {
+      query = query.where('region', whereIn: regions);
+    }
+    if (specializations.isNotEmpty) {
+      query = query.where('specialization', whereIn: specializations);
+    }
+    if (maximumVezeeta != null) {
+      query =
+          query.where('examine_vezeeta', isLessThanOrEqualTo: maximumVezeeta);
+    }
+    return query.orderBy('examine_vezeeta');
+  }
 }

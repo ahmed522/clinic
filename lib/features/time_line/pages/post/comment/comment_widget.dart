@@ -49,8 +49,7 @@ class CommentWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               PostTopWidget(
-                userName: CommonFunctions.getFullName(
-                    comment.writer.firstName!, comment.writer.lastName!),
+                userName: comment.writer.userName!,
                 userId: comment.writer.userId!,
                 userType: comment.writer.userType,
                 isCurrentUserPost: isReply

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clinic/features/authentication/controller/firebase/authentication_controller.dart';
 import 'package:clinic/features/following/model/follower_model.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_profile_page.dart';
-import 'package:clinic/features/time_line/pages/post/common/doctor_specialization_info_widget.dart';
+import 'package:clinic/global/widgets/doctor_specialization_info_widget.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/functions/common_functions.dart';

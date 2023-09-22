@@ -1,6 +1,6 @@
 import 'package:clinic/features/time_line/controller/post_controller.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
-import 'package:clinic/features/time_line/pages/post/common/doctor_specialization_info_widget.dart';
+import 'package:clinic/global/widgets/doctor_specialization_info_widget.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/functions/common_functions.dart';

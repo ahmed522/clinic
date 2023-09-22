@@ -36,227 +36,226 @@ class SingleChatPage extends StatelessWidget {
         ),
         tag: chatterId);
 
-    return OfflinePageBuilder(
-      child: GetX<SingleChatPageController>(
-        tag: chatterId,
-        builder: (controller) {
-          if (controller.loading.isTrue) {
-            return Container(
+    return GetX<SingleChatPageController>(
+      tag: chatterId,
+      builder: (controller) {
+        if (controller.loading.isTrue) {
+          return OfflinePageBuilder(
+            child: Container(
               color: CommonFunctions.isLightMode(context)
                   ? Colors.white
                   : AppColors.darkThemeBackgroundColor,
               child: const Center(
                 child: AppCircularProgressIndicator(width: 100, height: 100),
               ),
-            );
-          }
-          return Scaffold(
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70.0),
-              child: SingleChatPageAppBarWidget(
-                chatterId: chatterId,
-                isCreated: controller.chatCreatedListener.value,
-                blocks: controller.chat!.value.chatter1.blocks,
-                deleteChat: controller.chat!.value.chatter1.deleteChat,
-                muted: controller.chat!.value.chatter1.muteNotifications,
-              ),
             ),
-            body: OfflinePageBuilder(
-              child: GestureDetector(
-                onTap: () {
-                  FocusScopeNode currentFocus = FocusScope.of(context);
-                  currentFocus.unfocus();
-                },
-                child: Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      opacity: 0.18,
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        'assets/img/chat-background.jpg',
-                      ),
+          );
+        }
+        return Scaffold(
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(70.0),
+            child: SingleChatPageAppBarWidget(
+              chatterId: chatterId,
+              isCreated: controller.chatCreatedListener.value,
+              blocks: controller.chat!.value.chatter1.blocks,
+              deleteChat: controller.chat!.value.chatter1.deleteChat,
+              muted: controller.chat!.value.chatter1.muteNotifications,
+            ),
+          ),
+          body: OfflinePageBuilder(
+            child: GestureDetector(
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                currentFocus.unfocus();
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    opacity: 0.18,
+                    fit: BoxFit.cover,
+                    image: AssetImage(
+                      'assets/img/chat-background.jpg',
                     ),
                   ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      StreamBuilder(
-                        stream: controller.chatCreatedListener.isFalse
-                            ? controller.chatMessagesStream
-                            : controller.chatMessagesStream,
-                        builder: (context, snapshot) {
-                          return GetX<SingleChatPageController>(
-                            tag: chatterId,
-                            builder: (controller) {
-                              if (!snapshot.hasData ||
-                                  (snapshot.hasData &&
-                                      snapshot.data!.docs.isEmpty)) {
-                                if (controller.messageLoading.isTrue) {
-                                  return const Center(
-                                    child: AppCircularProgressIndicator(
-                                      width: 100,
-                                      height: 100,
-                                    ),
-                                  );
-                                }
-                                if ((snapshot.hasData &&
-                                        snapshot.data!.docs.isEmpty) &&
-                                    ((controller.chat!.value.chatter1.blocks) ||
-                                        (controller
-                                            .chat!.value.chatter1.isBlocked))) {
-                                  return BlockWidget(
-                                    chatter1: controller.chat!.value.chatter1,
-                                    chatter2: controller.chat!.value.chatter2,
-                                  );
-                                }
-                                return const NoPreviousMessagesPage();
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    StreamBuilder(
+                      stream: controller.chatCreatedListener.isFalse
+                          ? controller.chatMessagesStream
+                          : controller.chatMessagesStream,
+                      builder: (context, snapshot) {
+                        return GetX<SingleChatPageController>(
+                          tag: chatterId,
+                          builder: (controller) {
+                            if (!snapshot.hasData ||
+                                (snapshot.hasData &&
+                                    snapshot.data!.docs.isEmpty)) {
+                              if (controller.messageLoading.isTrue) {
+                                return const Center(
+                                  child: AppCircularProgressIndicator(
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                );
                               }
+                              if ((snapshot.hasData &&
+                                      snapshot.data!.docs.isEmpty) &&
+                                  ((controller.chat!.value.chatter1.blocks) ||
+                                      (controller
+                                          .chat!.value.chatter1.isBlocked))) {
+                                return BlockWidget(
+                                  chatter1: controller.chat!.value.chatter1,
+                                  chatter2: controller.chat!.value.chatter2,
+                                );
+                              }
+                              return const NoPreviousMessagesPage();
+                            }
 
-                              return ListView.builder(
-                                controller: controller.scrollController,
-                                reverse: true,
-                                itemCount: snapshot.data!.docs.length,
-                                physics: const ClampingScrollPhysics(),
-                                itemBuilder: (contex, index) {
-                                  MessageModel message =
-                                      MessageModel.fromSnapshot(
-                                    snapshot.data!.docs[index],
-                                  );
-                                  message.sendedMessage = (message.senderId ==
-                                      controller.currentUserId);
-                                  controller.updateSeenedMessage(message);
-                                  MessageModel? previousMessage;
+                            return ListView.builder(
+                              controller: controller.scrollController,
+                              reverse: true,
+                              itemCount: snapshot.data!.docs.length,
+                              physics: const ClampingScrollPhysics(),
+                              itemBuilder: (contex, index) {
+                                MessageModel message =
+                                    MessageModel.fromSnapshot(
+                                  snapshot.data!.docs[index],
+                                );
+                                message.sendedMessage = (message.senderId ==
+                                    controller.currentUserId);
+                                controller.updateSeenedMessage(message);
+                                MessageModel? previousMessage;
 
-                                  if (index > 0) {
-                                    previousMessage = MessageModel.fromSnapshot(
-                                        snapshot.data!.docs[index - 1]);
-                                  }
+                                if (index > 0) {
+                                  previousMessage = MessageModel.fromSnapshot(
+                                      snapshot.data!.docs[index - 1]);
+                                }
 
-                                  if (index == snapshot.data!.size - 1) {
-                                    return Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: ContaineredText(
-                                            text: _getMessagesDate(
-                                                message.messageTime.toDate()),
-                                          ),
+                                if (index == snapshot.data!.size - 1) {
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: ContaineredText(
+                                          text: _getMessagesDate(
+                                              message.messageTime.toDate()),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: (index > 0) &&
-                                                    _setPaddingBeforeMessage(
-                                                      currentMessage: message,
-                                                      previousMessage:
-                                                          previousMessage!,
-                                                    )
-                                                ? 5
-                                                : (index == 0)
-                                                    ? 80
-                                                    : 0,
-                                          ),
-                                          child: index == 0
-                                              ? BlockWidget(
-                                                  message: message,
-                                                  chatter1: controller
-                                                      .chat!.value.chatter1,
-                                                  chatter2: controller
-                                                      .chat!.value.chatter2,
-                                                )
-                                              : Column(
-                                                  children: [
-                                                    MessageWidget(
-                                                      message: message,
-                                                    ),
-                                                    _getMessagesDateDifference(
-                                                      message.messageTime
-                                                          .toDate(),
-                                                      previousMessage!
-                                                          .messageTime
-                                                          .toDate(),
-                                                    )
-                                                        ? Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(10),
-                                                            child:
-                                                                ContaineredText(
-                                                              text:
-                                                                  _getMessagesDate(
-                                                                previousMessage
-                                                                    .messageTime
-                                                                    .toDate(),
-                                                              ),
-                                                            ),
-                                                          )
-                                                        : const SizedBox(),
-                                                  ],
-                                                ),
-                                        ),
-                                      ],
-                                    );
-                                  }
-
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: (index == 0)
-                                          ? 80
-                                          : _setPaddingBeforeMessage(
-                                                  currentMessage: message,
-                                                  previousMessage:
-                                                      previousMessage!)
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom: (index > 0) &&
+                                                  _setPaddingBeforeMessage(
+                                                    currentMessage: message,
+                                                    previousMessage:
+                                                        previousMessage!,
+                                                  )
                                               ? 5
-                                              : 0,
-                                    ),
-                                    child: index == 0
-                                        ? BlockWidget(
-                                            message: message,
-                                            chatter1:
-                                                controller.chat!.value.chatter1,
-                                            chatter2:
-                                                controller.chat!.value.chatter2,
-                                          )
-                                        : Column(
-                                            children: [
-                                              MessageWidget(
+                                              : (index == 0)
+                                                  ? 80
+                                                  : 0,
+                                        ),
+                                        child: index == 0
+                                            ? BlockWidget(
                                                 message: message,
-                                              ),
-                                              _getMessagesDateDifference(
-                                                message.messageTime.toDate(),
-                                                previousMessage!.messageTime
-                                                    .toDate(),
+                                                chatter1: controller
+                                                    .chat!.value.chatter1,
+                                                chatter2: controller
+                                                    .chat!.value.chatter2,
                                               )
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      child: ContaineredText(
-                                                        text: _getMessagesDate(
-                                                          previousMessage
-                                                              .messageTime
-                                                              .toDate(),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : const SizedBox(),
-                                            ],
-                                          ),
+                                            : Column(
+                                                children: [
+                                                  MessageWidget(
+                                                    message: message,
+                                                  ),
+                                                  _getMessagesDateDifference(
+                                                    message.messageTime
+                                                        .toDate(),
+                                                    previousMessage!.messageTime
+                                                        .toDate(),
+                                                  )
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(10),
+                                                          child:
+                                                              ContaineredText(
+                                                            text:
+                                                                _getMessagesDate(
+                                                              previousMessage
+                                                                  .messageTime
+                                                                  .toDate(),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : const SizedBox(),
+                                                ],
+                                              ),
+                                      ),
+                                    ],
                                   );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      ChatBottomWidget(chatterId: chatterId),
-                    ],
-                  ),
+                                }
+
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: (index == 0)
+                                        ? 80
+                                        : _setPaddingBeforeMessage(
+                                                currentMessage: message,
+                                                previousMessage:
+                                                    previousMessage!)
+                                            ? 5
+                                            : 0,
+                                  ),
+                                  child: index == 0
+                                      ? BlockWidget(
+                                          message: message,
+                                          chatter1:
+                                              controller.chat!.value.chatter1,
+                                          chatter2:
+                                              controller.chat!.value.chatter2,
+                                        )
+                                      : Column(
+                                          children: [
+                                            MessageWidget(
+                                              message: message,
+                                            ),
+                                            _getMessagesDateDifference(
+                                              message.messageTime.toDate(),
+                                              previousMessage!.messageTime
+                                                  .toDate(),
+                                            )
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    child: ContaineredText(
+                                                      text: _getMessagesDate(
+                                                        previousMessage
+                                                            .messageTime
+                                                            .toDate(),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : const SizedBox(),
+                                          ],
+                                        ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    ChatBottomWidget(chatterId: chatterId),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

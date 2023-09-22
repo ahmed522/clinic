@@ -4,7 +4,6 @@ import 'package:clinic/features/time_line/pages/post/comment/comment_widget.dart
 import 'package:clinic/features/time_line/pages/post/comment/reply_reacts_widget.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/functions/common_functions.dart';
 import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ class ReplyPage extends StatelessWidget {
         commentId: reply.commentId, replyId: reply.replyId));
     Gender writerGender = reply.writer.gender;
     String appBarTitleText =
-        '${reply.writer.userType == UserType.doctor ? 'رد ${(writerGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}' : 'رد '}${CommonFunctions.getFullName(reply.writer.firstName!, reply.writer.lastName!)}';
+        '${reply.writer.userType == UserType.doctor ? 'رد ${(writerGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}' : 'رد '}${reply.writer.userName}';
     return Scaffold(
       appBar: DefaultAppBar(
         title: appBarTitleText,

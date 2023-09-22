@@ -93,10 +93,7 @@ class PostCommentsController extends GetxController {
       postId: postId,
       commentId: comment.commentId,
       commentWriterId: comment.writer.userId!,
-      commentWriterName: CommonFunctions.getFullName(
-        comment.writer.firstName!,
-        comment.writer.lastName!,
-      ),
+      commentWriterName: comment.writer.userName!,
       commentWriterType: comment.writer.userType,
       commentWriterGender: comment.writer.gender,
       activityTime: data['react_time'],

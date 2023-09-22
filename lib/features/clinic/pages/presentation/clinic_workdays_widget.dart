@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 class ClinicWorkDaysWidget extends StatelessWidget {
   const ClinicWorkDaysWidget({
     Key? key,
-    required this.clinicIndex,
+    this.clinicIndex,
     this.isDoctorPost = false,
     this.clinicModel,
   }) : super(key: key);
 
-  final int clinicIndex;
+  final int? clinicIndex;
   final bool isDoctorPost;
   final ClinicModel? clinicModel;
   @override
@@ -21,14 +21,10 @@ class ClinicWorkDaysWidget extends StatelessWidget {
 
     final ClinicModel clinic;
     if (isDoctorPost) {
-      if (clinicModel != null) {
-        clinic = clinicModel!;
-      } else {
-        clinic = clinicModel!;
-      }
+      clinic = clinicModel!;
     } else {
       final controller = DoctorClinicsController.find;
-      clinic = controller.clinics[clinicIndex];
+      clinic = controller.clinics[clinicIndex!];
     }
     return Column(
       children: [

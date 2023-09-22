@@ -13,14 +13,14 @@ import 'package:get/get.dart';
 class ClinicDataWidget extends StatelessWidget {
   const ClinicDataWidget({
     Key? key,
-    required this.clinicIndex,
+    this.clinicIndex,
     this.isDoctorPost = false,
     this.clinic,
     required this.isCurrentDoctorProfile,
     required this.doctorId,
   }) : super(key: key);
 
-  final int clinicIndex;
+  final int? clinicIndex;
   final bool isDoctorPost;
   final bool isCurrentDoctorProfile;
   final ClinicModel? clinic;
@@ -70,7 +70,7 @@ class ClinicDataWidget extends StatelessWidget {
                         EditClinicButton(
                           onPressed: () => Get.to(
                             () => EditClinicPage(
-                              clinicIndex: clinicIndex,
+                              clinicIndex: clinicIndex!,
                               doctorId: doctorId,
                             ),
                             transition: Transition.rightToLeftWithFade,
@@ -78,7 +78,7 @@ class ClinicDataWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         RemoveClinicButton(
-                          clinicIndex: clinicIndex,
+                          clinicIndex: clinicIndex!,
                           clinicId: clinic!.clinicId!,
                         ),
                         const SizedBox(height: 40),

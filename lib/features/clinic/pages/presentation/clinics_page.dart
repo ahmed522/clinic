@@ -1,6 +1,7 @@
 import 'package:clinic/features/clinic/controller/doctor_clinics_controller.dart';
 import 'package:clinic/features/clinic/pages/presentation/add_clinic_button.dart';
 import 'package:clinic/features/clinic/pages/creation/add_clinic_page.dart';
+import 'package:clinic/features/clinic/pages/presentation/single_clinic_item.dart';
 import 'package:clinic/features/clinic/pages/presentation/single_clinic_page.dart';
 import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
@@ -61,22 +62,26 @@ class ClinicsPage extends StatelessWidget {
                         ],
                       );
                     }
-                    return Column(
-                      children: List<ProfileOptionButton>.generate(
-                        controller.clinics.length,
-                        (index) => ProfileOptionButton(
-                          topPadding: 15,
-                          text: 'عيادة رقم ${index + 1}',
-                          imageAsset: 'assets/img/clinic.png',
-                          onPressed: () => Get.to(
-                            () => SingleClinicPage(
-                              clinicIndex: index,
-                              clinic: controller.clinics[index],
-                              isCurrentUser: controller
-                                  .doctorProfilePageController
-                                  .isCurrentDoctorProfile,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Column(
+                        children: List<SingleClinicItem>.generate(
+                          controller.clinics.length,
+                          (index) => SingleClinicItem(
+                            clinic: controller.clinics[index],
+                            onTap: () => Get.to(
+                              () => SingleClinicPage(
+                                clinicIndex: index,
+                                clinic: controller.clinics[index],
+                                isCurrentUser: controller
+                                    .doctorProfilePageController
+                                    .isCurrentDoctorProfile,
+                              ),
+                              transition: Transition.rightToLeftWithFade,
                             ),
-                            transition: Transition.rightToLeftWithFade,
+                            title: 'عيادة رقم ${index + 1}',
+                            gender: controller.doctorProfilePageController
+                                .currentDoctor.gender,
                           ),
                         ),
                       ),

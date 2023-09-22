@@ -10,8 +10,7 @@ class UserModel extends ParentUserModel {
     data['user_type'] = userType.name;
     data['uid'] = userId;
     data['email'] = email;
-    data['first_name'] = firstName;
-    data['last_name'] = lastName;
+    data['user_name'] = userName;
     data['birth_date'] = birthDate;
     data['gender'] = gender.name;
     data['personal_image_URL'] = personalImageURL;
@@ -28,8 +27,7 @@ class UserModel extends ParentUserModel {
     userType = UserType.user;
     userId = data['uid'];
     email = data['email'];
-    firstName = data['first_name'];
-    lastName = data['last_name'];
+    userName = data['user_name'];
     birthDate =
         isLocalStorage ? getBirthDate(data['birth_date']) : data['birth_date'];
     gender = (data['gender'] == 'male') ? Gender.male : Gender.female;

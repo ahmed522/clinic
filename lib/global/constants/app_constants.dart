@@ -46,6 +46,7 @@ class AppConstants {
     'طبيب القلب والأوعية الدموية',
     'طبيب مخ وأعصاب',
     'طبيب جلدية',
+    'طبيب مسالك بولية',
     'طبيب أنف وأذن وحنجرة',
     'طبيب أمراض الدم',
     'طبيب أورام',
@@ -61,6 +62,8 @@ class AppConstants {
     'طبيب باطنة وجهاز هضمي',
     'طبيب جرًّاح',
     'طبيب تخدير',
+    'طبيب صيدلي',
+    'طبيب بيطري',
   ];
   static const String doctorSpecializationsIconsURLStart =
       'https://firebasestorage.googleapis.com/v0/b/tabib-56f14.appspot.com/o/specs_icons%2F';
@@ -71,6 +74,7 @@ class AppConstants {
     'assets/img/specs/cardiovascular.png',
     'assets/img/specs/neurologist.png',
     'assets/img/specs/dermatology.png',
+    'assets/img/specs/urology.png',
     'assets/img/specs/ent.png',
     'assets/img/specs/hematology.png',
     'assets/img/specs/oncology.png',
@@ -86,6 +90,8 @@ class AppConstants {
     'assets/img/specs/stomach.png',
     'assets/img/specs/surgery.png',
     'assets/img/specs/anesthesia.png',
+    'assets/img/specs/pharmacy.png',
+    'assets/img/specs/vet.png',
   ];
 
   static Map<String, String> specializationsIcons =

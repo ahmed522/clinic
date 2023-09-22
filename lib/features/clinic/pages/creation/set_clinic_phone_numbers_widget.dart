@@ -6,7 +6,6 @@ import 'package:clinic/features/clinic/pages/creation/clinic_phone_number_text_f
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/constants/clinic_page_mode.dart';
 import 'package:clinic/global/widgets/circle_button.dart';
-import 'package:clinic/global/widgets/circular_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

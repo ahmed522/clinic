@@ -69,8 +69,7 @@ class UserPostWidget extends StatelessWidget {
                 setSideInfo: post.isErgent,
                 isCurrentUserPost:
                     controller.isCurrentUserPost(post.user.userId!),
-                userName: CommonFunctions.getFullName(
-                    post.user.firstName!, post.user.lastName!),
+                userName: post.user.userName!,
                 personalImageURL: post.user.personalImageURL,
                 postSideInfoText: 'حالة طارئة',
                 postSideInfoTextColor: Colors.red,

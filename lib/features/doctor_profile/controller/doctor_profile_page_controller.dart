@@ -6,7 +6,6 @@ import 'package:clinic/features/notifications/model/notification_type.dart';
 import 'package:clinic/global/constants/gender.dart';
 import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/data/models/doctor_model.dart';
-import 'package:clinic/global/functions/common_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
@@ -64,8 +63,7 @@ class DoctorProfilePageController extends GetxController {
       FollowerModel following = FollowerModel(
         userType: UserType.doctor,
         userId: doctorId!,
-        userName: CommonFunctions.getFullName(
-            currentDoctor.firstName!, currentDoctor.lastName!),
+        userName: currentDoctor.userName!,
         gender: currentDoctor.gender,
         doctorSpecialization: currentDoctor.specialization,
       );

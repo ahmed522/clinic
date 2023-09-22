@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 class ClinicPhoneNumbersWidget extends StatelessWidget {
   const ClinicPhoneNumbersWidget(
       {super.key,
-      required this.clinicIndex,
+      this.clinicIndex,
       required this.isDoctorPost,
       this.clinicModel});
-  final int clinicIndex;
+  final int? clinicIndex;
   final bool isDoctorPost;
   final ClinicModel? clinicModel;
   @override
@@ -19,7 +19,7 @@ class ClinicPhoneNumbersWidget extends StatelessWidget {
       clinic = clinicModel!;
     } else {
       final controller = DoctorClinicsController.find;
-      clinic = controller.clinics[clinicIndex];
+      clinic = controller.clinics[clinicIndex!];
     }
     if (clinic.phoneNumbers.isEmpty) {
       return const SizedBox();
