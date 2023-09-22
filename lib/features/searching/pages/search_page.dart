@@ -15,6 +15,7 @@ import 'package:clinic/global/constants/user_type.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
+import 'package:clinic/global/widgets/offline_page_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -26,22 +27,24 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(SearchPageController());
     return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          currentFocus.unfocus();
-        },
-        child: NestedScrollView(
-          headerSliverBuilder: ((context, innerBoxIsScrolled) {
-            return [
-              SliverPersistentHeader(
-                pinned: true,
-                floating: false,
-                delegate: SearchPageHeader(),
-              ),
-            ];
-          }),
-          body: const SearchPageContent(),
+      body: OfflinePageBuilder(
+        child: GestureDetector(
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            currentFocus.unfocus();
+          },
+          child: NestedScrollView(
+            headerSliverBuilder: ((context, innerBoxIsScrolled) {
+              return [
+                SliverPersistentHeader(
+                  pinned: true,
+                  floating: false,
+                  delegate: SearchPageHeader(),
+                ),
+              ];
+            }),
+            body: const SearchPageContent(),
+          ),
         ),
       ),
     );
