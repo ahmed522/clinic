@@ -24,15 +24,16 @@ class SingleFilterWidget extends StatelessWidget {
     return GestureDetector(
       onTap: filter.active ? null : () => _onFilterPressed(context)(),
       child: Container(
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         margin: const EdgeInsets.only(right: 5.0),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white, width: 1.5),
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          borderRadius: const BorderRadius.all(Radius.circular(25)),
           color: filter.active ? Colors.white : Colors.transparent,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             if (filter.active) ...[
               GestureDetector(

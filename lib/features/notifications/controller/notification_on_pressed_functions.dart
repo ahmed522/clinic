@@ -437,6 +437,26 @@ class NotificationsOnPressedFunctions {
     }
   }
 
+  static Future questionAllowenceNotificationOnPressed(
+      NotificationModel notification) async {
+    if (notification.data['allowed']) {
+      UserPostModel? post = await UserDataController.find.getUserPostById(
+          currentUserId,
+          notification.data['post_id'],
+          currentUser as UserModel);
+
+      Get.back();
+      if (post == null) {
+        CommonFunctions.deletedElement();
+      } else {
+        Get.to(
+          () => PostPage(post: post, writerType: currentUserType),
+          transition: Transition.rightToLeftWithFade,
+        );
+      }
+    }
+  }
+
   static ParentUserModel get currentUser =>
       AuthenticationController.find.currentUser;
   static UserType get currentUserType =>

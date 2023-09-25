@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 class SearchPageHeader extends SliverPersistentHeaderDelegate {
   SearchPageHeader();
-  final double _minTopBarHeight = 120;
+  final double _minTopBarHeight = 130;
   final double _maxTopBarHeight = 160;
   final double _shrinkLimit = 0.23;
   @override
@@ -35,9 +35,13 @@ class SearchPageHeader extends SliverPersistentHeaderDelegate {
               : AppColors.darkThemeBottomNavBarColor,
         ),
         child: Column(
-          children: const [
-            SearchPageHeaderTopBarContentWidget(),
-            SearchPageHeaderFiltersBarContentWidget(),
+          mainAxisAlignment: (shrinkFactor > _shrinkLimit)
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
+          children: [
+            const SearchPageHeaderTopBarContentWidget(),
+            SearchPageHeaderFiltersBarContentWidget(
+                topPadding: (shrinkFactor > _shrinkLimit) ? 0 : 5.0),
           ],
         ),
       ),
@@ -62,7 +66,7 @@ class SearchPageHeader extends SliverPersistentHeaderDelegate {
           : 200;
 
   @override
-  double get minExtent => 120;
+  double get minExtent => 130;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;

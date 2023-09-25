@@ -1,5 +1,6 @@
 import 'package:clinic/features/notifications/controller/notification_page_controller.dart';
 import 'package:clinic/features/notifications/model/notification_model.dart';
+import 'package:clinic/features/notifications/model/notification_type.dart';
 import 'package:clinic/features/notifications/pages/single_notification.dart';
 import 'package:clinic/global/colors/app_colors.dart';
 import 'package:clinic/global/fonts/app_fonts.dart';
@@ -22,7 +23,6 @@ class NotificationsPage extends StatelessWidget {
       appBar: const DefaultAppBar(
         title: 'الإشعارات',
         centerTitle: true,
-        height: 60,
       ),
       body: OfflinePageBuilder(
         child: RefreshIndicator(
@@ -38,7 +38,11 @@ class NotificationsPage extends StatelessWidget {
 
   _onNotificationPressed(BuildContext context, NotificationModel notification) {
     final controller = NotificationPageController.find;
-    MyAlertDialog.showLoadingDialog(context);
+    if ((notification.type != NotificationType.questionAllowence) ||
+        (notification.type == NotificationType.questionAllowence &&
+            notification.data['allowed'])) {
+      MyAlertDialog.showLoadingDialog(context);
+    }
     controller.getNotificationOnPressed(notification)();
   }
 

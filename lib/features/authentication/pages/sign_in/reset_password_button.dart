@@ -14,63 +14,66 @@ class ResetPasswordButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SigninController controller = Get.find();
-    return TextButton(
-      onPressed: () {
-        MyAlertDialog.showAlertDialog(
-          context,
-          'إعادة تعيين كلمة المرور',
-          AppConstants.passwordReset,
-          MyAlertDialog.getAlertDialogActions(
-            {
-              'إلغاء': () => Get.back(),
-              'إرسال': () {
-                if (controller.email == null ||
-                    !RegExp(AppConstants.emailValidationRegExp)
-                        .hasMatch(controller.email!)) {
-                  if (!Get.isSnackbarOpen) {
-                    Get.showSnackbar(const GetSnackBar(
-                      messageText: Center(
-                        child: Text(
-                          'البريد الإلكتروني غير صحيح',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: AppFonts.mainArabicFontFamily,
-                            fontSize: 17,
-                          ),
-                        ),
-                      ),
-                      backgroundColor: Colors.red,
-                      snackPosition: SnackPosition.TOP,
-                      snackStyle: SnackStyle.GROUNDED,
-                      duration: Duration(milliseconds: 1000),
-                      animationDuration: Duration(milliseconds: 500),
-                    ));
-                  }
-                } else {
-                  controller.resetPassword(controller.email!);
-                  Get.back();
-                }
+    return GetBuilder<SigninController>(builder: (controller) {
+      return TextButton(
+        onPressed: controller.loading
+            ? null
+            : () {
+                MyAlertDialog.showAlertDialog(
+                  context,
+                  'إعادة تعيين كلمة المرور',
+                  AppConstants.passwordReset,
+                  MyAlertDialog.getAlertDialogActions(
+                    {
+                      'إلغاء': () => Get.back(),
+                      'إرسال': () {
+                        if (controller.tempEmail == null ||
+                            !RegExp(AppConstants.emailValidationRegExp)
+                                .hasMatch(controller.tempEmail!)) {
+                          if (!Get.isSnackbarOpen) {
+                            Get.showSnackbar(const GetSnackBar(
+                              messageText: Center(
+                                child: Text(
+                                  'البريد الإلكتروني غير صحيح',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: AppFonts.mainArabicFontFamily,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                              backgroundColor: Colors.red,
+                              snackPosition: SnackPosition.TOP,
+                              snackStyle: SnackStyle.GROUNDED,
+                              duration: Duration(milliseconds: 1000),
+                              animationDuration: Duration(milliseconds: 500),
+                            ));
+                          }
+                        } else {
+                          controller.resetPassword(controller.tempEmail!);
+                          Get.back();
+                        }
+                      },
+                    },
+                  ),
+                );
               },
-            },
-          ),
-        );
-      },
-      style: TextButton.styleFrom(
-        foregroundColor: CommonFunctions.isLightMode(context)
-            ? AppColors.primaryColor
-            : Colors.white,
-      ),
-      child: Text(
-        'هل نسيت كلمة المرور؟',
-        style: TextStyle(
-          color: CommonFunctions.isLightMode(context)
+        style: TextButton.styleFrom(
+          foregroundColor: CommonFunctions.isLightMode(context)
               ? AppColors.primaryColor
               : Colors.white,
-          fontFamily: AppFonts.mainArabicFontFamily,
-          fontSize: 13,
         ),
-      ),
-    );
+        child: Text(
+          'هل نسيت كلمة المرور؟',
+          style: TextStyle(
+            color: CommonFunctions.isLightMode(context)
+                ? AppColors.primaryColor
+                : Colors.white,
+            fontFamily: AppFonts.mainArabicFontFamily,
+            fontSize: 13,
+          ),
+        ),
+      );
+    });
   }
 }

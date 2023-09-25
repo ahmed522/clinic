@@ -21,6 +21,7 @@ class ClinicModel {
   String? clinicId;
   String? doctorName;
   String? doctorPic;
+  late bool checkedDoctor;
   Gender doctorGender = Gender.male;
   List<String> phoneNumbers = [];
   late int index;

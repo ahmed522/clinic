@@ -41,6 +41,7 @@ class SignupEmailTextField extends StatelessWidget {
         }
         return null;
       },
+      onChange: (value) {},
     );
   }
 }

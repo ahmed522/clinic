@@ -579,6 +579,7 @@ class SearchPageController extends GetxController {
           }
           if (searchedDoctors.isEmpty) {
             updateNoResults(true);
+            updateLoadingItems(false);
           }
           updateMoreItemsLoading(false);
         }
@@ -655,6 +656,7 @@ class SearchPageController extends GetxController {
           }
           if (searchedClinics.isEmpty) {
             updateNoResults(true);
+            updateLoadingItems(false);
           }
           updateMoreItemsLoading(false);
         }

@@ -72,6 +72,7 @@ class UserDataController extends GetxController {
     try {
       Map<String, dynamic> data = doctor.toJson();
       data['join_time'] = Timestamp.now();
+      data['checked'] = false;
       await _db.collection('doctors').doc(doctor.userId).set(data);
       String clincDocId;
       for (var clinic in doctor.clinics) {
@@ -79,6 +80,7 @@ class UserDataController extends GetxController {
         clinic.doctorId = doctor.userId!;
         clinic.clinicId = clincDocId;
         clinic.specialization = doctor.specialization;
+        clinic.checkedDoctor = false;
         addClinicById(clinic);
       }
       MySnackBar.showGetSnackbar(
@@ -94,14 +96,15 @@ class UserDataController extends GetxController {
       );
     }
   }
+
   //=======================================================
 
   //================= common data =================
   Future<UserType?> getUserTypeById(String uid) async {
     UserType? userType;
     await _db.collection('doctors').doc(uid).get().then(
-      ((value) {
-        if (value.data() == null) {
+      ((snapshot) {
+        if (snapshot.data() == null) {
           userType = UserType.user;
         } else {
           userType = UserType.doctor;
@@ -116,8 +119,8 @@ class UserDataController extends GetxController {
     String? userName;
 
     await _db.collection(collectionName).doc(uid).get().then(
-      ((value) {
-        userName = value['user_name'];
+      ((snapshot) {
+        userName = snapshot['user_name'];
       }),
     );
     return userName!;
@@ -128,8 +131,8 @@ class UserDataController extends GetxController {
     String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
     String? personalImageURL;
     await _db.collection(collectionName).doc(uid).get().then(
-      ((value) {
-        personalImageURL = value.data()!['personal_image_URL'];
+      ((snapshot) {
+        personalImageURL = snapshot['personal_image_URL'];
       }),
     );
     return personalImageURL;
@@ -139,9 +142,8 @@ class UserDataController extends GetxController {
     String collectionName = (userType == UserType.doctor) ? 'doctors' : 'users';
     Gender? gender;
     await _db.collection(collectionName).doc(uid).get().then(
-      ((value) {
-        gender =
-            (value.data()!['gender'] == 'male') ? Gender.male : Gender.female;
+      ((snapshot) {
+        gender = (snapshot['gender'] == 'male') ? Gender.male : Gender.female;
       }),
     );
     return gender!;
@@ -235,6 +237,7 @@ class UserDataController extends GetxController {
     Map<String, dynamic> newData = {};
     newData = newClinic.toJson();
     newData['created_time'] = Timestamp.now();
+    newData['checked_doctor'] = newClinic.checkedDoctor;
     try {
       final doctorClinicsCollectionReference =
           _db.collection('clinics').doc(newClinic.clinicId);
@@ -1418,7 +1421,7 @@ class UserDataController extends GetxController {
     required List<String> specializations,
     required List<String> degrees,
   }) {
-    Query query = _db.collection('doctors');
+    Query query = _db.collection('doctors').where('checked', isEqualTo: true);
     if (degrees.isNotEmpty && specializations.isEmpty) {
       query = query.where('degree', whereIn: degrees);
     } else if (specializations.isNotEmpty) {
@@ -1437,7 +1440,8 @@ class UserDataController extends GetxController {
     required List<String> specializations,
     int? maximumVezeeta,
   }) {
-    Query query = _db.collection('clinics');
+    Query query =
+        _db.collection('clinics').where('checked_doctor', isEqualTo: true);
     if (governorate != null) {
       query = query.where('governorate', isEqualTo: governorate);
     }

@@ -3,7 +3,6 @@ import 'package:clinic/features/clinic/pages/presentation/add_clinic_button.dart
 import 'package:clinic/features/clinic/pages/creation/add_clinic_page.dart';
 import 'package:clinic/features/clinic/pages/presentation/single_clinic_item.dart';
 import 'package:clinic/features/clinic/pages/presentation/single_clinic_page.dart';
-import 'package:clinic/global/widgets/profile_option_button.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/default_appbar.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';

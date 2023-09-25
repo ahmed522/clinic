@@ -9,6 +9,7 @@ class SigninController extends GetxController {
   String? password;
   bool showPassword = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String? tempEmail;
 
   updateShowPassword() {
     showPassword = !showPassword;

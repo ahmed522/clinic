@@ -169,6 +169,13 @@ class SingleNotification extends StatelessWidget {
         title =
             '${(notifierGender == Gender.male) ? ' حصل ' : ' حصلت '}${(notifierGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}$notifierName على درجة علمية جديدة';
         break;
+      case NotificationType.questionAllowence:
+        if (notification.data['allowed']) {
+          title = 'تمت الموافقة على سؤالك';
+        } else {
+          title = 'لم تتم الموافقة على سؤالك لأنه يخالف معايير مجتمع طبيب';
+        }
+        break;
     }
     return title;
   }

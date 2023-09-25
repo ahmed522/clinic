@@ -24,6 +24,9 @@ class SigninEmailTextField extends StatelessWidget {
         controller.email = value.trim();
         return null;
       },
+      onChange: (value) {
+        controller.tempEmail = value;
+      },
     );
   }
 }

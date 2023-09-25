@@ -49,7 +49,9 @@ class NotificationPageController extends GetxController {
                 snapshot.docs.remove(documentSnapshot);
                 await _userDataController
                     .getSingleNotificationDocumentById(
-                        currentUserId, notificationId)
+                      currentUserId,
+                      notificationId,
+                    )
                     .delete();
               }
             }
@@ -108,17 +110,19 @@ class NotificationPageController extends GetxController {
   _showNotifications(QuerySnapshot snapshot, bool isRefresh) async {
     if (isRefresh) {
       notifications.clear();
-    } else {
-      notifications.removeRange(0, notifications.length ~/ 2);
     }
     _lastNotificationShown = snapshot.docs.last;
 
     for (var notificationSnapshot in snapshot.docs) {
       NotificationModel notification =
           NotificationModel.fromSnapshot(notificationSnapshot);
-      notification.notifierPic =
-          await _userDataController.getUserPersonalImageURLById(
-              notification.notifierId, notification.notifierType);
+      if (notification.type == NotificationType.questionAllowence) {
+        notification.notifierPic = currentUserPersonalImage;
+      } else {
+        notification.notifierPic =
+            await _userDataController.getUserPersonalImageURLById(
+                notification.notifierId, notification.notifierType);
+      }
       notifications.add(notification);
       loading.value = false;
     }
@@ -195,6 +199,9 @@ class NotificationPageController extends GetxController {
       case NotificationType.followedDoctorNewDegreePost:
         return () => NotificationsOnPressedFunctions
             .followedDoctorPostNotificationOnPressed(notification);
+      case NotificationType.questionAllowence:
+        return () => NotificationsOnPressedFunctions
+            .questionAllowenceNotificationOnPressed(notification);
     }
   }
 

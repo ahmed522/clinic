@@ -14,7 +14,7 @@ class LocalStorageController extends GetxController {
 
   storeCurrentUserData() async {
     final authenticationController = AuthenticationController.find;
-    String uid = authenticationController.getCurrenUserId();
+    String uid = authenticationController.firebaseUserId;
     UserType? userType = await _userDataController.getUserTypeById(uid);
     if (userType == UserType.doctor) {
       authenticationController.setCurrentUser =

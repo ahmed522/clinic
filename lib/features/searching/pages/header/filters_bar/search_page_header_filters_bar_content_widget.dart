@@ -6,26 +6,31 @@ import 'package:get/get.dart';
 class SearchPageHeaderFiltersBarContentWidget extends StatelessWidget {
   const SearchPageHeaderFiltersBarContentWidget({
     Key? key,
+    required this.topPadding,
   }) : super(key: key);
-
+  final double topPadding;
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
       child: GetBuilder<SearchPageController>(
         builder: (controller) {
-          return ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 20.0,
-              maxHeight: 30.0,
-            ),
-            child: ListView.builder(
-              padding: const EdgeInsets.only(right: 10, left: 10, top: 8.0),
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.filters.length,
-              itemBuilder: (context, index) => SingleFilterWidget(
-                filter: controller.filters.reversed.toList()[index],
+          return Padding(
+            padding: EdgeInsets.only(bottom: 2.0, top: topPadding),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: 25.0,
+                maxHeight: 25.0,
+              ),
+              child: Center(
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(right: 10, left: 10),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.filters.length,
+                  itemBuilder: (context, index) => SingleFilterWidget(
+                    filter: controller.filters.reversed.toList()[index],
+                  ),
+                ),
               ),
             ),
           );

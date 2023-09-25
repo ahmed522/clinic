@@ -9,10 +9,8 @@ import 'package:clinic/features/time_line/model/doctor_post_model.dart';
 import 'package:clinic/features/time_line/model/user_post_model.dart';
 import 'package:clinic/features/time_line/pages/post/doctor_post/doctor_post_widget.dart';
 import 'package:clinic/features/time_line/pages/post/user_post/user_post_widget.dart';
-import 'package:clinic/global/colors/app_colors.dart';
-import 'package:clinic/global/constants/gender.dart';
+
 import 'package:clinic/global/constants/user_type.dart';
-import 'package:clinic/global/fonts/app_fonts.dart';
 import 'package:clinic/global/widgets/app_circular_progress_indicator.dart';
 import 'package:clinic/global/widgets/empty_page.dart';
 import 'package:clinic/global/widgets/offline_page_builder.dart';

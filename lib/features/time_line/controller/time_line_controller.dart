@@ -35,11 +35,13 @@ class TimeLineController extends GetxController {
       QuerySnapshot snapshot;
       if (isRefresh) {
         snapshot = await _userDataController.getAllUsersPostsCollection
+            .where('allowed', isEqualTo: true)
             .orderBy('time_stamp', descending: true)
             .limit(limit)
             .get();
       } else {
         snapshot = await _userDataController.getAllUsersPostsCollection
+            .where('allowed', isEqualTo: true)
             .orderBy('time_stamp', descending: true)
             .startAfterDocument(_lastPostShown!)
             .limit(limit)

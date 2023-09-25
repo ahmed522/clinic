@@ -1,4 +1,3 @@
-import 'package:clinic/features/clinic/controller/doctor_clinics_controller.dart';
 import 'package:clinic/features/clinic/model/clinic_model.dart';
 import 'package:clinic/features/clinic/pages/presentation/clinic_data_widget.dart';
 import 'package:clinic/features/doctor_profile/pages/doctor_profile_page.dart';

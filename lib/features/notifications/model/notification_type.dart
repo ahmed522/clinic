@@ -14,4 +14,5 @@ enum NotificationType {
   followedDoctorNewDegreePost,
   followedDoctorDiscountPost,
   followedDoctorMedicalInfoPost,
+  questionAllowence,
 }

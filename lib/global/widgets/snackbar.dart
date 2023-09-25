@@ -34,6 +34,8 @@ class MySnackBar {
           messageText: Center(
             child: Text(
               message,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,
                 fontFamily: AppFonts.mainArabicFontFamily,

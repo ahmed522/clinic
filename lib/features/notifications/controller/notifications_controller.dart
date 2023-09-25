@@ -81,6 +81,12 @@ class NotificationsController extends GetxController {
               messageData['is_ergent'].toString() == 'true') {
             _foregroundNotifyErgentCase(messageData);
           }
+        } else if (messageData['type'] == 'question_allowence') {
+          if (Get.isRegistered<MainPageController>()) {
+            MainPageController.find.newNotifications.value = true;
+          }
+          _foregroundNotifyAcceptedPost(
+              message.notification!.title!, messageData);
         } else {
           if (Get.isRegistered<MainPageController>()) {
             MainPageController.find.newNotifications.value = true;
@@ -94,7 +100,8 @@ class NotificationsController extends GetxController {
         messageData['chatter_name'] = message.notification!.title;
         if (messageData['type'] == 'chat') {
           _onOpenNewMessageNotification(messageData);
-        } else if (messageData['type'] == 'patient_question') {
+        } else if (messageData['type'] == 'patient_question' ||
+            messageData['type'] == 'question_allowence') {
           _onOpenPatientQuestionNotification(messageData);
         } else if (messageData['type'] == 'timeLine') {
           if (messageData['sub_type'] == 'react_my_post') {
@@ -118,7 +125,8 @@ class NotificationsController extends GetxController {
           messageData['chatter_name'] = message.notification!.title;
           if (messageData['type'] == 'chat') {
             _onOpenNewMessageNotification(messageData);
-          } else if (messageData['type'] == 'patient_question') {
+          } else if (messageData['type'] == 'patient_question' ||
+              messageData['type'] == 'question_allowence') {
             _onOpenPatientQuestionNotification(messageData);
           } else if (messageData['type'] == 'timeLine') {
             if (messageData['sub_type'] == 'react_my_post') {
@@ -725,6 +733,69 @@ class NotificationsController extends GetxController {
           ),
         ),
         backgroundColor: Colors.red,
+        snackPosition: SnackPosition.TOP,
+        snackStyle: SnackStyle.GROUNDED,
+        duration: const Duration(milliseconds: 3000),
+        animationDuration: const Duration(milliseconds: 600),
+      ),
+    );
+  }
+
+  _foregroundNotifyAcceptedPost(
+      String title, Map<String, dynamic> messageData) {
+    bool pressed = false;
+    Get.showSnackbar(
+      GetSnackBar(
+        messageText: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            title,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: Colors.white,
+              fontFamily: AppFonts.mainArabicFontFamily,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        mainButton: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (!pressed) {
+                pressed = true;
+                _onOpenPatientQuestionNotification(messageData);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 5,
+            ),
+            child: const Text(
+              'فتح',
+              style: TextStyle(
+                color: Colors.green,
+                fontFamily: AppFonts.mainArabicFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                shadows: [
+                  BoxShadow(
+                    color: Colors.black38,
+                    spreadRadius: 0.3,
+                    blurRadius: 0.2,
+                    offset: Offset(0, 0.3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.green,
         snackPosition: SnackPosition.TOP,
         snackStyle: SnackStyle.GROUNDED,
         duration: const Duration(milliseconds: 3000),

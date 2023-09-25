@@ -5,9 +5,11 @@ class EmailTextField extends StatelessWidget {
   const EmailTextField({
     Key? key,
     required this.validator,
+    required this.onChange,
   }) : super(key: key);
 
   final String? Function(String?) validator;
+  final void Function(String?) onChange;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -28,6 +30,7 @@ class EmailTextField extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+      onChanged: (value) => onChange(value),
     );
   }
 }

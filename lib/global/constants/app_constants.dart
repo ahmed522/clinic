@@ -100,6 +100,8 @@ class AppConstants {
   static const String signinWithGoogle = 'أو قم بتسجيل الدخول من خلال';
   static const String verifyEmail =
       'لقد تم إرسال رسالة التحقق إلى بريدك الإلكتروني، يمكنك العودة وتسجيل الدخول بعد التحقق';
+  static const String stillCheckingDoctorData =
+      'نعمل حالياً على مراجعة بياناتك، ستصلك رسالة على بريدك الإلكتروني عند الإنتهاء';
   static String newDegreePostContent(String doctorName, Gender doctorGender) =>
       '${(doctorGender == Gender.male) ? ' حصل ' : ' حصلت '}${(doctorGender == Gender.male) ? 'الطبيب ' : 'الطبيبة '}$doctorName على درجة علمية جديدة';
   static const String passwordReset =

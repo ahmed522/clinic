@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:clinic/features/authentication/controller/firebase/authentication_exception_handler.dart';
 import 'package:clinic/features/authentication/controller/local_storage_controller.dart';
 import 'package:clinic/features/authentication/controller/sign_in/signin_controller.dart';
 import 'package:clinic/features/authentication/pages/common/email_verification_alert_dialog.dart';
+import 'package:clinic/features/authentication/pages/common/still_checking_alert_dialog.dart';
 import 'package:clinic/features/notifications/controller/notifications_controller.dart';
 import 'package:clinic/features/start/pages/start_page.dart';
 import 'package:clinic/features/authentication/controller/firebase/user_data_controller.dart';
@@ -41,6 +44,12 @@ class AuthenticationController extends GetxController {
       .doc('admin')
       .get()
       .then((value) => value['server_error']);
+  Future<bool> isDoctorChecked(String uid) => FirebaseFirestore.instance
+      .collection('doctors')
+      .doc(uid)
+      .get()
+      .then<bool>((snapshot) => snapshot['checked']);
+  late UserType? firebaseUserType;
   @override
   void onReady() async {
     try {
@@ -63,7 +72,7 @@ class AuthenticationController extends GetxController {
                 message: 'يجب عليك تحديث تطبيق طبيب لمتابعة الإستخدام',
               ),
           transition: Transition.fadeIn,
-          duration: const Duration(milliseconds: 1500));
+          duration: const Duration(milliseconds: 500));
     } else if (await serverError) {
       Get.offAll(
           () => const ErrorPage(
@@ -72,34 +81,46 @@ class AuthenticationController extends GetxController {
                     'حدثت مشكلة نعمل على حلها الان، يرجى إعادة المحاولة لاحقاً',
               ),
           transition: Transition.fadeIn,
-          duration: const Duration(milliseconds: 1500));
+          duration: const Duration(milliseconds: 500));
     } else {
-      if (user != null && user.emailVerified) {
-        if (loading.isFalse || isSigning.isFalse) {
-          await _localStorageController.getCurrentUserData();
-          Get.offAll(() => const MainPage(),
-              transition: Transition.fadeIn,
-              duration: const Duration(milliseconds: 1500));
+      if (user != null) {
+        bool doctorCheck = false;
+        if (Get.isRegistered<UserDataController>()) {
+          firebaseUserType =
+              await _userDataController.getUserTypeById(firebaseUserId);
+          doctorCheck = (((firebaseUserType == UserType.doctor) &&
+                  (await isDoctorChecked(firebaseUserId))) ||
+              (firebaseUserType != UserType.doctor));
+        }
+        if (user.emailVerified && doctorCheck) {
+          if (loading.isFalse || isSigning.isFalse) {
+            await _localStorageController.getCurrentUserData();
+            Get.offAll(() => const MainPage(),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 500));
+          }
+        } else {
+          if (isSigning.isFalse) {
+            logout(false);
+          }
         }
       } else {
         if (loading.isFalse || isSigning.isFalse) {
           Get.offAll(() => const StartPage(),
               transition: Transition.fadeIn,
-              duration: const Duration(milliseconds: 1500));
+              duration: const Duration(milliseconds: 300));
         }
       }
     }
   }
 
-  String getCurrenUserId() {
-    return _firebaseUser.value!.uid;
-  }
+  String get firebaseUserId => _firebaseUser.value!.uid;
 
   Future sendVerificationEmail() async {
-    await _firebaseUser.value!.sendEmailVerification().whenComplete(
-          () => Get.dialog(
-            const EmailVerificationAlertDialog(),
-            barrierDismissible: false,
+    await _firebaseUser.value!.sendEmailVerification().then(
+          (_) => MySnackBar.showGetSnackbar(
+            'تم إرسال رسالة التحقق إلى بريدك الإلكتروني',
+            Colors.green,
           ),
         );
   }
@@ -154,10 +175,31 @@ class AuthenticationController extends GetxController {
           .signInWithEmailAndPassword(email: email, password: password)
           .then(
         (value) async {
+          bool doctorCheck = false;
+          if (Get.isRegistered<UserDataController>()) {
+            firebaseUserType =
+                await _userDataController.getUserTypeById(firebaseUserId);
+            doctorCheck = (firebaseUserType == UserType.doctor) &&
+                !await isDoctorChecked(firebaseUserId);
+          }
+
           if (!_firebaseUser.value!.emailVerified) {
             loading.value = false;
-            isSigning.value = false;
-            Get.dialog(const EmailVerificationAlertDialog());
+            Get.dialog(
+              WillPopScope(
+                  onWillPop: () async => false,
+                  child: const EmailVerificationAlertDialog()),
+              barrierDismissible: false,
+            );
+          } else if (doctorCheck) {
+            loading.value = false;
+            Get.dialog(
+              WillPopScope(
+                onWillPop: () async => false,
+                child: const StillCheckingAlertDialog(),
+              ),
+              barrierDismissible: false,
+            );
           } else {
             await _localStorageController.storeCurrentUserData();
             await _userDataController.addNewUserToken(
@@ -196,7 +238,12 @@ class AuthenticationController extends GetxController {
 
   Future<void> restPassword(String email) async {
     try {
-      _firebaseAuth.sendPasswordResetEmail(email: email);
+      _firebaseAuth.sendPasswordResetEmail(email: email).then(
+            (_) => MySnackBar.showGetSnackbar(
+              'تم إرسال رسالة تغيير كلمة المرور إلى بريدك الإلكتروني',
+              Colors.green,
+            ),
+          );
     } catch (e) {
       Get.to(
         () => const ErrorPage(

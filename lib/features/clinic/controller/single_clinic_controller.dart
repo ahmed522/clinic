@@ -140,7 +140,9 @@ class SingleClinicController extends GetxController {
       updateLoading(true);
       tempClinic.clinicId =
           '${CommonFunctions.currentUserId}-${const Uuid().v4()}';
+
       addClinicPhoneNumbers();
+      tempClinic.checkedDoctor = true;
       await _userDataController.addClinicById(
         tempClinic,
       );

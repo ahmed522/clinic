@@ -24,14 +24,14 @@ class CommonFunctions {
           message: '  حدثت مشكلة، يرجى إعادة المحاولة لاحقاً',
         ),
         transition: Transition.fadeIn,
-        duration: const Duration(milliseconds: 1500),
+        duration: const Duration(milliseconds: 300),
       );
   static void deletedElement() => Get.to(
         () => const ErrorPage(
             imageAsset: 'assets/img/error.svg',
             message: 'المحتوى غير متوفر بعد الأن'),
         transition: Transition.fadeIn,
-        duration: const Duration(milliseconds: 1500),
+        duration: const Duration(milliseconds: 300),
       );
 
   static bool isLightMode(BuildContext context) =>
@@ -58,7 +58,7 @@ class CommonFunctions {
         DateTime.now().day, startTime.hour, startTime.minute);
     DateTime endDateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, endTime.hour, endTime.minute);
-    if (endDateTime.isBefore(startTime)) {
+    if (endDateTime.isBefore(startDateTime)) {
       if (DateTime.now().isAfter(startDateTime)) {
         return true;
       } else {

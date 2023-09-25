@@ -30,10 +30,10 @@ class PostController extends GetxController {
     try {
       String postDocumentId = '${post.user.userId}-${const Uuid().v4()}';
       post.postId = postDocumentId;
-      await _getPostDocumentRefById(postDocumentId).set(post.toJson());
-      NotificationsController.find
-          .notifyDoctorsWithSameSearchingSpecialization(post);
-      MySnackBar.showGetSnackbar('تم نشر سؤالك بنجاح', Colors.green);
+      Map<String, dynamic> data = post.toJson();
+      data['allowed'] = false;
+      await _getPostDocumentRefById(postDocumentId).set(data);
+      MySnackBar.showGetSnackbar('سيتم نشر سؤالك حال مراجعته', Colors.green);
     } catch (e) {
       Get.to(
         () => const ErrorPage(
@@ -48,7 +48,10 @@ class PostController extends GetxController {
     try {
       String postDocumentId = '${post.doctorId}-${const Uuid().v4()}';
       post.postId = postDocumentId;
-      await _getPostDocumentRefById(postDocumentId).set(post.toJson());
+      post.postId = postDocumentId;
+      Map<String, dynamic> data = post.toJson();
+      data['allowed'] = true;
+      await _getPostDocumentRefById(postDocumentId).set(data);
       NotificationsController.find.notifyFollowingDoctorPost(post);
       MySnackBar.showGetSnackbar('تم نشر منشورك بنجاح', Colors.green);
     } catch (e) {
