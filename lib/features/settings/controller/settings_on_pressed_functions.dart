@@ -299,7 +299,7 @@ class SettingsOnPressedFunctions {
   ///--------------------------- ------------------ ----------------------------
 
   ///------------------------------- contact us --------------------------------
-  static void onContactUsSettingPressed(BuildContext context) async {
+  static void onContactUsSettingPressed() async {
     String? encodeQueryParameters(Map<String, String> params) {
       return params.entries
           .map((MapEntry<String, String> e) =>

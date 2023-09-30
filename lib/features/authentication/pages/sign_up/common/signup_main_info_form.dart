@@ -189,13 +189,13 @@ class SignupMainInfoForm extends StatelessWidget {
                             backgroundColor: AppColors.primaryColor,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: const Text(
                             "التسجيل",
                             style: TextStyle(
-                              fontSize: 30,
+                              fontSize: 25,
                               fontFamily: AppFonts.mainArabicFontFamily,
                               color: Colors.white,
                             ),

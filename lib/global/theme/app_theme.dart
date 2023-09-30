@@ -27,12 +27,12 @@ class AppTheme {
                 ? AppColors.primaryColor
                 : Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               side: BorderSide(
-                color: (brightness == Brightness.light)
-                    ? AppColors.primaryColor
-                    : Colors.white,
-              ),
+                  color: (brightness == Brightness.light)
+                      ? AppColors.primaryColor
+                      : Colors.white,
+                  width: 0.3),
             ),
           ),
         ),

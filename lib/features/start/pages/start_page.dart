@@ -60,37 +60,26 @@ class StartPage extends StatelessWidget {
                     ? size.height / 12 + 250
                     : size.height / 6 + 200,
               ),
-              child: Text(
-                "طبيب",
-                style: TextStyle(
-                  fontSize: (size.width > AppConstants.phoneWidth)
-                      ? size.width / 8
-                      : size.width / 4,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w500,
-                  color: CommonFunctions.isLightMode(context)
-                      ? AppColors.primaryColor
-                      : Colors.white,
-                ),
-              ),
-            ),
-            FadeinAnimationWidget(
-              duration: const Duration(milliseconds: 1500),
-              position: PositionAnimationModel(
-                topAfter: (size.width > AppConstants.phoneWidth)
-                    ? size.width / 8 + size.height / 12 + 280
-                    : size.width / 4 + size.height / 6 + 230,
-              ),
-              child: Text(
-                "عيادة على الهاتف",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: AppFonts.mainArabicFontFamily,
-                  fontWeight: FontWeight.w300,
-                  color: CommonFunctions.isLightMode(context)
-                      ? AppColors.primaryColor
-                      : Colors.white,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    "طبيب",
+                    style: TextStyle(
+                      fontSize: (size.width > AppConstants.phoneWidth)
+                          ? size.width / 8
+                          : size.width / 4,
+                      fontFamily: AppFonts.mainArabicFontFamily,
+                      fontWeight: FontWeight.w500,
+                      color: CommonFunctions.isLightMode(context)
+                          ? AppColors.primaryColor
+                          : Colors.white,
+                    ),
+                  ),
+                  Text(
+                    AppConstants.slogan,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
               ),
             ),
             FadeinAnimationWidget(
@@ -119,7 +108,7 @@ class StartPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(10),
                         )),
                     child: Text(
                       "التسجيل",

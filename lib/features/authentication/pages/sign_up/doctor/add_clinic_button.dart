@@ -20,7 +20,7 @@ class AddClinicButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
         backgroundColor: AppColors.primaryColor,
         foregroundColor: Colors.white,

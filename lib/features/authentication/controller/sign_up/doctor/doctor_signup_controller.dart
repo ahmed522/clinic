@@ -138,6 +138,7 @@ class DoctorSignupController extends SignupController {
   }
 
   addClinicPhoneNumbers(int clinicIndex) {
+    doctorModel.clinics[clinicIndex].phoneNumbers.clear();
     for (TextEditingController numberController
         in clinicsPhoneNumbersTextControllers[clinicIndex]) {
       String number = numberController.text;

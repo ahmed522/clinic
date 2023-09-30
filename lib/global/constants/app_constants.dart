@@ -12,6 +12,7 @@ class AppConstants {
   static const double phoneWidth = 420.0;
   static const double phoneheight = 750.0;
   static const Size phoneSize = Size(phoneWidth, phoneheight);
+  static const String slogan = 'عيادة على الهاتف';
   static const String emailValidationRegExp =
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
   static const String nameValidationRegExp =

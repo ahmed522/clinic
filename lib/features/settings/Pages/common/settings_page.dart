@@ -39,9 +39,8 @@ class SettingsPage extends StatelessWidget {
                     SingleSetting(
                       text: 'تواصل معنا',
                       icon: Icons.contact_mail_outlined,
-                      onPressed: () =>
-                          SettingsOnPressedFunctions.onContactUsSettingPressed(
-                              context),
+                      onPressed: () => SettingsOnPressedFunctions
+                          .onContactUsSettingPressed(),
                     ),
                     SingleSetting(
                       text: 'مشاركة طبيب',
